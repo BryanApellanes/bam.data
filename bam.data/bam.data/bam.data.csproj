@@ -1,0 +1,137 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Data\Repositories\DaoInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Data\Js\AES.js" />
+    <None Remove="Data\Js\SHA1.js" />
+    <None Remove="Data\Js\SHA256.js" />
+    <None Remove="Data\Qi\Dao.js" />
+    <None Remove="Data\Qi\Qi.js" />
+    <None Remove="Data\Repositories\Templates\ChildPrimaryKeyProperty.tmpl" />
+    <None Remove="Data\Repositories\Templates\Dto.tmpl" />
+    <None Remove="Data\Repositories\Templates\ForeignKeyProperty.tmpl" />
+    <None Remove="Data\Repositories\Templates\SchemaRepository.tmpl" />
+    <None Remove="Data\Repositories\Templates\SchemaRepositoryAddType.tmpl" />
+    <None Remove="Data\Repositories\Templates\SchemaRepositoryMethods.tmpl" />
+    <None Remove="Data\Repositories\Templates\Wrapper.tmpl" />
+    <None Remove="Data\Repositories\Templates\XrefLeftProperty.tmpl" />
+    <None Remove="Data\Repositories\Templates\XrefRightProperty.tmpl" />
+    <None Remove="Data\Schema\Handlebars\Templates\ChildDaoCollectionAdd.hbs" />
+    <None Remove="Data\Schema\Handlebars\Templates\ChildXrefCollectionAdd.hbs" />
+    <None Remove="Data\Schema\Handlebars\Templates\Class.hbs" />
+    <None Remove="Data\Schema\Handlebars\Templates\Collection.hbs" />
+    <None Remove="Data\Schema\Handlebars\Templates\ColumnsClass.hbs" />
+    <None Remove="Data\Schema\Handlebars\Templates\ColumnsProperty.hbs" />
+    <None Remove="Data\Schema\Handlebars\Templates\Context.hbs" />
+    <None Remove="Data\Schema\Handlebars\Templates\ContextMethods.hbs" />
+    <None Remove="Data\Schema\Handlebars\Templates\DaoCollectionProperty.hbs" />
+    <None Remove="Data\Schema\Handlebars\Templates\ForeignKeyColumnsProperty.hbs" />
+    <None Remove="Data\Schema\Handlebars\Templates\ForeignKeyProperty.hbs" />
+    <None Remove="Data\Schema\Handlebars\Templates\KeyProperty.hbs" />
+    <None Remove="Data\Schema\Handlebars\Templates\PagedQueryClass.hbs" />
+    <None Remove="Data\Schema\Handlebars\Templates\Partial.hbs" />
+    <None Remove="Data\Schema\Handlebars\Templates\Property.hbs" />
+    <None Remove="Data\Schema\Handlebars\Templates\QiClass.hbs" />
+    <None Remove="Data\Schema\Handlebars\Templates\QueryClass.hbs" />
+    <None Remove="Data\Schema\Handlebars\Templates\XrefProperty.hbs" />
+    <None Remove="Data\Schema\Templates\ChildDaoCollectionAdd.tmpl" />
+    <None Remove="Data\Schema\Templates\ChildXrefCollectionAdd.tmpl" />
+    <None Remove="Data\Schema\Templates\Class.tmpl" />
+    <None Remove="Data\Schema\Templates\Collection.tmpl" />
+    <None Remove="Data\Schema\Templates\ColumnsClass.tmpl" />
+    <None Remove="Data\Schema\Templates\ColumnsProperty.tmpl" />
+    <None Remove="Data\Schema\Templates\Context.tmpl" />
+    <None Remove="Data\Schema\Templates\ContextMethods.tmpl" />
+    <None Remove="Data\Schema\Templates\DaoCollectionProperty.tmpl" />
+    <None Remove="Data\Schema\Templates\ForeignKeyProperty.tmpl" />
+    <None Remove="Data\Schema\Templates\KeyProperty.tmpl" />
+    <None Remove="Data\Schema\Templates\PagedQueryClass.tmpl" />
+    <None Remove="Data\Schema\Templates\Partial.tmpl" />
+    <None Remove="Data\Schema\Templates\Property.tmpl" />
+    <None Remove="Data\Schema\Templates\QiClass.tmpl" />
+    <None Remove="Data\Schema\Templates\QueryClass.tmpl" />
+    <None Remove="Data\Schema\Templates\README.md" />
+    <None Remove="Data\Schema\Templates\XrefProperty.tmpl" />
+    <None Remove="Javascript\json2.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Data\Js\AES.js" />
+    <Content Include="Data\Js\SHA1.js" />
+    <Content Include="Data\Js\SHA256.js" />
+    <Content Include="Data\Qi\Dao.js" />
+    <Content Include="Data\Qi\Qi.js" />
+    <Content Include="Data\Schema\Templates\README.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Data\Repositories\Templates\ChildPrimaryKeyProperty.tmpl" />
+    <EmbeddedResource Include="Data\Repositories\Templates\Dto.tmpl" />
+    <EmbeddedResource Include="Data\Repositories\Templates\ForeignKeyProperty.tmpl" />
+    <EmbeddedResource Include="Data\Repositories\Templates\SchemaRepository.tmpl" />
+    <EmbeddedResource Include="Data\Repositories\Templates\SchemaRepositoryAddType.tmpl" />
+    <EmbeddedResource Include="Data\Repositories\Templates\SchemaRepositoryMethods.tmpl" />
+    <EmbeddedResource Include="Data\Repositories\Templates\Wrapper.tmpl" />
+    <EmbeddedResource Include="Data\Repositories\Templates\XrefLeftProperty.tmpl" />
+    <EmbeddedResource Include="Data\Repositories\Templates\XrefRightProperty.tmpl" />
+    <EmbeddedResource Include="Data\Schema\Handlebars\Templates\ChildDaoCollectionAdd.hbs" />
+    <EmbeddedResource Include="Data\Schema\Handlebars\Templates\ChildXrefCollectionAdd.hbs" />
+    <EmbeddedResource Include="Data\Schema\Handlebars\Templates\Class.hbs" />
+    <EmbeddedResource Include="Data\Schema\Handlebars\Templates\Collection.hbs" />
+    <EmbeddedResource Include="Data\Schema\Handlebars\Templates\ColumnsClass.hbs" />
+    <EmbeddedResource Include="Data\Schema\Handlebars\Templates\ColumnsProperty.hbs" />
+    <EmbeddedResource Include="Data\Schema\Handlebars\Templates\Context.hbs" />
+    <EmbeddedResource Include="Data\Schema\Handlebars\Templates\ContextMethods.hbs" />
+    <EmbeddedResource Include="Data\Schema\Handlebars\Templates\DaoCollectionProperty.hbs" />
+    <EmbeddedResource Include="Data\Schema\Handlebars\Templates\ForeignKeyColumnsProperty.hbs" />
+    <EmbeddedResource Include="Data\Schema\Handlebars\Templates\ForeignKeyProperty.hbs" />
+    <EmbeddedResource Include="Data\Schema\Handlebars\Templates\KeyProperty.hbs" />
+    <EmbeddedResource Include="Data\Schema\Handlebars\Templates\PagedQueryClass.hbs" />
+    <EmbeddedResource Include="Data\Schema\Handlebars\Templates\Partial.hbs" />
+    <EmbeddedResource Include="Data\Schema\Handlebars\Templates\Property.hbs" />
+    <EmbeddedResource Include="Data\Schema\Handlebars\Templates\QiClass.hbs" />
+    <EmbeddedResource Include="Data\Schema\Handlebars\Templates\QueryClass.hbs" />
+    <EmbeddedResource Include="Data\Schema\Handlebars\Templates\XrefProperty.hbs" />
+    <EmbeddedResource Include="Data\Schema\Templates\ChildDaoCollectionAdd.tmpl" />
+    <EmbeddedResource Include="Data\Schema\Templates\ChildXrefCollectionAdd.tmpl" />
+    <EmbeddedResource Include="Data\Schema\Templates\Class.tmpl" />
+    <EmbeddedResource Include="Data\Schema\Templates\Collection.tmpl" />
+    <EmbeddedResource Include="Data\Schema\Templates\ColumnsClass.tmpl" />
+    <EmbeddedResource Include="Data\Schema\Templates\ColumnsProperty.tmpl" />
+    <EmbeddedResource Include="Data\Schema\Templates\Context.tmpl" />
+    <EmbeddedResource Include="Data\Schema\Templates\ContextMethods.tmpl" />
+    <EmbeddedResource Include="Data\Schema\Templates\DaoCollectionProperty.tmpl" />
+    <EmbeddedResource Include="Data\Schema\Templates\ForeignKeyProperty.tmpl" />
+    <EmbeddedResource Include="Data\Schema\Templates\KeyProperty.tmpl" />
+    <EmbeddedResource Include="Data\Schema\Templates\PagedQueryClass.tmpl" />
+    <EmbeddedResource Include="Data\Schema\Templates\Partial.tmpl" />
+    <EmbeddedResource Include="Data\Schema\Templates\Property.tmpl" />
+    <EmbeddedResource Include="Data\Schema\Templates\QiClass.tmpl" />
+    <EmbeddedResource Include="Data\Schema\Templates\QueryClass.tmpl" />
+    <EmbeddedResource Include="Data\Schema\Templates\XrefProperty.tmpl" />
+    <EmbeddedResource Include="Javascript\json2.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="9.1.1" />
+    <PackageReference Include="mongocsharpdriver" Version="2.19.0" />
+    <PackageReference Include="MySql.Data" Version="8.0.32" />
+    <PackageReference Include="Npgsql" Version="7.0.2" />
+    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.90" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\bam.base\bam.base\bam.base.csproj" />
+    <ProjectReference Include="..\..\..\bam.configuration\bam.configuration\bam.configuration.csproj" />
+  </ItemGroup>
+
+</Project>
