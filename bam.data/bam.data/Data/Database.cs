@@ -17,7 +17,7 @@ using System.Diagnostics;
 
 namespace Bam.Net.Data
 {
-    public partial class Database: Loggable
+    public partial class Database: Loggable//, IDatabase
     {
         List<DbConnection> _connections;
         public Database()

@@ -70,7 +70,7 @@ namespace Bam.Net.Data
         /// ConnectionStringResolver.  This behavior is different compared to the
         /// SqlClientRegistrar's Register method.
         /// </summary>
-        public static void Register<T>() where T : Dao
+        public static void Register<T>() where T : IDao
         {
             SetInitializerAndConnectionStringResolver(typeof(T));
             Register(Db.For<T>().ServiceProvider);

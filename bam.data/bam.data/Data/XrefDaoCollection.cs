@@ -67,7 +67,7 @@ namespace Bam.Net.Data
         }
 
         Database _database;
-        public Database Database
+        public IDatabase Database
         {
             get
             {
@@ -91,7 +91,7 @@ namespace Bam.Net.Data
         }
 
         readonly object _loadLock = new object();
-        public void Load(Database db)
+        public void Load(IDatabase db)
         {
             if (!_loaded && Parent != null)
             {
@@ -218,7 +218,7 @@ namespace Bam.Net.Data
         /// are not deleted.
         /// </summary>
         /// <param name="db"></param>
-        public void Clear(Database db = null)
+        public void Clear(IDatabase db = null)
         {
             db = db ?? Database;
             foreach(L item in _values)
@@ -283,9 +283,9 @@ namespace Bam.Net.Data
         }
 
         public event ICommittableDelegate AfterCommit;
-        public void Commit(Database db = null)
+        public void Commit(IDatabase db = null)
         {
-            db = db ?? Database;
+            db ??= Database;
             SqlStringBuilder sql = db.ServiceProvider.Get<SqlStringBuilder>();
             WriteCommit(sql, db);
 
@@ -293,7 +293,7 @@ namespace Bam.Net.Data
             AfterCommit?.Invoke(db, this);
         }
 
-        public void WriteCommit(SqlStringBuilder sql, Database db = null)
+        public void WriteCommit(ISqlStringBuilder sql, IDatabase db = null)
         {
             db = db ?? Database;
             List<L> children = new List<L>();
@@ -357,9 +357,9 @@ namespace Bam.Net.Data
         /// well as all Xref entries if any.
         /// </summary>
         /// <param name="db"></param>
-        public void Delete(Database db = null)
+        public void Delete(IDatabase db = null)
         {
-            db = db ?? Database;
+            db ??= Database;
             SqlStringBuilder sql = db.ServiceProvider.Get<SqlStringBuilder>();
             WriteDelete(sql);
             sql.Execute(db);
@@ -371,7 +371,7 @@ namespace Bam.Net.Data
         /// Xref entries if any.
         /// </summary>
         /// <param name="sql"></param>
-        public void WriteDelete(SqlStringBuilder sql)
+        public void WriteDelete(ISqlStringBuilder sql)
         {
             foreach (L item in this._values)
             {

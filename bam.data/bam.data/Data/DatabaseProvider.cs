@@ -17,7 +17,7 @@ namespace Bam.Net.Data
     {
         public ILogger Logger
         {
-            get;set;
+            get; set;
         }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace Bam.Net.Data
             instances.Each(instance =>
             {
                 Type type = instance.GetType();
-                type.GetProperties().Where(pi => pi.CanWrite && pi.PropertyType.Equals(typeof(Database))).Each(new { Instance = instance }, (ctx, pi) =>
+                type.GetProperties().Where(pi => pi.CanWrite && pi.PropertyType.Equals(typeof(IDatabase))).Each(new { Instance = instance }, (ctx, pi) =>
                 {
                     T db = GetSysDatabaseFor(instance);
                     if (pi.HasCustomAttributeOfType(out SchemasAttribute schemas))
@@ -42,12 +42,12 @@ namespace Bam.Net.Data
             });
         }
 
-        public virtual void SetDefaultDatabaseFor<TDao>() where TDao : Dao
+        public virtual void SetDefaultDatabaseFor<TDao>() where TDao : IDao
         {
             SetDefaultDatabaseFor<TDao>(out IDatabase db);
         }
 
-        public virtual void SetDefaultDatabaseFor<TDao>(out IDatabase db) where TDao: Dao
+        public virtual void SetDefaultDatabaseFor<TDao>(out IDatabase db) where TDao : IDao
         {
             db = GetSysDatabaseFor(typeof(TDao));
             Db.For<TDao>(db);
@@ -62,7 +62,7 @@ namespace Bam.Net.Data
         {
             return GetAppDatabaseFor(new DefaultConfigurationApplicationNameProvider(), databaseName);
         }
-        
+
         public abstract T GetAppDatabase(IApplicationNameProvider appNameProvider, string databaseName);
         public abstract T GetSysDatabase(string databaseName);
         public abstract T GetAppDatabaseFor(IApplicationNameProvider appNameProvider, object instance);
@@ -79,7 +79,7 @@ namespace Bam.Net.Data
             });
         }
 
-/*        IDatabase IDatabaseProvider.GetAppDatabase(IApplicationNameProvider appNameProvider, string databaseName)
+        IDatabase IDatabaseProvider.GetAppDatabase(IApplicationNameProvider appNameProvider, string databaseName)
         {
             return GetAppDatabase(appNameProvider, databaseName);
         }
@@ -107,6 +107,6 @@ namespace Bam.Net.Data
         IDatabase IDatabaseProvider.GetSysDatabaseFor(Type objectType, string info)
         {
             return GetSysDatabaseFor(objectType, info);
-        }*/
+        }
     }
 }

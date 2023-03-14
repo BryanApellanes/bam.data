@@ -24,32 +24,32 @@ namespace Bam.Net.Data
         public ILogger Logger { get; set; }
         public string Root { get; set; }
 
-        public Database GetAppDatabase(IApplicationNameProvider appNameProvider, string databaseName)
+        public IDatabase GetAppDatabase(IApplicationNameProvider appNameProvider, string databaseName)
         {
             throw new NotImplementedException();
         }
 
-        public Database GetAppDatabaseFor(IApplicationNameProvider appNameProvider, object instance)
+        public IDatabase GetAppDatabaseFor(IApplicationNameProvider appNameProvider, object instance)
         {
             throw new NotImplementedException();
         }
 
-        public Database GetAppDatabaseFor(IApplicationNameProvider appNameProvider, Type objectType, string info = null)
+        public IDatabase GetAppDatabaseFor(IApplicationNameProvider appNameProvider, Type objectType, string info = null)
         {
             throw new NotImplementedException();
         }
 
-        public Database GetSysDatabase(string databaseName)
+        public IDatabase GetSysDatabase(string databaseName)
         {
             throw new NotImplementedException();
         }
 
-        public Database GetSysDatabaseFor(object instance)
+        public IDatabase GetSysDatabaseFor(object instance)
         {
             throw new NotImplementedException();
         }
 
-        public Database GetSysDatabaseFor(Type objectType, string info = null)
+        public IDatabase GetSysDatabaseFor(Type objectType, string info = null)
         {
             throw new NotImplementedException();
         }

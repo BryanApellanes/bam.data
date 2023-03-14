@@ -36,7 +36,7 @@ namespace Bam.Net.Data
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static Database For(Type type)
+        public static IDatabase For(Type type)
         {
             return DefaultContainer[type];
         }
@@ -47,7 +47,7 @@ namespace Bam.Net.Data
         /// <typeparam name="T"></typeparam>
         /// <param name="database"></param>
         /// <returns></returns>
-		public static Database For<T>(Database database)
+		public static IDatabase For<T>(IDatabase database)
 		{
 			return For(typeof(T), database);
 		}
@@ -58,7 +58,7 @@ namespace Bam.Net.Data
         /// <param name="type"></param>
         /// <param name="database"></param>
         /// <returns></returns>
-		public static Database For(Type type, Database database)
+		public static IDatabase For(Type type, IDatabase database)
 		{
 			return For(Dao.ConnectionName(type), database);
 		}
@@ -70,7 +70,7 @@ namespace Bam.Net.Data
 		/// <param name="connectionName"></param>
 		/// <param name="database"></param>
 		/// <returns></returns>
-        public static Database For(string connectionName, Database database = null)
+        public static IDatabase For(string connectionName, IDatabase database = null)
         {
             if (database != null)
             {

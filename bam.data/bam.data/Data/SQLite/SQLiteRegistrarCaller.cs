@@ -15,7 +15,7 @@ namespace Bam.Net.Data
     /// </summary>
     public class SQLiteRegistrarCaller: IRegistrarCaller
     {
-        public void Register(Database database)
+        public void Register(IDatabase database)
         {
             SQLiteRegistrar.Register(database);
         }
@@ -29,7 +29,7 @@ namespace Bam.Net.Data
             SQLiteRegistrar.Register(daoType);
         }
 
-        public void Register<T>() where T : Dao
+        public void Register<T>() where T : IDao
         {
             SQLiteRegistrar.Register<T>();
         }

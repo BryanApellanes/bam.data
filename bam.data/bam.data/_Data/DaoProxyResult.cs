@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿//using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -6,7 +6,7 @@ using Yahoo.Yui.Compressor;
 
 namespace Bam.Net.Data
 {
-    public class DaoProxyResult: ActionResult
+/*    public class DaoProxyResult: ActionResult
     {
         public DaoProxyResult(bool min)
         {
@@ -21,5 +21,5 @@ namespace Bam.Net.Data
             JavaScriptCompressor jsc = new JavaScriptCompressor();
             this.Script = jsc.Compress(this.Script);
         }
-    }
+    }*/
 }

@@ -11,7 +11,6 @@ using System.Data;
 using System.Collections;
 using Bam.Net.Logging;
 using Newtonsoft.Json.Linq;
-using NLog.LayoutRenderers;
 
 namespace Bam.Net.Data
 {

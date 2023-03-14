@@ -1,7 +1,7 @@
 /*
 	Copyright © Bryan Apellanes 2015  
 */
-using Microsoft.AspNetCore.Mvc;
+//using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ using System.Text;
 
 namespace Bam.Net.Data
 {
-    public partial class DaoController: Controller
+/*    public partial class DaoController: Controller
     {
         public ActionResult Default()
         {
@@ -20,5 +20,5 @@ namespace Bam.Net.Data
         {
             return new DaoProxyResult(min);
         }
-    }
+    }*/
 }
