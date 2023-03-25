@@ -10,7 +10,7 @@ using System.Data.Common;
 
 namespace Bam.Net.Data
 {
-    public partial class SqlStringBuilder : IHasFilters
+    public partial class SqlStringBuilder : IHasFilters, ISqlStringBuilder
     {
         const string InsertFormat = "INSERT INTO {0} ";
         StringBuilder _stringBuilder;
@@ -59,7 +59,7 @@ namespace Bam.Net.Data
 
         public event SqlExecuteDelegate Executed;
         
-        public DataTable GetDataTable(Database db)
+        public DataTable GetDataTable(IDatabase db)
         {
             if (!string.IsNullOrEmpty(this))
             {
@@ -74,7 +74,7 @@ namespace Bam.Net.Data
             }
         }
 
-        public bool TryExecute(Database db)
+        public bool TryExecute(IDatabase db)
         {
             return TryExecute(db, out Exception ignore);
         }
@@ -86,7 +86,7 @@ namespace Bam.Net.Data
         /// <param name="db"></param>
         /// <param name="ex"></param>
         /// <returns></returns>
-        public bool TryExecute(Database db, out Exception ex)
+        public bool TryExecute(IDatabase db, out Exception ex)
         {
             ex = null;
             try
@@ -101,7 +101,7 @@ namespace Bam.Net.Data
             return ex == null;
         }
 
-        public void Execute(Database db)
+        public void Execute(IDatabase db)
         {
             if (!string.IsNullOrWhiteSpace(this))
             {
@@ -110,7 +110,7 @@ namespace Bam.Net.Data
             }
         }
 
-        public IEnumerable<T> ExecuteReader<T>(Database db) where T : class, new()
+        public IEnumerable<T> ExecuteReader<T>(IDatabase db) where T : class, new()
         {
             if (!string.IsNullOrWhiteSpace(this))
             {
@@ -120,12 +120,12 @@ namespace Bam.Net.Data
         }
 
         
-        public virtual DataSet GetDataSet(Database db, bool releaseConnection = true, DbConnection conn = null, DbTransaction tx = null)
+        public virtual DataSet GetDataSet(IDatabase db, bool releaseConnection = true, DbConnection conn = null, DbTransaction tx = null)
         {
             return GetDataSet<object>(db, releaseConnection, conn, tx);
         }
 
-        public virtual DataSet GetDataSet<T>(Database db, bool releaseConnection = true, DbConnection conn = null, DbTransaction tx = null)
+        public virtual DataSet GetDataSet<T>(IDatabase db, bool releaseConnection = true, DbConnection conn = null, DbTransaction tx = null)
         {
             if (conn == null)
             {
@@ -154,7 +154,7 @@ namespace Bam.Net.Data
         /// Appends GoText to the end of the current string
         /// </summary>
         /// <returns></returns>
-        public virtual SqlStringBuilder Go()
+        public virtual ISqlStringBuilder Go()
         {
             string soFar = _stringBuilder.ToString();
             if (!string.IsNullOrEmpty(soFar) && !soFar.EndsWith(GoText))
@@ -164,29 +164,29 @@ namespace Bam.Net.Data
             return this;
         }
 
-        public virtual SqlStringBuilder Update(Dao instance)
+        public virtual ISqlStringBuilder Update(IDao instance)
         {
             return Update(instance.TableName(), instance.GetNewAssignValues());
         }
 
-        public virtual SqlStringBuilder Update<T>(T instance) where T : Dao
+        public virtual ISqlStringBuilder Update<T>(T instance) where T : IDao
         {
             return Update(Dao.TableName(instance), instance.GetNewAssignValues());
         }
 
-        public virtual SqlStringBuilder Update(string tableName, dynamic valueAssignments)
+        public virtual ISqlStringBuilder Update(string tableName, dynamic valueAssignments)
         {
             IEnumerable<AssignValue> values = AssignValue.FromDynamic(valueAssignments, ColumnNameFormatter);
             return Update(tableName, values.ToArray());
         }
 
-        public virtual SqlStringBuilder Update(string tableName, Dictionary<string, object> valueAssignments)
+        public virtual ISqlStringBuilder Update(string tableName, Dictionary<string, object> valueAssignments)
         {
             IEnumerable<AssignValue> values = AssignValue.FromDictionary<string, object>(valueAssignments, ColumnNameFormatter);
             return Update(tableName, values.ToArray());
         }
 
-        public virtual SqlStringBuilder Update(string tableName, params AssignValue[] values)
+        public virtual ISqlStringBuilder Update(string tableName, params AssignValue[] values)
         {
             _stringBuilder.AppendFormat("UPDATE {0} ", TableNameFormatter(tableName));
             SetFormat set = new SetFormat();
@@ -202,27 +202,27 @@ namespace Bam.Net.Data
             return this;
         }
 
-        public virtual SqlStringBuilder Insert<T>(T instance) where T : Dao, new()
+        public virtual ISqlStringBuilder Insert<T>(T instance) where T : IDao, new()
         {
             return Insert(Dao.TableName(instance), instance.GetNewAssignValues());
         }
 
-        public virtual SqlStringBuilder Insert(Dao instance)
+        public virtual ISqlStringBuilder Insert(IDao instance)
         {
             return Insert(Dao.TableName(instance.GetType()), instance.GetNewAssignValues());
         }
 
-        public virtual SqlStringBuilder Insert(string tableName, dynamic valueAssignments)
+        public virtual ISqlStringBuilder Insert(string tableName, dynamic valueAssignments)
         {
             IEnumerable<AssignValue> values = AssignValue.FromDynamic(valueAssignments, ColumnNameFormatter);
             return Insert(tableName, values.ToArray());
         }
-        public virtual SqlStringBuilder Insert(string tableName, params AssignValue[] values)
+        public virtual ISqlStringBuilder Insert(string tableName, params AssignValue[] values)
         {
             return FormatInsert<InsertFormat>(tableName, values);
         }
 
-        public virtual SqlStringBuilder FormatInsert<T>(string tableName, params AssignValue[] values) where T : SetFormat, new()
+        public virtual ISqlStringBuilder FormatInsert<T>(string tableName, params AssignValue[] values) where T : SetFormat, new()
         {
             _stringBuilder.AppendFormat(InsertFormat, TableNameFormatter(tableName));
             T insert = new T();
@@ -240,12 +240,12 @@ namespace Bam.Net.Data
         }
         public bool SelectStar { get; set; }
 
-        public virtual SqlStringBuilder Select<T>() where T: Dao, new()
+        public virtual ISqlStringBuilder Select<T>() where T: IDao, new()
         {
             return Select(Dao.TableName(typeof(T)), SelectStar ? "*": ColumnAttribute.GetColumns(typeof(T)).ToDelimited(c => ColumnNameFormatter(c.Name)));
         }
 
-        public virtual SqlStringBuilder Select<T>(params string[] columns)
+        public virtual ISqlStringBuilder Select<T>(params string[] columns)
         {
             List<string> goodColumns = ColumnAttribute.GetColumns(typeof(T)).Select(c => c.Name).ToList();
             foreach (string column in columns)
@@ -266,7 +266,7 @@ namespace Bam.Net.Data
         /// <typeparam name="T"></typeparam>
         /// <param name="topCount"></param>
         /// <returns></returns>
-        public virtual SqlStringBuilder Top<T>(int topCount) where T : Dao, new()
+        public virtual ISqlStringBuilder Top<T>(int topCount) where T : IDao, new()
         {
             return SelectTop<T>(topCount);
         }
@@ -277,17 +277,17 @@ namespace Bam.Net.Data
         /// <typeparam name="T"></typeparam>
         /// <param name="topCount"></param>
         /// <returns></returns>
-        public virtual SqlStringBuilder SelectTop<T>(int topCount) where T : Dao, new()
+        public virtual ISqlStringBuilder SelectTop<T>(int topCount) where T : IDao, new()
         {
             return SelectTop(topCount, Dao.TableName(typeof(T)), SelectStar ? "*" : ColumnAttribute.GetColumns(typeof(T)).ToDelimited(c => ColumnNameFormatter(c.Name)));
         }
 
-        public virtual SqlStringBuilder Select(string tableName, params string[] columnNames)
+        public virtual ISqlStringBuilder Select(string tableName, params string[] columnNames)
         {
             return SelectTop(-1, tableName, columnNames);
         }
 
-        public virtual SqlStringBuilder SelectTop(int topCount, string tableName, params string[] columnNames)
+        public virtual ISqlStringBuilder SelectTop(int topCount, string tableName, params string[] columnNames)
         {
             if (columnNames.Length == 0)
             {
@@ -309,7 +309,7 @@ namespace Bam.Net.Data
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public virtual SqlStringBuilder Count<T>() where T : Dao, new()
+        public virtual ISqlStringBuilder Count<T>() where T : IDao, new()
         {
             return SelectCount<T>();
         }
@@ -319,7 +319,7 @@ namespace Bam.Net.Data
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public virtual SqlStringBuilder SelectCount<T>() where T : Dao, new()
+        public virtual ISqlStringBuilder SelectCount<T>() where T : IDao, new()
         {
 			return SelectCount(Dao.TableName(typeof(T)));
         }
@@ -329,24 +329,24 @@ namespace Bam.Net.Data
         /// </summary>
         /// <param name="tableName"></param>
         /// <returns></returns>
-		public virtual SqlStringBuilder Count(string tableName)
+		public virtual ISqlStringBuilder Count(string tableName)
 		{
 			return SelectCount(tableName);
 		}
 
-		public virtual SqlStringBuilder SelectCount(string tableName)
+		public virtual ISqlStringBuilder SelectCount(string tableName)
 		{
 			_stringBuilder.AppendFormat("SELECT COUNT(*) FROM {0} ", TableNameFormatter(tableName));
 			return this;
 		}
 
-        public virtual SqlStringBuilder Delete(string tableName)
+        public virtual ISqlStringBuilder Delete(string tableName)
         {
 			_stringBuilder.AppendFormat("DELETE FROM {0} ", TableNameFormatter(tableName));
             return this;
         }
 
-        public SqlStringBuilder Where<C>(Func<C, IQueryFilter> where) where C : IQueryFilter, IFilterToken, new()
+        public ISqlStringBuilder Where<C>(Func<C, IQueryFilter> where) where C : IQueryFilter, IFilterToken, new()
         {
             C columns = new C();
             IQueryFilter filter = where(columns);
@@ -354,12 +354,12 @@ namespace Bam.Net.Data
             return this;
         }
 
-        public SqlStringBuilder OrderBy<C>(OrderBy<C> orderBy) where C : IQueryFilter, IFilterToken, new()
+        public ISqlStringBuilder OrderBy<C>(IOrderBy<C> orderBy) where C : IQueryFilter, IFilterToken, new()
         {
             return OrderBy(orderBy.Column.ToString(), orderBy.SortOrder);
         }
 
-        public virtual SqlStringBuilder Where(IQueryFilter filter)
+        public virtual ISqlStringBuilder Where(IQueryFilter filter)
         {
             WhereFormat where = new WhereFormat(filter)
             {
@@ -371,12 +371,12 @@ namespace Bam.Net.Data
             return this;
         }
 
-        public virtual SqlStringBuilder Where(string columnName, object value)
+        public virtual ISqlStringBuilder Where(string columnName, object value)
         {
             return Where(new AssignValue(columnName, value, ColumnNameFormatter));
         }
 
-        public virtual SqlStringBuilder Where(dynamic parameters)
+        public virtual ISqlStringBuilder Where(dynamic parameters)
         {
             IEnumerable<AssignValue> values = AssignValue.FromDynamic(parameters, ColumnNameFormatter);
             foreach(AssignValue value in values)
@@ -386,7 +386,7 @@ namespace Bam.Net.Data
             return this;
         }
 
-        public virtual SqlStringBuilder Where(AssignValue filter)
+        public virtual ISqlStringBuilder Where(AssignValue filter)
         {
             WhereFormat where = new WhereFormat() {ParameterPrefix = filter.ParameterPrefix};
             where.ColumnNameFormatter = filter.ColumnNameFormatter;
@@ -398,7 +398,7 @@ namespace Bam.Net.Data
             return this;
         }
 
-        public virtual SqlStringBuilder And(IQueryFilter filter)
+        public virtual ISqlStringBuilder And(IQueryFilter filter)
         {
             AndFormat and = new AndFormat(filter)
             {
@@ -410,12 +410,12 @@ namespace Bam.Net.Data
             return this;
         }
 
-        public virtual SqlStringBuilder And(string columnName, object value)
+        public virtual ISqlStringBuilder And(string columnName, object value)
         {
             return And(new AssignValue(columnName, value, ColumnNameFormatter));
         }
 
-        public virtual SqlStringBuilder And(dynamic parameters)
+        public virtual ISqlStringBuilder And(dynamic parameters)
         {
             IEnumerable<AssignValue> values = AssignValue.FromDynamic(parameters, ColumnNameFormatter);
             foreach(AssignValue value in values)
@@ -425,7 +425,7 @@ namespace Bam.Net.Data
             return this;
         }
         
-        public virtual SqlStringBuilder And(AssignValue filter)
+        public virtual ISqlStringBuilder And(AssignValue filter)
         {
             AndFormat where = new AndFormat() {ParameterPrefix = filter.ParameterPrefix};
             where.ColumnNameFormatter = filter.ColumnNameFormatter;
@@ -437,12 +437,12 @@ namespace Bam.Net.Data
             return this;
         }
 
-        public virtual SqlStringBuilder Id()
+        public virtual ISqlStringBuilder Id()
         {
             return Id("ID");
         }
 
-        public virtual SqlStringBuilder Id(string idAs)
+        public virtual ISqlStringBuilder Id(string idAs)
         {
             _stringBuilder.AppendFormat("{0}SELECT @@IDENTITY AS {1}", this.GoText, idAs);
             return this;
@@ -481,7 +481,7 @@ namespace Bam.Net.Data
             Executed?.Invoke(this, db);
         }
 		
-		public virtual SqlStringBuilder OrderBy(string columnName, SortOrder order = SortOrder.Ascending)
+		public virtual ISqlStringBuilder OrderBy(string columnName, SortOrder order = SortOrder.Ascending)
 		{
 			_stringBuilder.AppendFormat("ORDER BY {0} {1}", ColumnNameFormatter(columnName), GetSortOrder(order));
 			return this;

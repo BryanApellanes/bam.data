@@ -15,7 +15,7 @@ namespace Bam.Net.Data
     /// that result in the return of potentially
     /// multiple result sets.
     /// </summary>
-    public class QuerySet: SqlStringBuilder
+    public class QuerySet: SqlStringBuilder, IQuerySet
     {
         public new event SqlExecuteDelegate Executed;
 
@@ -28,7 +28,7 @@ namespace Bam.Net.Data
                 
         public void Select<C, T>(Func<C, IQueryFilter> where)
             where C : IFilterToken, new()
-            where T : Dao, new()
+            where T : IDao, new()
         {
             C columns = new C();
             IQueryFilter filter = where(columns);
@@ -37,7 +37,7 @@ namespace Bam.Net.Data
 
         public void Select<C, T>(IQueryFilter filter)
             where C : IFilterToken, new()
-            where T : Dao, new()
+            where T : IDao, new()
         {
             _results.Add(new SelectResult()); 
             base.Select<T>().Where(filter).Go();
@@ -51,26 +51,26 @@ namespace Bam.Net.Data
 			}
 		}
 
-        public override SqlStringBuilder Insert<T>(T instance)
+        public override ISqlStringBuilder Insert<T>(T instance)
         {
-            return Insert((Dao)instance);
+            return Insert((IDao)instance);
         }
 
-        public override SqlStringBuilder Insert(Dao instance)
+        public override ISqlStringBuilder Insert(IDao instance)
         {
             _results.Add(new InsertResult(instance));
             base.Insert(instance).Id().Go();
             return this;
         }
 
-        public override SqlStringBuilder Select<T>()
+        public override ISqlStringBuilder Select<T>()
         {
             _results.Add(new SelectResult());
             base.Select<T>();
             return this;
         }
 
-        public override SqlStringBuilder Select<T>(params string[] columns)
+        public override ISqlStringBuilder Select<T>(params string[] columns)
         {
             _results.Add(new SelectResult());
             base.Select<T>(columns);
@@ -113,9 +113,9 @@ namespace Bam.Net.Data
             return this;
         }
 
-        public QuerySetResults Results => new QuerySetResults(_results, Database);
+        public IQuerySetResults Results => new QuerySetResults(_results, Database);
 
-        public Database Database { get; set; }
+        public IDatabase Database { get; set; }
 
         protected internal DataSet DataSet
         {

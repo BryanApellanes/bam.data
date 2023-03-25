@@ -21,7 +21,7 @@ namespace Bam.Net.Data
     /// <summary>
     /// Data Access Object
     /// </summary>
-    public abstract partial class Dao : ICommittable, IHasDataRow, IComparable
+    public abstract partial class Dao : IDao, ICommittable, IHasDataRow, IComparable
     {
         static Dictionary<string, string> _proxiedConnectionNames;
 
@@ -151,8 +151,8 @@ namespace Bam.Net.Data
             Initializer(this);
         }
 
-        Action<Dao> _initializer;
-        public Action<Dao> Initializer
+        Action<IDao> _initializer;
+        public Action<IDao> Initializer
         {
             get => _initializer ?? GlobalInitializer;
             set => _initializer = value;
@@ -160,8 +160,8 @@ namespace Bam.Net.Data
 
         public static DBNull Null => DBNull.Value;
         
-        static Action<Dao> _globalInitializer;
-        public static Action<Dao> GlobalInitializer
+        static Action<IDao> _globalInitializer;
+        public static Action<IDao> GlobalInitializer
         {
             get
             {
@@ -406,7 +406,7 @@ namespace Bam.Net.Data
 
         public event DaoDelegate BeforeWriteCommit;
         public static event DaoDelegate BeforeWriteCommitAny;
-        protected internal void OnBeforeWriteCommit(Database db)
+        protected internal void OnBeforeWriteCommit(IDatabase db)
         {
             BeforeWriteCommit?.Invoke(db, this);
             BeforeWriteCommitAny?.Invoke(db, this);
@@ -414,7 +414,7 @@ namespace Bam.Net.Data
 
         public event DaoDelegate AfterWriteCommit;
         public static event DaoDelegate AfterWriteCommitAny;
-        protected internal void OnAfterWriteCommit(Database db)
+        protected internal void OnAfterWriteCommit(IDatabase db)
         {
             AfterWriteCommit?.Invoke(db, this);
             AfterWriteCommitAny?.Invoke(db, this);
@@ -422,7 +422,7 @@ namespace Bam.Net.Data
 
         public event DaoDelegate BeforeCommit;
         public static event DaoDelegate BeforeCommitAny;
-        protected internal void OnBeforeCommit(Database db)
+        protected internal void OnBeforeCommit(IDatabase db)
         {
             BeforeCommit?.Invoke(db, this);
             BeforeCommitAny?.Invoke(db, this);
@@ -441,7 +441,7 @@ namespace Bam.Net.Data
         /// The event that fires after any Dao instance is committed.
         /// </summary>
         public static event DaoDelegate AfterCommitAny;
-        protected internal void OnAfterCommit(Database db)
+        protected internal void OnAfterCommit(IDatabase db)
         {
             AfterCommit?.Invoke(db, this);
             AfterCommitAny?.Invoke(db, this);
@@ -449,7 +449,7 @@ namespace Bam.Net.Data
 
         public event DaoDelegate BeforeWriteDelete;
         public static event DaoDelegate BeforeWriteDeleteAny;
-        protected void OnBeforeWriteDelete(Database db)
+        protected void OnBeforeWriteDelete(IDatabase db)
         {
             BeforeWriteDelete?.Invoke(db, this);
             BeforeWriteDeleteAny?.Invoke(db, this);
@@ -457,7 +457,7 @@ namespace Bam.Net.Data
 
         public event DaoDelegate AfterWriteDelete;
         public static event DaoDelegate AfterWriteDeleteAny;
-        protected void OnAfterWriteDelete(Database db)
+        protected void OnAfterWriteDelete(IDatabase db)
         {
             AfterWriteDelete?.Invoke(db, this);
             AfterWriteDeleteAny?.Invoke(db, this);
@@ -465,7 +465,7 @@ namespace Bam.Net.Data
 
         public event DaoDelegate BeforeDelete;
         public static event DaoDelegate BeforeDeleteAny;
-        protected void OnBeforeDelete(Database db)
+        protected void OnBeforeDelete(IDatabase db)
         {
             BeforeDelete?.Invoke(db, this);
             BeforeDeleteAny?.Invoke(db, this);
@@ -473,7 +473,7 @@ namespace Bam.Net.Data
 
         public event DaoDelegate AfterDelete;
         public static event DaoDelegate AfterDeleteAny;
-        protected void OnAfterDelete(Database db)
+        protected void OnAfterDelete(IDatabase db)
         {
             AfterDelete?.Invoke(db, this);
             AfterDeleteAny?.Invoke(db, this);
@@ -481,7 +481,7 @@ namespace Bam.Net.Data
 
         protected internal Dictionary<string, ILoadable> ChildCollections => _childCollections;
 
-        public virtual void Hydrate(Database database = null)
+        public virtual void Hydrate(IDatabase database = null)
         {
             database.Hydrate(this);
         }
@@ -573,7 +573,7 @@ namespace Bam.Net.Data
         /// </summary>
         /// <param name="db"></param>
         /// <returns></returns>
-        public Task SaveAsync(Database db = null)
+        public Task SaveAsync(IDatabase db = null)
         {
             return Task.Run(() =>
             {
@@ -588,7 +588,7 @@ namespace Bam.Net.Data
         /// children, though child commit events will not be triggerred.
         /// Same as Save
         /// </summary>
-        public void Save(Database db)
+        public void Save(IDatabase db)
         {
             Commit(db);
         }
@@ -602,7 +602,7 @@ namespace Bam.Net.Data
         /// </summary>
         public virtual void Commit()
         {
-            Database db = Database;
+            IDatabase db = Database;
             Commit(db);
         }
 
@@ -632,13 +632,13 @@ namespace Bam.Net.Data
         /// hydrated.
         /// Same as Save
         /// </summary>
-        public void Commit(Database db, bool commitChildren)
+        public void Commit(IDatabase db, bool commitChildren)
         {
             db = db ?? Database;
 
             ThrowIfInvalid();
 
-            QuerySet querySet = GetQuerySet(db);
+            IQuerySet querySet = GetQuerySet(db);
 
             WriteCommit(querySet, db);
             if (commitChildren)
@@ -652,11 +652,11 @@ namespace Bam.Net.Data
             }
         }
 
-        public void Update(Database db = null)
+        public void Update(IDatabase db = null)
         {
             db = db ?? Database;
             ThrowIfInvalid();
-            QuerySet querySet = GetQuerySet(db);
+            IQuerySet querySet = GetQuerySet(db);
             WriteUpdate(querySet);
 
             if (!string.IsNullOrWhiteSpace(querySet.ToString()))
@@ -665,11 +665,11 @@ namespace Bam.Net.Data
             }
         }
 
-        public void Insert(Database db = null)
+        public void Insert(IDatabase db = null)
         {
             db = db ?? Database;
             ThrowIfInvalid();
-            QuerySet querySet = GetQuerySet(db);
+            IQuerySet querySet = GetQuerySet(db);
             WriteInsert(querySet);
 
             if (!string.IsNullOrWhiteSpace(querySet.ToString()))
@@ -693,7 +693,7 @@ namespace Bam.Net.Data
             };
         }
 
-        public void WriteChildDeletes(SqlStringBuilder sql)
+        public void WriteChildDeletes(ISqlStringBuilder sql)
         {
             foreach (string key in ChildCollections.Keys)
             {
@@ -712,7 +712,7 @@ namespace Bam.Net.Data
 
         public virtual void Delete(IDatabase database = null)
         {
-            SqlStringBuilder sql = GetSqlStringBuilder(out Database db);
+            ISqlStringBuilder sql = GetSqlStringBuilder(out IDatabase db);
             if (database != null)
             {
                 sql = GetSqlStringBuilder(database);
@@ -750,7 +750,7 @@ namespace Bam.Net.Data
 
         protected virtual void Delete(IQueryFilter filter)
         {
-            SqlStringBuilder sql = GetSqlStringBuilder(out Database db);
+            ISqlStringBuilder sql = GetSqlStringBuilder(out IDatabase db);
 
             foreach (string key in this.ChildCollections.Keys)
             {
@@ -762,44 +762,44 @@ namespace Bam.Net.Data
             sql.Reset();
         }
 
-        protected internal SqlStringBuilder GetSqlStringBuilder()
+        protected internal ISqlStringBuilder GetSqlStringBuilder()
         {
-            return GetSqlStringBuilder(out Database ignore);
+            return GetSqlStringBuilder(out IDatabase ignore);
         }
 
-        protected internal SqlStringBuilder GetSqlStringBuilder(out Database db)
+        protected internal ISqlStringBuilder GetSqlStringBuilder(out IDatabase db)
         {
             db = Database;
             return GetSqlStringBuilder(db);
         }
 
-        protected internal static SqlStringBuilder GetSqlStringBuilder(Database db)
+        protected internal static ISqlStringBuilder GetSqlStringBuilder(IDatabase db)
         {
             SqlStringBuilder sql = db.ServiceProvider.Get<SqlStringBuilder>();
             return sql;
         }
 
-        protected internal QuerySet GetQuerySet()
+        protected internal IQuerySet GetQuerySet()
         {
-            return GetQuerySet(out Database ignore);
+            return GetQuerySet(out IDatabase ignore);
         }
 
-        protected internal QuerySet GetQuerySet(out Database db)
+        protected internal IQuerySet GetQuerySet(out IDatabase db)
         {
             db = Database;
             return GetQuerySet(db);
         }
 
-        protected internal static QuerySet GetQuerySet(Database db)
+        protected internal static IQuerySet GetQuerySet(IDatabase db)
         {
             return db.GetQuerySet();
         }
 
         public virtual void WriteDelete(ISqlStringBuilder sql)
         {
-            Database db = Database;
+            IDatabase db = Database;
             OnBeforeWriteDelete(db);
-            sql.Delete(TableName()).Where(db.GetAssignment(KeyColumnName, IdValue, sql.ColumnNameFormatter));
+            sql.Delete(TableName()).Where(new AssignValue(KeyColumnName, IdValue, sql.ColumnNameFormatter));// db.GetAssignment(KeyColumnName, IdValue, sql.ColumnNameFormatter));
             OnAfterWriteDelete(db);
         }
 
@@ -815,7 +815,7 @@ namespace Bam.Net.Data
         /// <param name="sqlStringBuilder"></param>
         public virtual void WriteCommit(ISqlStringBuilder sqlStringBuilder)
         {
-            Database db = Database;
+            IDatabase db = Database;
             WriteCommit(sqlStringBuilder, db);
         }
 
@@ -842,7 +842,7 @@ namespace Bam.Net.Data
         /// GetUniqueFilter().
         /// </summary>
         /// <param name="sqlStringBuilder"></param>
-        public void WriteUpdate(SqlStringBuilder sqlStringBuilder)
+        public void WriteUpdate(ISqlStringBuilder sqlStringBuilder)
         {
             AssignValue[] valueAssignments = GetNewAssignValues();
             sqlStringBuilder
@@ -856,7 +856,7 @@ namespace Bam.Net.Data
         /// which when executed will insert the current instance.
         /// </summary>
         /// <param name="sqlStringBuilder"></param>
-        public void WriteInsert(SqlStringBuilder sqlStringBuilder)
+        public void WriteInsert(ISqlStringBuilder sqlStringBuilder)
         {
             sqlStringBuilder
                 .Insert(this)
@@ -868,7 +868,7 @@ namespace Bam.Net.Data
         /// since it was loaded.  This method will write to the database.
         /// </summary>
         /// <param name="db"></param>
-        public virtual void Undo(Database db = null)
+        public virtual void Undo(IDatabase db = null)
         {
             Type thisType = this.GetType();
             if (db == null)
@@ -876,7 +876,7 @@ namespace Bam.Net.Data
                 db = Database;
             }
 
-            SqlStringBuilder sql = GetSqlStringBuilder(db);
+            ISqlStringBuilder sql = GetSqlStringBuilder(db);
             ColumnAttribute[] columns = Db.GetColumns(thisType);
             foreach (ColumnAttribute col in columns)
             {
@@ -894,7 +894,7 @@ namespace Bam.Net.Data
         /// Re-insert the current instance after it has been deleted.
         /// </summary>
         /// <param name="db"></param>
-        public virtual void Undelete(Database db = null)
+        public virtual void Undelete(IDatabase db = null)
         {
             Type thisType = this.GetType();
             if (db == null)
@@ -949,7 +949,7 @@ namespace Bam.Net.Data
         /// <returns></returns>
         public abstract IQueryFilter GetUniqueFilter();
 
-        public Func<Dao, IQueryFilter> UniqueFilterProvider
+        public Func<IDao, IQueryFilter> UniqueFilterProvider
         {
             get;
             set;
@@ -1578,7 +1578,7 @@ namespace Bam.Net.Data
             } 
         }
 
-        private void ExecuteCommit(Database db, QuerySet querySet)
+        private void ExecuteCommit(IDatabase db, IQuerySet querySet)
         {
             OnBeforeCommit(db);
             querySet.Execute(db);

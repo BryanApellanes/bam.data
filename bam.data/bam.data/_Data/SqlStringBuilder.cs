@@ -9,7 +9,7 @@ namespace Bam.Net.Data
 {
     public partial class SqlStringBuilder // core
     {
-        public IEnumerable<dynamic> ExecuteDynamicReader(Database db)
+        public IEnumerable<dynamic> ExecuteDynamicReader(IDatabase db)
         {
             throw new NotImplementedException($"{nameof(ExecuteDynamicReader)} not implemented on this platform");
         }

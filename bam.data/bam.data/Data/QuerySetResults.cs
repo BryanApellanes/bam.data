@@ -8,16 +8,16 @@ using System.Text;
 
 namespace Bam.Net.Data
 {
-    public class QuerySetResults
+    public class QuerySetResults : IQuerySetResults
     {
         List<IHasDataTable> _values;
-        public QuerySetResults(IEnumerable<IHasDataTable> values, Database database)
+        public QuerySetResults(IEnumerable<IHasDataTable> values, IDatabase database)
         {
             this._values = new List<IHasDataTable>(values);
             this.Database = database;
         }
 
-        public Database Database { get; set; }
+        public IDatabase Database { get; set; }
         /// <summary>
         /// Instantiates a new instance of T and calls SetDataTable passing
         /// in the DataTable from the specified index
@@ -45,7 +45,7 @@ namespace Bam.Net.Data
         /// <typeparam name="T"></typeparam>
         /// <param name="index"></param>
         /// <returns></returns>
-        public T ToDao<T>(int index) where T : Dao, new()
+        public T ToDao<T>(int index) where T : IDao, new()
         {
             InsertResult ir = _values[index] as InsertResult;
             if (ir == null)

@@ -13,9 +13,9 @@ namespace Bam.Net.Data
     /// </summary>
     /// <typeparam name="C">The type defining column names</typeparam>
     /// <typeparam name="T">The matching table type T for columns C</typeparam>
-    public class Query<C, T>
+    public class Query<C, T> : IQuery<C, T>
         where C : IQueryFilter, IFilterToken, new()
-        where T : Dao, new()
+        where T : IDao, new()
     {
         public Query() { }
         public Query(WhereDelegate<C> where, OrderBy<C> orderBy = null, Database db = null)
@@ -77,15 +77,15 @@ namespace Bam.Net.Data
             set;
         }
 
-        public DataTable Where(WhereDelegate<C> where, Database db = null)
+        public DataTable Where(WhereDelegate<C> where, IDatabase db = null)
         {
             return Where(where, null, db);
         }
 
-        public DataTable Where(Func<C, QueryFilter<C>> where, OrderBy<C> orderBy = null, Database db = null)
+        public DataTable Where(Func<C, IQueryFilter<C>> where, IOrderBy<C> orderBy = null, IDatabase db = null)
         {
             Establish(where, orderBy, db);
-            SqlStringBuilder sql = ToSqlStringBuilder(db);
+            ISqlStringBuilder sql = ToSqlStringBuilder(db);
             db = EstablishOrderAndDb(orderBy, db, sql);
 
             return GetDataTable(db, sql);
@@ -94,13 +94,13 @@ namespace Bam.Net.Data
         private DataTable Where(WhereDelegate<C> where, OrderBy<C> orderBy = null, Database db = null)
         {
             Establish(where, orderBy, db);
-            SqlStringBuilder sql = ToSqlStringBuilder(db);
+            ISqlStringBuilder sql = ToSqlStringBuilder(db);
             db = EstablishOrderAndDb(orderBy, db, sql);
 
             return GetDataTable(db, sql);
         }
 
-        public DataTable Where(Qi.QiQuery query, Database db = null)
+        public DataTable Where(Qi.QiQuery query, IDatabase db = null)
         {
             SqlStringBuilder sql = new SqlStringBuilder();
             if (query.limit > 0)
@@ -124,14 +124,14 @@ namespace Bam.Net.Data
             return GetDataTable(Database);
         }
 
-        public DataTable GetDataTable(Database database)
+        public DataTable GetDataTable(IDatabase database)
         {
-            SqlStringBuilder sql = ToSqlStringBuilder(database);
+            ISqlStringBuilder sql = ToSqlStringBuilder(database);
             Database db = EstablishOrderAndDb(OrderBy, database, sql);
             return GetDataTable(db, sql);
         }
 
-        public SqlStringBuilder ToSqlStringBuilder(Database db)
+        public ISqlStringBuilder ToSqlStringBuilder(IDatabase db)
         {
             if (FilterDelegate == null)
             {
@@ -172,7 +172,7 @@ namespace Bam.Net.Data
             this.Database = db;
         }
 
-        private static DataTable GetDataTable(Database db, SqlStringBuilder sql)
+        private static DataTable GetDataTable(IDatabase db, ISqlStringBuilder sql)
         {
             db = db ?? Db.For<T>();
             IParameterBuilder parameterBuilder = db.ServiceProvider.Get<IParameterBuilder>();

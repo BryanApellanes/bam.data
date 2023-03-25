@@ -13,7 +13,7 @@ namespace Bam.Net.Data
 {
     public class DaoCollection<C, T> : PagedEnumerator<T>, IEnumerable<T>, ILoadable, IHasDataTable, IAddable
         where C : QueryFilter, IFilterToken, new()
-        where T : Dao, new()
+        where T : IDao, new()
     {
         Book<T> _book;
         List<T> _values;
@@ -34,7 +34,7 @@ namespace Bam.Net.Data
             this._values = new List<T>();
         }
 
-        public DaoCollection(DataTable table, Dao parent = null, string referencingColumn = null)
+        public DaoCollection(DataTable table, IDao parent = null, string referencingColumn = null)
             : this()
         {
             this._parent = parent;
@@ -44,7 +44,7 @@ namespace Bam.Net.Data
             SetDataTable(table);
         }
 
-		public DaoCollection(Database database, DataTable table, Dao parent = null, string referencingColumn = null)
+		public DaoCollection(Database database, DataTable table, IDao parent = null, string referencingColumn = null)
 			: this()
 		{
 			this._parent = parent;
@@ -56,7 +56,7 @@ namespace Bam.Net.Data
 		}
 
 
-        public DaoCollection(Query<C, T> query, Dao parent = null, string referencingColumn = null): this()
+        public DaoCollection(Query<C, T> query, IDao parent = null, string referencingColumn = null): this()
         {
             this._parent = parent;
 			this.Query = query;
@@ -93,7 +93,7 @@ namespace Bam.Net.Data
             set;
         }
 
-        public Query<C, T> Query
+        public IQuery<C, T> Query
         {
             get;
             set;

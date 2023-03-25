@@ -91,7 +91,7 @@ namespace Bam.Net.Data
 			return this;
 		}
 	
-		public override SqlStringBuilder Insert(Dao instance)
+		public override SqlStringBuilder Insert(IDao instance)
 		{
 			ResultDataTables.Add(new InsertResult(instance, "Id"));
 			return Insert(Dao.TableName(instance.GetType()), instance.GetNewAssignValues()).Id().Go();			

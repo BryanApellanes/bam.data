@@ -185,7 +185,7 @@ namespace Bam.Net.Data
 			this.parameters.AddRange(where.Parameters);
 			return this;
 		}
-		public override DataSet GetDataSet(Database db, bool releaseConnection = true, DbConnection conn = null, DbTransaction tx = null)
+		public override DataSet GetDataSet(IDatabase db, bool releaseConnection = true, DbConnection conn = null, DbTransaction tx = null)
 		{
 			OracleDatasetProvider oracleGetDatasetProvider = new OracleDatasetProvider(this);
 			return oracleGetDatasetProvider.GetDataSet(db, releaseConnection, conn, tx);

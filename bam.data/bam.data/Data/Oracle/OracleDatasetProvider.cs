@@ -41,7 +41,7 @@ namespace Bam.Net.Data.Oracle
 		public SqlStringBuilder SqlStringBuilder { get; set; }
 		public IPLSqlStringBuilder PLSqlStringBuilder { get; set; }
 
-		public DataSet GetDataSet(Database db, bool releaseConnection = true, DbConnection conn = null, DbTransaction tx = null)
+		public DataSet GetDataSet(IDatabase db, bool releaseConnection = true, DbConnection conn = null, DbTransaction tx = null)
 		{
 			if (conn == null)
 			{

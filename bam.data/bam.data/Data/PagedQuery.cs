@@ -13,9 +13,9 @@ namespace Bam.Net.Data
 {
 	public class PagedQuery<C, T>
 		where C : QueryFilter, IFilterToken, new()
-		where T : Dao, new()
+		where T : IDao, new()
 	{
-		public PagedQuery(C orderByColumn, Query<C, T> query, Database db = null)
+		public PagedQuery(C orderByColumn, Query<C, T> query, IDatabase db = null)
 		{
 			this.Database = db;
 			this.OrderByColumn = orderByColumn;
@@ -42,7 +42,7 @@ namespace Bam.Net.Data
 		public int CurrentPage { get; set; }
 		public Query<C, T> Query { get; set; }
 		Database _database;
-		public Database Database
+		public IDatabase Database
 		{
 			get
 			{

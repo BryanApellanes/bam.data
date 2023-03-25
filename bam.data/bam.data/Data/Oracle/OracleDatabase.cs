@@ -94,7 +94,7 @@ namespace Bam.Net.Data.Oracle
             }
         }
 
-        public override long? GetIdValue(Dao dao)
+        public override long? GetIdValue(IDao dao)
         {
             long? result = base.GetIdValue(dao);
             if (result == null)
@@ -175,28 +175,28 @@ namespace Bam.Net.Data.Oracle
 
             return result;
         }
-        public override Query<C, T> GetQuery<C, T>()
+        public override IQuery<C, T> GetQuery<C, T>()
         {
             Query<C, T> q = base.GetQuery<C, T>();
             q.ColumnNameProvider = ColumnNameProvider;
             return q;
         }
 
-        public override Query<C, T> GetQuery<C, T>(Delegate where)
+        public override IQuery<C, T> GetQuery<C, T>(Delegate where)
         {
             Query<C, T> q = base.GetQuery<C, T>(where);
             q.ColumnNameProvider = ColumnNameProvider;
             return q;
         }
 
-        public override Query<C, T> GetQuery<C, T>(Func<C, QueryFilter<C>> where, OrderBy<C> orderBy = null)
+        public override IQuery<C, T> GetQuery<C, T>(Func<C, IQueryFilter<C>> where, IOrderBy<C> orderBy = null)
         {
             Query<C, T> q = base.GetQuery<C, T>(where, orderBy);
             q.ColumnNameProvider = ColumnNameProvider;
             return q;
         }
 
-        public override Query<C, T> GetQuery<C, T>(WhereDelegate<C> where, OrderBy<C> orderBy = null)
+        public override IQuery<C, T> GetQuery<C, T>(WhereDelegate<C> where, IOrderBy<C> orderBy = null)
         {
             Query<C, T> q = base.GetQuery<C, T>(where, orderBy);
             q.ColumnNameProvider = ColumnNameProvider;

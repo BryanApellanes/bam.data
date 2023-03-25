@@ -17,7 +17,7 @@ using System.Diagnostics;
 
 namespace Bam.Net.Data
 {
-    public partial class Database: Loggable//, IDatabase
+    public partial class Database: Loggable, IDatabase
     {
         List<DbConnection> _connections;
         public Database()
@@ -89,7 +89,7 @@ namespace Bam.Net.Data
             get; set;
         }
 
-        public DaoTransaction BeginTransaction()
+        public IDaoTransaction BeginTransaction()
         {
             return Db.BeginTransaction(this);
         }
@@ -146,7 +146,7 @@ namespace Bam.Net.Data
             }
         }
 
-        public virtual void Hydrate(Dao dao)
+        public virtual void Hydrate(IDao dao)
         {
             GetHydrator()?.Hydrate(dao, this);
         }
@@ -156,7 +156,7 @@ namespace Bam.Net.Data
             return ServiceProvider?.Get<IHydrator>() ?? Hydrator.DefaultHydrator;
         }
 
-        public Dictionary<EnumType, DaoType> FillEnumDictionary<EnumType, DaoType>(Dictionary<EnumType, DaoType> dictionary, string nameColumn) where DaoType : Dao, new()
+        public Dictionary<EnumType, DaoType> FillEnumDictionary<EnumType, DaoType>(Dictionary<EnumType, DaoType> dictionary, string nameColumn) where DaoType : IDao, new()
         {
             QuerySet query = ExecuteQuery<DaoType>();
 
@@ -181,52 +181,52 @@ namespace Bam.Net.Data
             return dictionary;
         }
 
-		public virtual Query<C, T> GetQuery<C, T>() 
+		public virtual IQuery<C, T> GetQuery<C, T>() 
 			where C : IQueryFilter, IFilterToken, new()
-			where T: Dao, new()
+			where T: IDao, new()
 		{
 			return new Query<C,T>();
 		}
 
-		public virtual Query<C, T> GetQuery<C, T>(WhereDelegate<C> where, OrderBy<C> orderBy = null)
+		public virtual IQuery<C, T> GetQuery<C, T>(WhereDelegate<C> where, IOrderBy<C> orderBy = null)
 			where C : IQueryFilter, IFilterToken, new()
-			where T : Dao, new()
+			where T : IDao, new()
 		{
 			return new Query<C, T>(where, orderBy, this);
 		}
 
-		public virtual Query<C, T> GetQuery<C, T>(Func<C, QueryFilter<C>> where, OrderBy<C> orderBy = null)
+		public virtual IQuery<C, T> GetQuery<C, T>(Func<C, IQueryFilter<C>> where, IOrderBy<C> orderBy = null)
 			where C : IQueryFilter, IFilterToken, new()
-			where T : Dao, new()
+			where T : IDao, new()
 		{
 			return new Query<C, T>(where, orderBy, this);
 		}
 
-		public virtual Query<C, T> GetQuery<C, T>(Delegate where)
+		public virtual IQuery<C, T> GetQuery<C, T>(Delegate where)
 			where C : IQueryFilter, IFilterToken, new()
-			where T : Dao, new()
+			where T : IDao, new()
 		{
 			return new Query<C, T>(where, this);
 		}
 
-        public SchemaWriter GetSchemaWriter()
+        public ISchemaWriter GetSchemaWriter()
         {
             return ServiceProvider.Get<SchemaWriter>();
         }
 
-        public SqlStringBuilder Sql()
+        public ISqlStringBuilder Sql()
         {
             return GetSqlStringBuilder();
         }
 
-        public virtual SqlStringBuilder GetSqlStringBuilder()
+        public virtual ISqlStringBuilder GetSqlStringBuilder()
         {
             SqlStringBuilder sql = ServiceProvider.Get<SqlStringBuilder>();
             sql.SelectStar = SelectStar;
             return sql;
         }
 
-        public virtual QuerySet GetQuerySet()
+        public virtual IQuerySet GetQuerySet()
         {
             QuerySet sql = ServiceProvider.Get<QuerySet>();
             sql.Database = this;
@@ -243,7 +243,7 @@ namespace Bam.Net.Data
             return dataTypeTranslator;
         }
 
-        public DbParameter[] GetParameters(SqlStringBuilder sqlStringBuilder)
+        public DbParameter[] GetParameters(ISqlStringBuilder sqlStringBuilder)
         {
             IParameterBuilder paramBuilder = GetService<IParameterBuilder>();
             Args.ThrowIfNull(paramBuilder, "IParameterBuilder");
@@ -257,17 +257,17 @@ namespace Bam.Net.Data
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="builder"></param>
-        public virtual void ExecuteSql<T>(SqlStringBuilder builder) where T : Dao 
+        public virtual void ExecuteSql<T>(ISqlStringBuilder builder) where T : IDao 
         {
             ExecuteSql(builder, ServiceProvider.Get<IParameterBuilder>());
         }
 
-        public virtual void ExecuteSql(SqlStringBuilder builder)
+        public virtual void ExecuteSql(ISqlStringBuilder builder)
         {
             ExecuteSql(builder, ServiceProvider.Get<IParameterBuilder>());
         }
 
-        public virtual void ExecuteSql(SqlStringBuilder builder, IParameterBuilder parameterBuilder)
+        public virtual void ExecuteSql(ISqlStringBuilder builder, IParameterBuilder parameterBuilder)
         {
             ExecuteSql(builder, CommandType.Text, parameterBuilder.GetParameters(builder));
         }
@@ -322,7 +322,7 @@ namespace Bam.Net.Data
             }
         }
 
-        public virtual IEnumerable<T> ExecuteReader<T>(SqlStringBuilder sqlStatement, Action<DbDataReader> onReaderExecuted = null) where T : class, new()
+        public virtual IEnumerable<T> ExecuteReader<T>(ISqlStringBuilder sqlStatement, Action<DbDataReader> onReaderExecuted = null) where T : class, new()
         {
             return ExecuteReader<T>(sqlStatement.ToString(), GetParameters(sqlStatement), null, true, onReaderExecuted);
         }
@@ -379,7 +379,7 @@ namespace Bam.Net.Data
         }
 
 
-        public virtual DbDataReader ExecuteReader(SqlStringBuilder sqlStatement)
+        public virtual DbDataReader ExecuteReader(ISqlStringBuilder sqlStatement)
         {
             return ExecuteReader(sqlStatement.ToString(), GetParameters(sqlStatement));
         }
@@ -424,7 +424,7 @@ namespace Bam.Net.Data
         }
 
         // -- start datatable readers
-        public virtual DataTable GetDataTableFromReader(SqlStringBuilder sqlStatement)
+        public virtual DataTable GetDataTableFromReader(ISqlStringBuilder sqlStatement)
         {
             return GetDataTableFromReader(sqlStatement.ToString(), GetParameters(sqlStatement));
         }
@@ -478,13 +478,13 @@ namespace Bam.Net.Data
             return table;
         }
 
-        public virtual IEnumerable<DataRow> GetDataRowsFromReader(SqlStringBuilder sqlStatement)
+        public virtual IEnumerable<DataRow> GetDataRowsFromReader(ISqlStringBuilder sqlStatement)
         {
             DbConnection ignore;
             return GetDataRowsFromReader(sqlStatement.ToString(), GetParameters(sqlStatement), out ignore);
         }
 
-        public virtual IEnumerable<DataRow> GetDataRowsFromReader(SqlStringBuilder sqlStatement, out DbConnection conn)
+        public virtual IEnumerable<DataRow> GetDataRowsFromReader(ISqlStringBuilder sqlStatement, out DbConnection conn)
         {
             return GetDataRowsFromReader(sqlStatement.ToString(), GetParameters(sqlStatement), out conn);
         }
@@ -531,7 +531,7 @@ namespace Bam.Net.Data
         }
         // -- end datatable readers
 
-        public virtual T QuerySingle<T>(SqlStringBuilder sql)
+        public virtual T QuerySingle<T>(ISqlStringBuilder sql)
         {
             return QuerySingle<T>(sql, GetService<IParameterBuilder>().GetParameters(sql));
         }
@@ -641,7 +641,7 @@ namespace Bam.Net.Data
             return GetDataTable(sqlStatement, parameters.ToDbParameters(this).ToArray());
         }
 
-        public virtual DataTable GetDataTable(SqlStringBuilder sqlStringBuilder)
+        public virtual DataTable GetDataTable(ISqlStringBuilder sqlStringBuilder)
         {
             return GetDataTable(sqlStringBuilder.ToString(), GetDbParameters(sqlStringBuilder));
         }
@@ -669,12 +669,12 @@ namespace Bam.Net.Data
             return table;
         }
 
-		public T New<T>() where T : Dao, new()
+		public T New<T>() where T : IDao, new()
 		{
 			return typeof(T).Construct<T>(this);
 		}
 
-		public T Save<T>(T dao) where T: Dao, new()
+		public T Save<T>(T dao) where T: IDao, new()
 		{
 			dao.Save(this);
 			return dao;
@@ -685,7 +685,7 @@ namespace Bam.Net.Data
 			return ServiceProvider.Get<T>();
 		}
 		
-		public virtual long? GetIdValue(Dao dao)
+		public virtual long? GetIdValue(IDao dao)
 		{
 			string keyColumnName = dao.KeyColumnName;
 			DataRow row = dao.DataRow;
@@ -703,7 +703,7 @@ namespace Bam.Net.Data
             return new long?();
 		}
 
-		public virtual long? GetIdValue<T>(DataRow row) where T: Dao, new()
+		public virtual long? GetIdValue<T>(DataRow row) where T: IDao, new()
 		{
 			return this.GetLongValue(Dao.GetKeyColumnName(typeof(T)), row);
 		}
@@ -715,7 +715,7 @@ namespace Bam.Net.Data
             return conn;
         }
 
-        public virtual DbParameter[] GetDbParameters(SqlStringBuilder sqlStringBuilder)
+        public virtual DbParameter[] GetDbParameters(ISqlStringBuilder sqlStringBuilder)
         {
             return GetService<IParameterBuilder>().GetParameters(sqlStringBuilder);
         }
