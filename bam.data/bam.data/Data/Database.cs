@@ -148,7 +148,7 @@ namespace Bam.Net.Data
 
         public virtual void Hydrate(IDao dao)
         {
-            GetHydrator()?.Hydrate(dao, this);
+            GetHydrator()?.HydrateChildren(dao, this);
         }
 
         public virtual IHydrator GetHydrator()
@@ -211,7 +211,7 @@ namespace Bam.Net.Data
 
         public ISchemaWriter GetSchemaWriter()
         {
-            return ServiceProvider.Get<SchemaWriter>();
+            return ServiceProvider.Get<ISchemaWriter>();
         }
 
         public ISqlStringBuilder Sql()
@@ -269,7 +269,7 @@ namespace Bam.Net.Data
 
         public virtual void ExecuteSql(ISqlStringBuilder builder, IParameterBuilder parameterBuilder)
         {
-            ExecuteSql(builder, CommandType.Text, parameterBuilder.GetParameters(builder));
+            ExecuteSql(builder.ToString(), CommandType.Text, parameterBuilder.GetParameters(builder));
         }
 
         public virtual void ExecuteStoredProcedure(string sprocName, params DbParameter[] dbParameters)
@@ -533,7 +533,7 @@ namespace Bam.Net.Data
 
         public virtual T QuerySingle<T>(ISqlStringBuilder sql)
         {
-            return QuerySingle<T>(sql, GetService<IParameterBuilder>().GetParameters(sql));
+            return QuerySingle<T>(sql.ToString(), GetService<IParameterBuilder>().GetParameters(sql));
         }
 
         public virtual T QuerySingle<T>(string singleValueQuery, object dynamicParamters)
@@ -940,7 +940,7 @@ namespace Bam.Net.Data
 		}
 
 		Func<ColumnAttribute, string> _columnNameProvider;
-		protected internal virtual Func<ColumnAttribute, string> ColumnNameProvider
+		public virtual Func<ColumnAttribute, string> ColumnNameProvider
 		{
 			get
 			{
@@ -962,7 +962,7 @@ namespace Bam.Net.Data
             }
         }
 		
-		private QuerySet ExecuteQuery<T>() where T : Dao, new()
+		private QuerySet ExecuteQuery<T>() where T : IDao, new()
 		{
 			QuerySet query = new QuerySet();
 			query.Select<T>();
@@ -971,7 +971,7 @@ namespace Bam.Net.Data
 		}
 
 		static readonly object initEnumLock = new object();
-		private void InitEnumValues<EnumType, T>(string valueColumn, string nameColumn) where T : Dao, new()
+		private void InitEnumValues<EnumType, T>(string valueColumn, string nameColumn) where T : IDao, new()
 		{
 			FieldInfo[] fields = typeof(EnumType).GetFields(BindingFlags.Public | BindingFlags.Static);
 			foreach (FieldInfo field in fields)

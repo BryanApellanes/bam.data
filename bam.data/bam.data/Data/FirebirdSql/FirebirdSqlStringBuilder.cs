@@ -100,7 +100,7 @@ namespace Bam.Net.Data
             return this;
         }
 
-        public override SqlStringBuilder Select(string tableName, params string[] columnNames)
+        public override ISqlStringBuilder Select(string tableName, params string[] columnNames)
         {
             return base.Select(tableName, columnNames);
         }

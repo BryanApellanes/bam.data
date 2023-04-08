@@ -41,7 +41,7 @@ namespace Bam.Net.Data
 		public int PageSize { get; set; }
 		public int CurrentPage { get; set; }
 		public Query<C, T> Query { get; set; }
-		Database _database;
+		IDatabase _database;
 		public IDatabase Database
 		{
 			get
@@ -85,7 +85,7 @@ namespace Bam.Net.Data
 			}
 			else
 			{
-				LastEntry = null;
+				LastEntry = default(T);
 			}
 		}
 
@@ -130,7 +130,7 @@ namespace Bam.Net.Data
 			return sql;
 		}
 
-		private void SetQuery(SqlStringBuilder sql)
+		private void SetQuery(ISqlStringBuilder sql)
 		{
 			Args.ThrowIfNull(OrderByColumn, "OrderByColumn");
 			IQueryFilter queryFilter = (IQueryFilter)Query.FilterDelegate.DynamicInvoke(OrderByColumn);

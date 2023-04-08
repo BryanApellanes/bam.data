@@ -15,10 +15,10 @@ namespace Bam.Net.Data
 {
     public class DatabaseContainer
     {
-        readonly Dictionary<string, Database> _databases;        
+        readonly Dictionary<string, IDatabase> _databases;        
         public DatabaseContainer()
         {
-            this._databases = new Dictionary<string, Database>();
+            this._databases = new Dictionary<string, IDatabase>();
             this.TriedFallback = new List<string>();
         }
 
@@ -37,7 +37,7 @@ namespace Bam.Net.Data
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public Database For<T>() where T : Dao
+        public IDatabase For<T>() where T : IDao
         {
             return this[typeof(T)];
         }
@@ -59,7 +59,7 @@ namespace Bam.Net.Data
             return this[type];
         }
 
-        public IDaoTransaction BeginTransaction<T>() where T : Dao
+        public IDaoTransaction BeginTransaction<T>() where T : IDao
         {
             return Db.BeginTransaction<T>();
         }
@@ -106,7 +106,7 @@ namespace Bam.Net.Data
         /// <summary>
         /// The Action to execute if initialization fails
         /// </summary>
-        public Action<string, Dictionary<string, Database>> FallBack
+        public Action<string, Dictionary<string, IDatabase>> FallBack
         {
             get;
             set;
@@ -118,7 +118,7 @@ namespace Bam.Net.Data
             private set;
         }
 
-        internal void InitializeDatabase(string connectionName, Dictionary<string, Database> databases)
+        internal void InitializeDatabase(string connectionName, Dictionary<string, IDatabase> databases)
         {
             DatabaseInitializationResult dir = DatabaseInitializers.TryInitialize(connectionName);
             if (dir.Success)

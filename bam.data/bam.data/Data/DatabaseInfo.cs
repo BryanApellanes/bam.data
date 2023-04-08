@@ -11,13 +11,13 @@ namespace Bam.Net.Data
     /// </summary>
     public class DatabaseInfo
     {
-        public DatabaseInfo(Database database)
+        public DatabaseInfo(IDatabase database)
         {
             Args.ThrowIfNull(database, "database");
             Database = database;
         }
         
-        protected Database Database { get; }
+        protected IDatabase Database { get; }
 
         public string DatabaseType => Database.GetType().FullName;
         public string ConnectionString => Database.ConnectionString;

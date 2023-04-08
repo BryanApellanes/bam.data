@@ -476,7 +476,7 @@ namespace Bam.Net.Data
 			return (string)this;
         }
 		
-		protected internal void OnExecuted(Database db)
+		protected internal void OnExecuted(IDatabase db)
 		{
             Executed?.Invoke(this, db);
         }

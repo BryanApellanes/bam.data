@@ -66,7 +66,7 @@ namespace Bam.Net.Data
             Load();
         }
 
-        Database _database;
+        IDatabase _database;
         public IDatabase Database
         {
             get
@@ -101,7 +101,7 @@ namespace Bam.Net.Data
                     {
                         XrefsByListId = new Dictionary<ulong, X>();
 
-                        QuerySet q = Dao.GetQuerySet(db);
+                        IQuerySet q = Dao.GetQuerySet(db);
                         q.Select<X>().Where(new AssignValue(ParentColumnName, Parent.IdValue.Value, q.ColumnNameFormatter));
                         q.Execute(db);
 
@@ -121,7 +121,7 @@ namespace Bam.Net.Data
                                 XrefsByListId.Add(id, xref);
                             }
 
-                            QuerySet q2 = Dao.GetQuerySet(db);
+                            IQuerySet q2 = Dao.GetQuerySet(db);
                             QueryFilter filter = new QueryFilter(Dao.GetKeyColumnName<L>());
                             filter.In(ids.Select(i => (object)i).ToArray(), db.ParameterPrefix);
                             q2.Select<L>().Where(filter);
@@ -204,7 +204,7 @@ namespace Bam.Net.Data
             DeleteXrefItem(item, db);
         }
 
-        private void DeleteXrefItem(L item, Database db)
+        private void DeleteXrefItem(L item, IDatabase db)
         {
             if (XrefsByListId.ContainsKey(item.IdValue.Value))
             {
@@ -241,7 +241,7 @@ namespace Bam.Net.Data
             return true;
         }
 
-        private void Initialize(DataTable table, Database db = null)
+        private void Initialize(DataTable table, IDatabase db = null)
         {
             db = db ?? Database;
             ConstructorInfo _ctor = typeof(L).GetConstructor(new Type[] { typeof(Database), typeof(DataRow) });
@@ -311,7 +311,7 @@ namespace Bam.Net.Data
             };
         }
 
-        private X EnsureXref(L item, Database db = null)
+        private X EnsureXref(L item, IDatabase db = null)
         {
             db = db ?? Database;
             if (item.IdValue != null && XrefsByListId.ContainsKey(item.IdValue.Value))
@@ -326,7 +326,7 @@ namespace Bam.Net.Data
                 }
 
                 X result = null;
-                QuerySet q = Dao.GetQuerySet(db);
+                IQuerySet q = Dao.GetQuerySet(db);
                 q.Select<X>().Where(new QueryFilter(ListColumnName) == item.IdValue.Value && new QueryFilter(ParentColumnName) == Parent.IdValue.Value);
 
                 q.Execute(db);
@@ -448,7 +448,7 @@ namespace Bam.Net.Data
         #endregion
 
         readonly bool _setDatabases; // set to true after ctor completes
-        private void SetEachDatabase(Database db)
+        private void SetEachDatabase(IDatabase db)
         {
             if (_setDatabases)
             {

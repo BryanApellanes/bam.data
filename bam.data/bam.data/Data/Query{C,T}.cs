@@ -18,14 +18,14 @@ namespace Bam.Net.Data
         where T : IDao, new()
     {
         public Query() { }
-        public Query(WhereDelegate<C> where, OrderBy<C> orderBy = null, Database db = null)
+        public Query(WhereDelegate<C> where, IOrderBy<C> orderBy = null, IDatabase db = null)
         {
             this.FilterDelegate = where;
             this.OrderBy = orderBy;
             this.Database = db;
         }
 
-        public Query(Func<C, QueryFilter<C>> where, OrderBy<C> orderBy = null, Database db = null)
+        public Query(Func<C, IQueryFilter<C>> where, IOrderBy<C> orderBy = null, IDatabase db = null)
         {
             this.FilterDelegate = where;
             this.OrderBy = orderBy;
@@ -65,13 +65,13 @@ namespace Bam.Net.Data
             set;
         }
 
-        protected internal OrderBy<C> OrderBy
+        protected internal IOrderBy<C> OrderBy
         {
             get;
             set;
         }
 
-        protected internal Database Database
+        protected internal IDatabase Database
         {
             get;
             set;
@@ -91,7 +91,7 @@ namespace Bam.Net.Data
             return GetDataTable(db, sql);
         }
 
-        private DataTable Where(WhereDelegate<C> where, OrderBy<C> orderBy = null, Database db = null)
+        private DataTable Where(WhereDelegate<C> where, IOrderBy<C> orderBy = null, IDatabase db = null)
         {
             Establish(where, orderBy, db);
             ISqlStringBuilder sql = ToSqlStringBuilder(db);
@@ -127,7 +127,7 @@ namespace Bam.Net.Data
         public DataTable GetDataTable(IDatabase database)
         {
             ISqlStringBuilder sql = ToSqlStringBuilder(database);
-            Database db = EstablishOrderAndDb(OrderBy, database, sql);
+            IDatabase db = EstablishOrderAndDb(OrderBy, database, sql);
             return GetDataTable(db, sql);
         }
 
@@ -148,7 +148,7 @@ namespace Bam.Net.Data
             return GetSqlStringBuilder(db).Where(queryFilter);
         }
 
-        private Database EstablishOrderAndDb(OrderBy<C> orderBy, Database db, SqlStringBuilder sql)
+        private IDatabase EstablishOrderAndDb(IOrderBy<C> orderBy, IDatabase db, ISqlStringBuilder sql)
         {
             if (orderBy != null)
             {
@@ -164,7 +164,7 @@ namespace Bam.Net.Data
             return db;
         }
 
-        private void Establish(Delegate where, OrderBy<C> orderBy = null, Database db = null)
+        private void Establish(Delegate where, IOrderBy<C> orderBy = null, IDatabase db = null)
         {
             db = db ?? Db.For<T>();
             this.FilterDelegate = where;
@@ -177,13 +177,13 @@ namespace Bam.Net.Data
             db = db ?? Db.For<T>();
             IParameterBuilder parameterBuilder = db.ServiceProvider.Get<IParameterBuilder>();
             DbParameter[] parameters = parameterBuilder.GetParameters(sql);
-            return db.GetDataTable(sql, System.Data.CommandType.Text, parameters);
+            return db.GetDataTable(sql.ToString(), System.Data.CommandType.Text, parameters);
         }
 
-        private SqlStringBuilder GetSqlStringBuilder(Database db)
+        private ISqlStringBuilder GetSqlStringBuilder(IDatabase db)
         {
             db = db ?? Db.For<T>();
-            SqlStringBuilder sql = db.GetSqlStringBuilder();
+            ISqlStringBuilder sql = db.GetSqlStringBuilder();
             sql.Select(Dao.TableName(typeof(T)), db.ColumnNameListProvider(typeof(T), db));
             return sql;
         }

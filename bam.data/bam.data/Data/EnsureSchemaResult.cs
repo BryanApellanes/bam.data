@@ -8,7 +8,7 @@ namespace Bam.Net.Data
 {
     public class EnsureSchemaResult
     {
-        public Database Database { get; set; }
+        public IDatabase Database { get; set; }
         public string SchemaName { get; set; }
         public EnsureSchemaStatus Status { get; set; }
 

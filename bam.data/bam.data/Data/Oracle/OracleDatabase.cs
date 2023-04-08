@@ -177,33 +177,33 @@ namespace Bam.Net.Data.Oracle
         }
         public override IQuery<C, T> GetQuery<C, T>()
         {
-            Query<C, T> q = base.GetQuery<C, T>();
+            IQuery<C, T> q = base.GetQuery<C, T>();
             q.ColumnNameProvider = ColumnNameProvider;
             return q;
         }
 
         public override IQuery<C, T> GetQuery<C, T>(Delegate where)
         {
-            Query<C, T> q = base.GetQuery<C, T>(where);
+            IQuery<C, T> q = base.GetQuery<C, T>(where);
             q.ColumnNameProvider = ColumnNameProvider;
             return q;
         }
 
         public override IQuery<C, T> GetQuery<C, T>(Func<C, IQueryFilter<C>> where, IOrderBy<C> orderBy = null)
         {
-            Query<C, T> q = base.GetQuery<C, T>(where, orderBy);
+            IQuery<C, T> q = base.GetQuery<C, T>(where, orderBy);
             q.ColumnNameProvider = ColumnNameProvider;
             return q;
         }
 
         public override IQuery<C, T> GetQuery<C, T>(WhereDelegate<C> where, IOrderBy<C> orderBy = null)
         {
-            Query<C, T> q = base.GetQuery<C, T>(where, orderBy);
+            IQuery<C, T> q = base.GetQuery<C, T>(where, orderBy);
             q.ColumnNameProvider = ColumnNameProvider;
             return q;
         }
 
-        protected internal override Func<ColumnAttribute, string> ColumnNameProvider
+        public override Func<ColumnAttribute, string> ColumnNameProvider
         {
             get
             {

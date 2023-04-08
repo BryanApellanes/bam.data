@@ -37,7 +37,7 @@ namespace Bam.Net.Data
         /// like the other Register methods do.
         /// </summary>
         /// <param name="database"></param>
-        public static void Register(Database database)
+        public static void Register(IDatabase database)
         {
             Register(database.ServiceProvider);
         }

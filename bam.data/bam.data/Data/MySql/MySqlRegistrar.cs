@@ -46,7 +46,7 @@ namespace Bam.Net.Data
             Register(Db.For<T>().ServiceProvider);
         }
 
-        public static void Register(Database database)
+        public static void Register(IDatabase database)
         {
             Register(database.ServiceProvider);
         }

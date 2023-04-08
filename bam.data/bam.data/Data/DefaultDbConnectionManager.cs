@@ -52,11 +52,11 @@ namespace Bam.Net.Data
                 Task releaseTask = Task.Run(() =>
                 {
                     Thread.Sleep(LifetimeMilliseconds); // give the consumer of the connection a chance to use it and complete
-                    string timerName = $"{GetType().Name}.{Database.GetType().Name}.ConnectionReleaseTimer_{6.RandomLetters()}";
-                    Bam.Net.Logging.Counters.Timer releaseTimer = Stats.Start(timerName);
+                    //string timerName = $"{GetType().Name}.{Database.GetType().Name}.ConnectionReleaseTimer_{6.RandomLetters()}";
+                    //Bam.Net.Logging.Counters.Timer releaseTimer = Stats.Start(timerName);
                     Log.Debug($"Waiting for connection to release");
                     ReleaseConnection(c);
-                    Stats.End(releaseTimer, (timer) => Log.Debug("{0}", timer));
+                    //Stats.End(releaseTimer, (timer) => Log.Debug("{0}", timer));
                 });
                 if (BlockOnRelease)
                 {                    

@@ -11,24 +11,24 @@ using Bam.Net.Incubation;
 
 namespace Bam.Net.Data
 {
-    public class DaoTransaction: IDisposable
+    public class DaoTransaction: IDaoTransaction, IDisposable
     {
         public event EventHandler Committed;
         public event EventHandler RolledBack;
         public event EventHandler Disposed;
 
-        List<Dao> _toDelete = new List<Dao>();
-        List<Dao> _toUndo = new List<Dao>();
-        List<Dao> _toUndelete = new List<Dao>();
+        List<IDao> _toDelete = new List<IDao>();
+        List<IDao> _toUndo = new List<IDao>();
+        List<IDao> _toUndelete = new List<IDao>();
 
-        public DaoTransaction(Database database)
+        public DaoTransaction(IDatabase database)
         {
             this._db = new Database(database.ServiceProvider.Clone(), database.ConnectionString, database.ConnectionName);
             Dao.BeforeCommitAny += DaoBeforeCommitAny;
             Dao.BeforeDeleteAny += DaoBeforeDeleteAny;
         }
 
-        protected void DaoBeforeCommitAny(Database db, Dao dao)
+        protected void DaoBeforeCommitAny(IDatabase db, IDao dao)
         {
             if (db == this.Database)
             {
@@ -43,7 +43,7 @@ namespace Bam.Net.Data
             }
         }
 
-        protected void DaoBeforeDeleteAny(Database db, Dao dao)
+        protected void DaoBeforeDeleteAny(IDatabase db, IDao dao)
         {
             if (db == this.Database)
             {
@@ -51,8 +51,8 @@ namespace Bam.Net.Data
             }
         }
 
-        Database _db;
-        public Database Database
+        IDatabase _db;
+        public IDatabase Database
         {
             get
             {

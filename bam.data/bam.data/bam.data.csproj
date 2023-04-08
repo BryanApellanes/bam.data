@@ -35,6 +35,7 @@
     <PackageReference Include="Npgsql" Version="7.0.2" />
     <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.90" />
     <PackageReference Include="Stub.System.Data.SQLite.Core.NetStandard" Version="1.0.117" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
   </ItemGroup>
 
   <ItemGroup>

@@ -486,6 +486,14 @@ namespace Bam.Net.Data
             database.Hydrate(this);
         }
 
+        public virtual void HydrateChildren(IDatabase database = null)
+        {
+            foreach (string key in ChildCollections.Keys)
+            {
+                ChildCollections?[key].Load(database);
+            }
+        }
+
         /// <summary>
         /// Reset the child collections for this instance forcing
         /// them to be reloaded the next time they are referenced.
@@ -824,6 +832,7 @@ namespace Bam.Net.Data
             OnBeforeWriteCommit(db);
             if (HasNewValues)
             {
+                sqlStringBuilder.Executed += (_sql, _db) => OnAfterCommit(_db);
                 if (this.IsNew || this.ForceInsert)
                 {
                     WriteInsert(sqlStringBuilder);
@@ -917,7 +926,7 @@ namespace Bam.Net.Data
         /// the names and values of columns with new values
         /// </summary>
         /// <returns></returns>
-        protected internal AssignValue[] GetNewAssignValues()
+        public virtual AssignValue[] GetNewAssignValues()
         {
             List<AssignValue> valueAssignments = new List<AssignValue>();
             foreach (string columnName in this.NewValues.Keys)
@@ -1306,7 +1315,7 @@ namespace Bam.Net.Data
         /// current Dao instance have been set
         /// since its instanciation.
         /// </summary>
-        protected internal bool HasNewValues => NewValues.Count > 0;
+        public bool HasNewValues => NewValues.Count > 0;
 
         protected internal Dictionary<string, object> NewValues
         {
@@ -1506,11 +1515,12 @@ namespace Bam.Net.Data
             }
         }
 
-        protected internal void SetValue(string columnName, object value)
+        public void SetValue(string columnName, object value)
         {
             SetValue(columnName, value, true);
         }
-        
+
+
         protected internal void SetValue(string columnName, object value, bool mapUlongToLong)
         {
             // Note To Self: Please don't mess with this logic.  You've faced the consequences of that decision 
@@ -1565,7 +1575,7 @@ namespace Bam.Net.Data
             this.OnInitialize();
         }
 
-        private void SetUuid()
+        public void SetUuid()
         {
             if (HasUuidProperty(out PropertyInfo uuid))
             {

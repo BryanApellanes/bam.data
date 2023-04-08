@@ -24,11 +24,11 @@ namespace Bam.Net.Data
 
         public ILogger Logger { get; set; }
 
-        public bool TryHydrate(IDao dao, IDatabase database = null)
+        public bool TryHydrateChildren(IDao dao, IDatabase database = null)
         {
             try
             {
-                Hydrate(dao, database);
+                HydrateChildren(dao, database);
                 return true;
             }
             catch (Exception ex)
@@ -38,12 +38,9 @@ namespace Bam.Net.Data
             }
         }
 
-        public void Hydrate(IDao dao, IDatabase database = null)
+        public void HydrateChildren(IDao dao, IDatabase database = null)
         {
-            foreach (string key in dao.ChildCollections.Keys)
-            {
-                dao.ChildCollections?[key].Load(database);
-            }
+            dao.HydrateChildren(database);
         }
     }
 }

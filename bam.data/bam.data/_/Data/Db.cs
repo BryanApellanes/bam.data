@@ -80,20 +80,20 @@ namespace Bam.Net.Data
             return DefaultContainer[connectionName];
         }
 
-        public static DaoTransaction BeginTransaction<T>() where T : Dao
+        public static IDaoTransaction BeginTransaction<T>() where T : IDao
         {
             return BeginTransaction(typeof(T));
         }
 
-        public static DaoTransaction BeginTransaction(Type type)
+        public static IDaoTransaction BeginTransaction(Type type)
         {
-            Database original = Db.For(type);//_.Db[type];
+            IDatabase original = Db.For(type);//_.Db[type];
             return BeginTransaction(original);
         }
 
-        public static DaoTransaction BeginTransaction(Database db)
+        public static IDaoTransaction BeginTransaction(IDatabase db)
         {
-            Database original = db;
+            IDatabase original = db;
             DaoTransaction tx = new DaoTransaction(original);
             Db.For(db.ConnectionName, tx.Database);
             tx.Disposed += (o, a) =>
@@ -227,10 +227,10 @@ namespace Bam.Net.Data
         /// Creates the tables for the specified type
         /// </summary>
         /// <param name="type"></param>
-        public static EnsureSchemaStatus EnsureSchema(Type type, Database database = null)
+        public static EnsureSchemaStatus EnsureSchema(Type type, IDatabase database = null)
         {
             string name = Dao.ConnectionName(type);
-            Database db = database ?? Db.For(type);
+            IDatabase db = database ?? Db.For(type);
             EnsureSchemaResult result = new EnsureSchemaResult { Database = db, SchemaName = name };
             EnsureSchemaStatus status = _ensureSchemaResults.Where(esr => esr.Equals(result)).Select(esr => esr.Status).FirstOrDefault();
             if (status != EnsureSchemaStatus.AlreadyDone ||

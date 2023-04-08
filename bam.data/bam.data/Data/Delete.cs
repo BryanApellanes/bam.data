@@ -8,18 +8,18 @@ namespace Bam.Net.Data
 {
     public static class Delete
     {
-        public static SqlStringBuilder From<T>(Database db = null) where T : Dao, new()
+        public static ISqlStringBuilder From<T>(IDatabase db = null) where T : Dao, new()
         {
             return GetSqlStringBuilder<T>(db).Delete(Dao.TableName(typeof(T)));
         }
 
-        public static SqlStringBuilder From<T>(QueryFilter filter, Database db = null) where T: Dao, new()
+        public static ISqlStringBuilder From<T>(IQueryFilter filter, IDatabase db = null) where T: Dao, new()
         {
-            SqlStringBuilder sql = GetSqlStringBuilder<T>(db);
+            ISqlStringBuilder sql = GetSqlStringBuilder<T>(db);
             return sql.Delete(Dao.TableName(typeof(T))).Where(filter);
         }
 
-        private static SqlStringBuilder GetSqlStringBuilder<T>(Database db) where T : Dao, new()
+        private static ISqlStringBuilder GetSqlStringBuilder<T>(IDatabase db) where T : Dao, new()
         {
             db = db ?? Db.For<T>();
             SqlStringBuilder sql = db.GetService<SqlStringBuilder>();

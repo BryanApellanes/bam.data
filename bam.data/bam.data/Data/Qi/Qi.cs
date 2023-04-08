@@ -16,7 +16,7 @@ namespace Bam.Net.Data.Qi
 
         public static DataTable Where(QiQuery query)
         {
-            Database db = Db.For(query.cxName);
+            IDatabase db = Db.For(query.cxName);
             SqlStringBuilder sql = new SqlStringBuilder();
             sql
                 .Select(query.table, query.columns)

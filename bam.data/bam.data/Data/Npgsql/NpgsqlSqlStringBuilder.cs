@@ -90,7 +90,7 @@ namespace Bam.Net.Data
             return $"{ColumnNameFormatter(column.Name)} {type}{max}{(column.AllowNull ? "" : " NOT NULL")}";
         }
 
-        public override SqlStringBuilder Where(string columnName, object value)
+        public override ISqlStringBuilder Where(string columnName, object value)
         {
             AssignValue assignValue = new AssignValue(columnName, value, ColumnNameFormatter) {ParameterPrefix = ":"};
             return Where(assignValue);
@@ -112,7 +112,7 @@ namespace Bam.Net.Data
             return this;
         }
 
-        public override SqlStringBuilder And(string columnName, object value)
+        public override ISqlStringBuilder And(string columnName, object value)
         {
             AssignValue assignValue = new AssignValue(columnName, value, ColumnNameFormatter){ParameterPrefix = ":"};
             return And(assignValue);
@@ -127,7 +127,7 @@ namespace Bam.Net.Data
             return this;
         }
 
-        public override SqlStringBuilder Select(string tableName, params string[] columnNames)
+        public override ISqlStringBuilder Select(string tableName, params string[] columnNames)
         {
             return base.Select(tableName, columnNames);
         }

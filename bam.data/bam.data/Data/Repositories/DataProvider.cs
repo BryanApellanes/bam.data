@@ -113,9 +113,9 @@ namespace Bam.Net.Data.Repositories
         public void Init(IApplicationNameProvider appNameProvider, IUserManager userManager)
         {            
             SetRuntimeAppDataDirectory(appNameProvider);
-            User.UserDatabase = userManager.Database;
-            Vault.SystemVaultDatabase = Current.GetSysDatabaseFor(typeof(Vault), "System");
-            Vault.ApplicationVaultDatabase = Current.GetAppDatabaseFor(appNameProvider, typeof(Vault), appNameProvider.GetApplicationName());
+            //User.UserDatabase = userManager.Database;
+            //Vault.SystemVaultDatabase = Current.GetSysDatabaseFor(typeof(Vault), "System");
+            //Vault.ApplicationVaultDatabase = Current.GetAppDatabaseFor(appNameProvider, typeof(Vault), appNameProvider.GetApplicationName());
         }
 
         public void SetRuntimeAppDataDirectory()
@@ -288,11 +288,11 @@ namespace Bam.Net.Data.Repositories
             string hash = type.ToInfoHash();
             return new DirectoryInfo(Path.Combine(GetRootDataDirectory().FullName, WorkspacesDirectory, type.Name, hash));
         }
-
+/*
         public IDaoRepository GetSysDaoRepository(ILogger logger = null, string schemaName = null)
         {
             return new DaoRepository(GetSysDatabaseFor(typeof(DaoRepository)), logger, schemaName);
-        }
+        }*/
         
         public DirectoryInfo GetAppEmailTemplatesDirectory(IApplicationNameProvider appNameProvider)
         {

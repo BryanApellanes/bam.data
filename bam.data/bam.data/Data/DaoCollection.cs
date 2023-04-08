@@ -19,7 +19,7 @@ namespace Bam.Net.Data
         List<T> _values;
         DataTable _table;
 
-        Dao _parent;
+        IDao _parent;
 
         ConstructorInfo _ctor;
 
@@ -44,7 +44,7 @@ namespace Bam.Net.Data
             SetDataTable(table);
         }
 
-		public DaoCollection(Database database, DataTable table, IDao parent = null, string referencingColumn = null)
+		public DaoCollection(IDatabase database, DataTable table, IDao parent = null, string referencingColumn = null)
 			: this()
 		{
 			this._parent = parent;
@@ -105,7 +105,7 @@ namespace Bam.Net.Data
             set { }
         }
 
-        Database _database;
+        IDatabase _database;
         public IDatabase Database
         {
             get
@@ -181,7 +181,7 @@ namespace Bam.Net.Data
             Loaded = true;
         }
 
-        public Dao Parent
+        public IDao Parent
         {
             get => this._parent;
             protected set => this._parent = value;
@@ -358,7 +358,7 @@ namespace Bam.Net.Data
 
             sql.Executed += (s, d) =>
             {
-                children.Each(dao => dao.OnAfterCommit(d));
+                //children.Each(dao => dao.OnAfterCommit(d));
                 AfterCommit?.Invoke(d, this);
             };
         }
@@ -446,7 +446,7 @@ namespace Bam.Net.Data
         /// </summary>
         /// <param name="saveIfNew">If true and a new entry is required, the Dao value is saved prior to being returned.</param>
         /// <returns></returns>
-        public T JustOne(Database db, bool saveIfNew = false)
+        public T JustOne(IDatabase db, bool saveIfNew = false)
         {
             if (this.Count > 1)
             {
