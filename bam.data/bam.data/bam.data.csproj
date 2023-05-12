@@ -7,19 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="_\Data\DatabaseProvider.cs" />
-    <Compile Remove="_\Data\DataPaths.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Data\Js\AES.js" />
-    <None Remove="Data\Js\SHA1.js" />
-    <None Remove="Data\Js\SHA256.js" />
-    <None Remove="Data\Qi\Dao.js" />
-    <None Remove="Data\Qi\Qi.js" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="Data\Js\AES.js" />
     <Content Include="Data\Js\SHA1.js" />
     <Content Include="Data\Js\SHA256.js" />

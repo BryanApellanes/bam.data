@@ -16,7 +16,7 @@ namespace Bam.Net.Data
         }
     }
 
-    public class OrderBy<C> where C : IQueryFilter, IFilterToken, new()
+    public class OrderBy<C>: IOrderBy<C> where C : IQueryFilter, IFilterToken, new()
     {
         public OrderBy(Func<C, C> column, SortOrder order)
         {
