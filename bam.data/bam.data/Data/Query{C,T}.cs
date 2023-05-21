@@ -71,7 +71,7 @@ namespace Bam.Net.Data
             set;
         }
 
-        protected internal IDatabase Database
+        public IDatabase Database
         {
             get;
             set;

@@ -56,7 +56,7 @@ namespace Bam.Net.Data
 		}
 
 
-        public DaoCollection(Query<C, T> query, IDao parent = null, string referencingColumn = null): this()
+        public DaoCollection(IQuery<C, T> query, IDao parent = null, string referencingColumn = null): this()
         {
             this._parent = parent;
 			this.Query = query;
@@ -64,7 +64,7 @@ namespace Bam.Net.Data
             this.ReferencingColumn = referencingColumn;
         }
         
-        public DaoCollection(Database db, Query<C, T> query, bool load = false): this(query, null, null)
+        public DaoCollection(IDatabase db, IQuery<C, T> query, bool load = false): this(query, null, null)
         {
             if (load)
             {
@@ -72,7 +72,7 @@ namespace Bam.Net.Data
             }
         }
 
-        public DaoCollection(Query<C, T> query, bool load = false): this(query, null, null)
+        public DaoCollection(IQuery<C, T> query, bool load = false): this(query, null, null)
         {
             if (load)
             {
