@@ -26,8 +26,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\bam.base\bam.base\bam.base.csproj" />
-    <ProjectReference Include="..\..\..\bam.configuration\bam.configuration\bam.configuration.csproj" />
+    <ProjectReference Include="..\..\bam.base\bam.base\bam.base.csproj" />
+    <ProjectReference Include="..\..\bam.configuration\bam.configuration\bam.configuration.csproj" />
   </ItemGroup>
 
 </Project>
