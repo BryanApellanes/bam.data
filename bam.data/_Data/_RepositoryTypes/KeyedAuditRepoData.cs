@@ -1,5 +1,4 @@
-﻿using bam.data;
-using Bam.Data;
+﻿using Bam.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
