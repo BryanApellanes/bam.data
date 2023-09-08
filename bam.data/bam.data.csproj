@@ -7,11 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Data\Js\AES.js" />
-    <Content Include="Data\Js\SHA1.js" />
-    <Content Include="Data\Js\SHA256.js" />
-    <Content Include="Data\Qi\Dao.js" />
-    <Content Include="Data\Qi\Qi.js" />
+    <Content Include="Js\AES.js" />
+    <Content Include="Js\SHA1.js" />
+    <Content Include="Js\SHA256.js" />
+    <Content Include="Qi\Dao.js" />
+    <Content Include="Qi\Qi.js" />
   </ItemGroup>
 
   <ItemGroup>
