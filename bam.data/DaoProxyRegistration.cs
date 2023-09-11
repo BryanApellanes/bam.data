@@ -1,14 +1,13 @@
 /*
 	Copyright © Bryan Apellanes 2015  
 */
- using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
 
 using System.IO;
-using Bam.Net;
 using Bam.Net.Data;
 using Bam.Net.Incubation;
 using Bam.Net.Logging;
