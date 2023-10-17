@@ -46,7 +46,7 @@ namespace Bam.Net.Data.MsSql
 
         private void Register()
         {
-            ServiceProvider = new Incubator();
+            ServiceProvider = new DependencyProvider();
             ServiceProvider.Set<DbProviderFactory>(SqlClientFactory.Instance);
             MsSqlRegistrar.Register(this);
             Infos.Add(new DatabaseInfo(this));

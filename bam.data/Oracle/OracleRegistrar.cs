@@ -61,7 +61,7 @@ namespace Bam.Net.Data
             Register(Db.For<T>().ServiceProvider);
         }
 
-        public static void Register(Incubator incubator)
+        public static void Register(DependencyProvider incubator)
         {
             incubator.Set<IParameterBuilder>(() => new OracleParameterBuilder());
             incubator.Set<SqlStringBuilder>(() => new OracleSqlStringBuilder());

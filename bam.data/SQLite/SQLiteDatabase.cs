@@ -169,7 +169,7 @@ namespace Bam.Net.Data.SQLite
 
         private void Register()
         {            
-            ServiceProvider = new Incubator();
+            ServiceProvider = new DependencyProvider();
             ServiceProvider.Set<DbProviderFactory>(SQLiteFactory.Instance);
             SQLiteRegistrar.Register(this);
             Infos.Add(new DatabaseInfo(this));

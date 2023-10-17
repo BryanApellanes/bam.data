@@ -32,7 +32,7 @@ namespace Bam.Net.Data
             NpgsqlRegistrar.Register<T>();
         }
 
-        public void Register(Incubator incubator)
+        public void Register(DependencyProvider incubator)
         {
             NpgsqlRegistrar.Register(incubator);
         }

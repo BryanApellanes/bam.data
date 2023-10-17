@@ -96,7 +96,7 @@ namespace Bam.Net.Data.Npgsql
         
         private void Register()
         {
-            ServiceProvider = new Incubator();
+            ServiceProvider = new DependencyProvider();
             ServiceProvider.Set<DbProviderFactory>(NpgsqlFactory.Instance);
             NpgsqlRegistrar.Register(this);
             Infos.Add(new DatabaseInfo(this));

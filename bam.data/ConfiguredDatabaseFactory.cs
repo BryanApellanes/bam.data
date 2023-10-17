@@ -58,7 +58,7 @@ namespace Bam.Net.Data
             }
 
             Database database = new Database();
-            database.ServiceProvider = new Incubator();
+            database.ServiceProvider = new DependencyProvider();
             
             Configure(database);
             

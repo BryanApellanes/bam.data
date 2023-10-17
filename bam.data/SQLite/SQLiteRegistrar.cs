@@ -88,7 +88,7 @@ namespace Bam.Net.Data
             SQLiteConnectionStringResolver.Register();
         }
 
-        public static void Register(Incubator incubator)
+        public static void Register(DependencyProvider incubator)
         {
             SQLiteConnectionStringResolver.Register();
 

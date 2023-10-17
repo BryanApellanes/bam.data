@@ -34,7 +34,7 @@ namespace Bam.Net.Data
             OracleRegistrar.Register<T>();
         }
 
-        public void Register(Incubation.Incubator incubator)
+        public void Register(Incubation.DependencyProvider incubator)
         {
             OracleRegistrar.Register(incubator);
         }

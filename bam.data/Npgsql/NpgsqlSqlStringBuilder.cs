@@ -21,7 +21,7 @@ namespace Bam.Net.Data
             GoText = ";\r\n";
             CreateTableFormat = "CREATE TABLE {0} ({1})";
             AddForeignKeyColumnFormat = "ALTER TABLE {0} ADD CONSTRAINT {1} FOREIGN KEY (\"{2}\") REFERENCES {3} (\"{4}\")";
-            TableNameFormatter = (s) => "{0}"._Format(s);
+            TableNameFormatter = (s) => "{0}".Format(s);
             ColumnNameFormatter = NpgsqlFormatProvider.ColumnNameFormatter;
         }
         
@@ -37,7 +37,7 @@ namespace Bam.Net.Data
             this.GoText = ";\r\n";
         }
         
-        public static void Register(Incubator incubator)
+        public static void Register(DependencyProvider incubator)
         {
             NpgsqlSqlStringBuilder builder = new NpgsqlSqlStringBuilder();
             incubator.Set(typeof(SqlStringBuilder), builder);

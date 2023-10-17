@@ -11,7 +11,7 @@ namespace Bam.Net.Data
     public class EndsWithComparison: Comparison
     {
         public EndsWithComparison(string columnName, object value, int? number = null)
-            : base(columnName, "LIKE", "%{0}"._Format(value), number)
+            : base(columnName, "LIKE", "%{0}".Format(value), number)
         { }
     }
 }

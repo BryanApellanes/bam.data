@@ -15,7 +15,7 @@ namespace Bam.Net.Data
             KeyColumnFormat = "{0} PRIMARY KEY AUTOINCREMENT";
         }
 
-        public static void Register(Incubator incubator)
+        public static void Register(DependencyProvider incubator)
         {
             incubator.Set<SqlStringBuilder>(new SQLiteSqlStringBuilder());
 

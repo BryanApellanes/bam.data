@@ -19,7 +19,7 @@ namespace Bam.Net.Data
 	/// </summary>
     public static class Db
     {
-        public static DatabaseContainer DefaultContainer => Incubator.Default.Get<DatabaseContainer>();
+        public static DatabaseContainer DefaultContainer => DependencyProvider.Default.Get<DatabaseContainer>();
 
         /// <summary>
         /// Get the Database for the specified generic type T

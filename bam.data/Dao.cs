@@ -69,7 +69,7 @@ namespace Bam.Net.Data
         /// <param name="daoSibling"></param>
         public static void RegisterDaoTypes(Type daoSibling)
         {
-            RegisterDaoTypes(daoSibling.Assembly, Incubator.Default);
+            RegisterDaoTypes(daoSibling.Assembly, DependencyProvider.Default);
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace Bam.Net.Data
         /// </summary>
         /// <param name="daoSibling"></param>
         /// <param name="serviceProvider"></param>
-        public static void RegisterDaoTypes(Type daoSibling, Incubator serviceProvider)
+        public static void RegisterDaoTypes(Type daoSibling, DependencyProvider serviceProvider)
         {
             RegisterDaoTypes(daoSibling.Assembly, serviceProvider);
         }
@@ -90,7 +90,7 @@ namespace Bam.Net.Data
         /// </summary>
         /// <param name="daoAssembly"></param>
         /// <param name="serviceProvider"></param>
-        public static void RegisterDaoTypes(Assembly daoAssembly, Incubator serviceProvider)
+        public static void RegisterDaoTypes(Assembly daoAssembly, DependencyProvider serviceProvider)
         {
             Type[] types = daoAssembly.GetTypes();
             for (int i = 0; i < types.Length; i++)
@@ -553,11 +553,11 @@ namespace Bam.Net.Data
                 if (!(ca is KeyColumnAttribute) && !ca.AllowNull)
                 {
                     string propTypeName = prop.PropertyType.Name;
-                    MethodInfo getter = type.GetMethod("Get{0}Value"._Format(propTypeName));
+                    MethodInfo getter = type.GetMethod("Get{0}Value".Format(propTypeName));
                     object val = getter.Invoke(this, new object[] { ca.Name });
                     if (val == null || (val is string s && string.IsNullOrEmpty(s)))
                     {
-                        msgs.Add("{0} can't be null"._Format(prop.Name));
+                        msgs.Add("{0} can't be null".Format(prop.Name));
                     }
                 }
             }
@@ -1288,9 +1288,9 @@ namespace Bam.Net.Data
             set => _isNew = value;
         }
 
-        Incubator _incubator;
+        DependencyProvider _incubator;
         [Exclude]
-        public Incubator ServiceProvider
+        public DependencyProvider ServiceProvider
         {
             get
             {
@@ -1559,7 +1559,7 @@ namespace Bam.Net.Data
         {
             this._childCollections = new Dictionary<string, ILoadable>();
             this.NewValues = new Dictionary<string, object>();
-            this.ServiceProvider = Incubator.Default;
+            this.ServiceProvider = DependencyProvider.Default;
             this.IsNew = true;
             this.DataRow = this.ToDataRow();
             this.AutoDeleteChildren = true;

@@ -127,7 +127,7 @@ namespace Bam.Net.Data
         /// <returns></returns>
         public virtual Database GetDatabase(ConnectionStringSettings conn, DbProviderFactory factory)
         {
-            Incubator serviceProvider = new Incubator();
+            DependencyProvider serviceProvider = new DependencyProvider();
             serviceProvider.Set<DbProviderFactory>(factory);
             Database database = new Database(serviceProvider, conn.ConnectionString, conn.Name);
             return database;

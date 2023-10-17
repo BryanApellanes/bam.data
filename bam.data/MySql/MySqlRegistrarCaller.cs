@@ -32,7 +32,7 @@ namespace Bam.Net.Data
             MySqlRegistrar.Register<T>();
         }
 
-        public void Register(Incubator incubator)
+        public void Register(DependencyProvider incubator)
         {
             MySqlRegistrar.Register(incubator);
         }

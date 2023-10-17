@@ -20,7 +20,7 @@ namespace Bam.Net.Data.FirebirdSql
         public static SetFormat GetSetFormat(string tableName, StringBuilder stringBuilder, int? startNumber, params AssignValue[] values)
         {
             SetFormat set = new SetFormat();
-            set.ColumnNameFormatter = (s) => "\"{0}\""._Format(s);
+            set.ColumnNameFormatter = (s) => "\"{0}\"".Format(s);
             set.ParameterPrefix = "@";
             foreach (AssignValue value in values)
             {
@@ -36,7 +36,7 @@ namespace Bam.Net.Data.FirebirdSql
         public static WhereFormat GetWhereFormat(IQueryFilter filter, StringBuilder stringBuilder, int? startNumber)
         {
             WhereFormat where = new WhereFormat(filter);
-            where.ColumnNameFormatter = (s) => "\"{0}\""._Format(s);
+            where.ColumnNameFormatter = (s) => "\"{0}\"".Format(s);
             where.ParameterPrefix = "@";
             where.StartNumber = startNumber;
             stringBuilder.Append(where.Parse());
@@ -46,7 +46,7 @@ namespace Bam.Net.Data.FirebirdSql
         public static WhereFormat GetWhereFormat(AssignValue filter, StringBuilder stringBuilder, int? startNumber)
         {
             WhereFormat where = new WhereFormat();
-            where.ColumnNameFormatter = (s) => "\"{0}\""._Format(s);
+            where.ColumnNameFormatter = (s) => "\"{0}\"".Format(s);
             where.ParameterPrefix = "@";
             where.StartNumber = startNumber;
             where.AddAssignment(filter);

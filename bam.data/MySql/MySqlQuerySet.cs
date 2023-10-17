@@ -15,7 +15,7 @@ namespace Bam.Net.Data
             : base()
         {
             this.GoText = ";\r\n";
-            this.TableNameFormatter = (s) => "`{0}`"._Format(s);
+            this.TableNameFormatter = (s) => "`{0}`".Format(s);
             this.ColumnNameFormatter = (s) => s;
         }
 

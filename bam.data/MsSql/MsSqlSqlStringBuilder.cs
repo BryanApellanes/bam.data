@@ -15,7 +15,7 @@ namespace Bam.Net.Data
 {
     public class MsSqlSqlStringBuilder: SchemaWriter
     {
-        public static void Register(Incubator incubator)
+        public static void Register(DependencyProvider incubator)
         {
             MsSqlSqlStringBuilder builder = new MsSqlSqlStringBuilder();
             incubator.Set(typeof(SqlStringBuilder), builder);

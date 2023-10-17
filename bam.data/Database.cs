@@ -25,12 +25,12 @@ namespace Bam.Net.Data
 			_resetEvent = new AutoResetEvent(false);
 			_connections = new List<DbConnection>();
 			_schemaNames = new HashSet<string>();
-            ServiceProvider = Incubator.Default;           
+            ServiceProvider = DependencyProvider.Default;           
             MaxConnections = 20;
             ConnectionManager = new DefaultDbConnectionManager(this);
         }
 
-        public Database(Incubator serviceProvider, string connectionString, string connectionName = null)
+        public Database(DependencyProvider serviceProvider, string connectionString, string connectionName = null)
             : this()
         {
             ServiceProvider = serviceProvider;
@@ -44,7 +44,7 @@ namespace Bam.Net.Data
         }
 
         public Database(string connectionString, string connectionName = null)
-            : this(new Incubator(), connectionString, connectionName)
+            : this(new DependencyProvider(), connectionString, connectionName)
         {
         }
 
@@ -102,7 +102,7 @@ namespace Bam.Net.Data
 
         public int MaxConnections { get; set; }
 
-        public Incubator ServiceProvider { get; set; }
+        public DependencyProvider ServiceProvider { get; set; }
 
 		public string ParameterPrefix { get; set; }
 		/// <summary>

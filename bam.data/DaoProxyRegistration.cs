@@ -27,7 +27,7 @@ namespace Bam.Net.Data
                 !daoType.IsSubclassOf(typeof(Dao)), "The specified type ({0}) must be a Dao implementation.",
                 daoType.Name);
 
-            this.ServiceProvider = new Incubator();
+            this.ServiceProvider = new DependencyProvider();
             this.Assembly = daoType.Assembly;
             this.ContextName = Dao.ConnectionName(daoType);
             Dao.RegisterDaoTypes(daoType, this.ServiceProvider);
@@ -35,7 +35,7 @@ namespace Bam.Net.Data
 
         public DaoProxyRegistration(Assembly assembly)
         {
-            this.ServiceProvider = new Incubator();
+            this.ServiceProvider = new DependencyProvider();
             this.Assembly = assembly;
             Type daoType = (from type in assembly.GetTypes()
                             where type.IsSubclassOf(typeof(Dao))
@@ -209,7 +209,7 @@ namespace Bam.Net.Data
 
         public string ContextName { get; set; }
         public Assembly Assembly { get; set; }
-        public Incubator ServiceProvider { get; set; }
+        public DependencyProvider ServiceProvider { get; set; }
 
         StringBuilder _proxiesScript;
         object _proxiesScriptLock = new object();
@@ -277,7 +277,7 @@ namespace Bam.Net.Data
             return GetDaoJsCtorScript(ServiceProvider, ServiceProvider.ClassNames);
         }
 
-        internal static StringBuilder GetDaoJsCtorScript(Incubator incubator, string[] classes)
+        internal static StringBuilder GetDaoJsCtorScript(DependencyProvider incubator, string[] classes)
         {
             StringBuilder ctorScript = new StringBuilder();
             StringBuilder fkProto = new StringBuilder();
@@ -370,7 +370,7 @@ namespace Bam.Net.Data
         }
 
         #region assemble script
-        private StringBuilder BuildProxyScript(Incubator incubator, string connectionName = "")
+        private StringBuilder BuildProxyScript(DependencyProvider incubator, string connectionName = "")
         {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.AppendLine("$(document).ready(function(){");
@@ -389,7 +389,7 @@ namespace Bam.Net.Data
             return stringBuilder;
         }
 
-        private StringBuilder GetBodyAndMeta(Incubator incubator)
+        private StringBuilder GetBodyAndMeta(DependencyProvider incubator)
         {
             StringBuilder script = new StringBuilder();
             StringBuilder meta = new StringBuilder();

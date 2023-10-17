@@ -26,7 +26,7 @@ namespace Bam.Net.Data
 
 		public OracleParameter IdParameter { get; set; }
 
-        public static void Register(Incubator incubator)
+        public static void Register(DependencyProvider incubator)
         {
             incubator.Set<SqlStringBuilder>(new OracleSqlStringBuilder());
 
@@ -226,17 +226,17 @@ namespace Bam.Net.Data
 			{
 				case "Int":
 				case "BigInt":					
-					return "NUMBER({0})"._Format(GetNumberMaxLength(column));
+					return "NUMBER({0})".Format(GetNumberMaxLength(column));
 				case "Decimal":
-					return "NUMBER({0},2)"._Format(GetNumberMaxLength(column));
+					return "NUMBER({0},2)".Format(GetNumberMaxLength(column));
 				case "VarBinary":
 					return "BLOB";
 				case "DateTime":
 					return "DATE DEFAULT (sysdate)";
 				case "Bit":
-					return "CHAR CHECK ({0} IN (0,1))"._Format(column.Name);
+					return "CHAR CHECK ({0} IN (0,1))".Format(column.Name);
 				default:
-					return "VARCHAR2({0})"._Format(column.MaxLength);
+					return "VARCHAR2({0})".Format(column.MaxLength);
 			}
 		}
 

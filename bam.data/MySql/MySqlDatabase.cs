@@ -38,7 +38,7 @@ namespace Bam.Net.Data.MySql
 
         private void Register()
         {
-            ServiceProvider = new Incubator();
+            ServiceProvider = new DependencyProvider();
             ServiceProvider.Set<DbProviderFactory>(MySqlClientFactory.Instance);
             MySqlRegistrar.Register(this);
             Infos.Add(new DatabaseInfo(this));

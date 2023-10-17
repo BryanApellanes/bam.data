@@ -23,7 +23,7 @@ namespace Bam.Net.Data.FirebirdSql
 
         public FirebirdSqlDatabase(string serverName, string databaseName, string connectionName, FirebirdSqlCredentials credentials = null)
         {
-            ColumnNameProvider = (c) => "\"{0}\""._Format(c.Name);
+            ColumnNameProvider = (c) => "\"{0}\"".Format(c.Name);
             ConnectionStringResolver = new FirebirdSqlConnectionStringResolver(serverName, databaseName, credentials);
             ConnectionName = connectionName;
             Register();
@@ -36,7 +36,7 @@ namespace Bam.Net.Data.FirebirdSql
 
         private void Register()
         {
-            ServiceProvider = new Incubator();
+            ServiceProvider = new DependencyProvider();
             ServiceProvider.Set<DbProviderFactory>(FirebirdClientFactory.Instance);
             FirebirdSqlRegistrar.Register(this);
             Infos.Add(new DatabaseInfo(this));

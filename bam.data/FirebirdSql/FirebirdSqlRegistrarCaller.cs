@@ -32,7 +32,7 @@ namespace Bam.Net.Data
             FirebirdSqlRegistrar.Register<T>();
         }
 
-        public void Register(Incubator incubator)
+        public void Register(DependencyProvider incubator)
         {
             FirebirdSqlRegistrar.Register(incubator);
         }

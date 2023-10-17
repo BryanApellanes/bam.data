@@ -15,7 +15,7 @@ namespace Bam.Net.Data
 	{
 		public DatabaseInitializationFailedException() : base() { }
 		public DatabaseInitializationFailedException(string connectionName)
-			: base("Failed to initialize database: {0}"._Format(connectionName))
+			: base("Failed to initialize database: {0}".Format(connectionName))
 		{ }
 		public DatabaseInitializationFailedException(SerializationInfo info, StreamingContext context) { }
 

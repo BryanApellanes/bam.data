@@ -11,7 +11,7 @@ namespace Bam.Net.Data
     public class DoesntEndWithComparison : Comparison
     {
         public DoesntEndWithComparison(string columnName, object value, int? num = null)
-            : base(columnName, "NOT LIKE", "%{0}"._Format(value), num)
+            : base(columnName, "NOT LIKE", "%{0}".Format(value), num)
         { }
     }
 }

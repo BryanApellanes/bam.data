@@ -56,7 +56,7 @@ namespace Bam.Net.Data
         /// into the specified incubator
         /// </summary>
         /// <param name="incubator"></param>
-        public static void Register(Incubator incubator)
+        public static void Register(DependencyProvider incubator)
         {
             MySqlParameterBuilder b = new MySqlParameterBuilder();
             incubator.Set<IParameterBuilder>(b);

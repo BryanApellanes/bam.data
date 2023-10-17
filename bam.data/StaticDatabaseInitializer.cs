@@ -50,12 +50,12 @@ namespace Bam.Net.Data
 
 		public void Ignore(params Type[] types)
 		{
-			throw new NotImplementedException("{0} doesn't implement Ignore"._Format(typeof(StaticDatabaseInitializer).FullName));
+			throw new NotImplementedException("{0} doesn't implement Ignore".Format(typeof(StaticDatabaseInitializer).FullName));
 		}
 
 		public void Ignore(params string[] connectionNames)
 		{
-			throw new NotImplementedException("{0} doesn't implement Ignore"._Format(typeof(StaticDatabaseInitializer).FullName));
+			throw new NotImplementedException("{0} doesn't implement Ignore".Format(typeof(StaticDatabaseInitializer).FullName));
 		}
 
 		#endregion

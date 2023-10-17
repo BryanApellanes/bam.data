@@ -24,7 +24,7 @@ namespace Bam.Net.Data
         public System.Configuration.ConnectionStringSettings Resolve(string connectionName)
 		{
 			string db = Database == null ? "null": Database.GetType().Name;
-			throw new InvalidOperationException("No ConnectionStringResolver was specified: Database={0}, ConnectionName={1}"._Format(db, connectionName));
+			throw new InvalidOperationException("No ConnectionStringResolver was specified: Database={0}, ConnectionName={1}".Format(db, connectionName));
 		}
 
         public DbConnectionStringBuilder GetConnectionStringBuilder()

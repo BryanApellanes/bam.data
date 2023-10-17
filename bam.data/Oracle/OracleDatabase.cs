@@ -226,7 +226,7 @@ namespace Bam.Net.Data.Oracle
 
         private void Register()
         {
-            ServiceProvider = new Incubator();
+            ServiceProvider = new DependencyProvider();
             ServiceProvider.Set<DbProviderFactory>(OracleClientFactory.Instance);
             OracleRegistrar.Register(this);
             Infos.Add(new DatabaseInfo(this));
