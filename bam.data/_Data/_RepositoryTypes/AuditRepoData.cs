@@ -18,7 +18,7 @@ namespace Bam.Net.Data.Repositories
     /// data.
     /// </summary>
     [Serializable]
-    public abstract class AuditRepoData: RepoData
+    public abstract class AuditRepoData: RepoData, IAuditRepoData
     {
         public AuditRepoData() : base()
         {

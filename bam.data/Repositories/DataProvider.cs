@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using Bam.Net.Configuration;
 using Bam.Net.Data.SQLite;
-//using Bam.Net.Encryption;
 using Bam.Net.Logging;
 using Bam.Net.UserAccounts;
-//using Bam.Net.UserAccounts.Data;
 
 namespace Bam.Net.Data.Repositories
 {
-    public partial class DataProvider : DatabaseProvider<SQLiteDatabase>, IDataDirectoryProvider//, IRepositoryProvider
+    public partial class DataProvider : DatabaseProvider<SQLiteDatabase>, IDataDirectoryProvider
     {
         public DataProvider()
         {
@@ -288,11 +286,6 @@ namespace Bam.Net.Data.Repositories
             string hash = type.ToInfoHash();
             return new DirectoryInfo(Path.Combine(GetRootDataDirectory().FullName, WorkspacesDirectory, type.Name, hash));
         }
-/*
-        public IDaoRepository GetSysDaoRepository(ILogger logger = null, string schemaName = null)
-        {
-            return new DaoRepository(GetSysDatabaseFor(typeof(DaoRepository)), logger, schemaName);
-        }*/
         
         public DirectoryInfo GetAppEmailTemplatesDirectory(IApplicationNameProvider appNameProvider)
         {

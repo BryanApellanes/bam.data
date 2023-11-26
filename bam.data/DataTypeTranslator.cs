@@ -11,8 +11,6 @@ namespace Bam.Net.Data
     /// </summary>
     public class DataTypeTranslator : IDataTypeTranslator
     {
-
-
         public virtual Type TypeFromDbDataType(string dbDataType)
         {
             return TypeFromDataType(TranslateDataType(dbDataType));

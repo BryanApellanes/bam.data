@@ -44,6 +44,24 @@ namespace Bam.Net.Data
         {
             _eventEmitter.Subscribe(logger);
         }
+        public virtual void Subscribe(VerbosityLevel levelToSubscribe, Action<ILoggable, LoggableEventArgs> handler)
+        {
+            Type emittingType = _eventEmitter.GetType();
+            EventInfo[] eventInfos = emittingType.GetEvents();
+            eventInfos.Each(eventInfo =>
+            {
+                if (eventInfo.HasCustomAttributeOfType(out VerbosityAttribute verbosityAttribute))
+                {
+                    if (verbosityAttribute.Value == levelToSubscribe)
+                    {
+                        eventInfo.AddEventHandler(this, (EventHandler)((s, a) =>
+                        {
+                            handler(this, LoggableEventArgs.ForLoggable(this, verbosityAttribute));
+                        }));
+                    }
+                }
+            });
+        }
 
         public bool IsSubscribed(ILogger logger)
         {
