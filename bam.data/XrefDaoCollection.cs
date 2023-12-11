@@ -24,7 +24,7 @@ namespace Bam.Net.Data
         List<L> _values;
         Book<L> _book;
 
-        public XrefDaoCollection(Dao parent, bool load = true)
+        public XrefDaoCollection(IDao parent, bool load = true)
         {
             Parent = parent;
             _values = new List<L>();
@@ -41,7 +41,7 @@ namespace Bam.Net.Data
             _setDatabases = true;
         }
 
-        protected Dao Parent
+        protected IDao Parent
         {
             get;
             set;
@@ -102,7 +102,7 @@ namespace Bam.Net.Data
                         XrefsByListId = new Dictionary<ulong, X>();
 
                         IQuerySet q = Dao.GetQuerySet(db);
-                        q.Select<X>().Where(new AssignValue(ParentColumnName, Parent.IdValue.Value, q.ColumnNameFormatter));
+                        q.Select<X>().Where(new AssignValue(ParentColumnName, Parent.DbId.Value, q.ColumnNameFormatter));
                         q.Execute(db);
 
                         // should have all the ids of L that should be retrieved
@@ -206,9 +206,9 @@ namespace Bam.Net.Data
 
         private void DeleteXrefItem(L item, IDatabase db)
         {
-            if (XrefsByListId.ContainsKey(item.IdValue.Value))
+            if (XrefsByListId.ContainsKey(item.DbId.Value))
             {
-                XrefsByListId[item.IdValue.Value].Delete(db);
+                XrefsByListId[item.DbId.Value].Delete(db);
             }
         }
 
@@ -314,9 +314,9 @@ namespace Bam.Net.Data
         private X EnsureXref(L item, IDatabase db = null)
         {
             db = db ?? Database;
-            if (item.IdValue != null && XrefsByListId.ContainsKey(item.IdValue.Value))
+            if (item.DbId != null && XrefsByListId.ContainsKey(item.DbId.Value))
             {
-                return XrefsByListId[item.IdValue.Value];
+                return XrefsByListId[item.DbId.Value];
             }
             else
             {
@@ -327,7 +327,7 @@ namespace Bam.Net.Data
 
                 X result = null;
                 IQuerySet q = Dao.GetQuerySet(db);
-                q.Select<X>().Where(new QueryFilter(ListColumnName) == item.IdValue.Value && new QueryFilter(ParentColumnName) == Parent.IdValue.Value);
+                q.Select<X>().Where(new QueryFilter(ListColumnName) == item.DbId.Value && new QueryFilter(ParentColumnName) == Parent.DbId.Value);
 
                 q.Execute(db);
                 if (q.Results[0].DataTable.Rows.Count > 0)
@@ -337,11 +337,11 @@ namespace Bam.Net.Data
                 else
                 {
                     result = new X();
-                    result.SetValue($"{Parent.GetType().Name}Id", Parent.IdValue, false);
-                    result.SetValue($"{typeof(L).Name}Id", item.IdValue, false);
+                    result.SetValue($"{Parent.GetType().Name}Id", Parent.DbId, false);
+                    result.SetValue($"{typeof(L).Name}Id", item.DbId, false);
                     result.Save(db);
 
-                    XrefsByListId.Add(item.IdValue.Value, result);
+                    XrefsByListId.Add(item.DbId.Value, result);
                 }
 
                 return result;
@@ -383,7 +383,7 @@ namespace Bam.Net.Data
                 {
                     item.WriteDelete(sql);
                     sql.Go();
-                    XrefsByListId[item.IdValue.Value].WriteDelete(sql);
+                    XrefsByListId[item.DbId.Value].WriteDelete(sql);
                 }
                 sql.Go();
             }

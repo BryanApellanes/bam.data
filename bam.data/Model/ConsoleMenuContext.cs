@@ -21,7 +21,7 @@ namespace Bam.Net.Data.Model
         public override void Show()
         {
             string menu = this.Menu.Write(this.Writer);
-            Console.WriteLine(menu);
+            System.Console.WriteLine(menu);
         }
     }
 }

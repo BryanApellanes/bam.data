@@ -1,7 +1,3 @@
-using System;
-using Bam.Net.Data.Repositories;
-//using Bam.Net.Services.DataReplication;
-
 namespace Bam.Net.Data
 {
     public class DaoId : QueryValue
@@ -26,11 +22,15 @@ namespace Bam.Net.Data
             return GetRawValue();
         }
 
-        public ulong GetDaoId(Dao dao)
+        public ulong? GetDbId(Dao dao)
         {
             Args.ThrowIfNull(dao, "dao");
-            Args.ThrowIfNull(dao.IdValue, "dao.IdValue");
-            return dao.GetId().Value;
+            Args.ThrowIfNull(dao.DbId, "dao.DbId");
+            if(dao == null)
+            {
+                return default;
+            }
+            return dao.GetDbId();
         }
 
         public IUniversalIdResolver GetUniversalIdentifier(Dao data)
@@ -38,11 +38,11 @@ namespace Bam.Net.Data
             return new UniversalIdResolver(data);
         }
         
-        public ulong GetId(object obj)
+        public ulong? GetId(object obj)
         {
             if (obj is Dao dao)
             {
-                return GetDaoId(dao);
+                return GetDbId(dao);
             }
             throw new InvalidOperationException("The specified object must be a Dao instance.");
         }

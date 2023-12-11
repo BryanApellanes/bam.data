@@ -190,6 +190,7 @@ namespace Bam.Net.Data
 			OracleDatasetProvider oracleGetDatasetProvider = new OracleDatasetProvider(this);
 			return oracleGetDatasetProvider.GetDataSet(db, releaseConnection, conn, tx);
 		}
+
         public override string GetKeyColumnDefinition(KeyColumnAttribute keyColumn)
         {
             return string.Format(KeyColumnFormat, keyColumn.Name); 

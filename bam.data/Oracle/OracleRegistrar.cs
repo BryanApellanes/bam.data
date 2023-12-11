@@ -19,7 +19,7 @@ namespace Bam.Net.Data
     {
         public static void OutputAssemblyQualifiedName()
         {
-            Console.WriteLine(OracleAssemblyQualifiedName());
+            System.Console.WriteLine(OracleAssemblyQualifiedName());
         }
 
         public static string OracleAssemblyQualifiedName()

@@ -22,7 +22,7 @@ namespace Bam.Net.Data
 
         public static void OutputSQLiteFactoryAssemblyQualifiedName()
         {
-            Console.WriteLine(SQLiteFactoryAssemblyQualifiedName());
+            System.Console.WriteLine(SQLiteFactoryAssemblyQualifiedName());
         }
 
         public static string SQLiteFactoryAssemblyQualifiedName()

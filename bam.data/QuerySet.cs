@@ -17,8 +17,6 @@ namespace Bam.Net.Data
     /// </summary>
     public class QuerySet: SqlStringBuilder, IQuerySet
     {
-        public new event SqlExecuteDelegate Executed;
-
         List<IHasDataTable> _results;
         public QuerySet()
         {
@@ -117,22 +115,16 @@ namespace Bam.Net.Data
 
         public IDatabase Database { get; set; }
 
+        public override void Execute(IDatabase db)
+        {
+            this.DataSet = base.GetDataSet(db);
+            this.OnExecuted(db);
+        }
+
         protected internal DataSet DataSet
         {
             get;
             set;
-        }
-
-        public new virtual void Execute(Database db)
-        {
-            DataSet = base.GetDataSet(db);
-            OnExecuted(db);
-            this.Reset();
-        }
-
-        protected new internal void OnExecuted(Database db)
-        {
-            Executed?.Invoke(this, db);
         }
         
         /// <summary>
@@ -151,6 +143,7 @@ namespace Bam.Net.Data
                         result.SetDataTable(table);
                     }
                 }
+                this.Reset();
             };
         }
     }

@@ -48,7 +48,7 @@ namespace Bam.Net.Data
             IsNew = false;
         }
 
-        public Dao(Database database, DataRow row)
+        public Dao(IDatabase database, DataRow row)
         {
             Database = database;
             DataRow = row;
@@ -171,7 +171,7 @@ namespace Bam.Net.Data
 
         public override int GetHashCode()
         {
-            ulong id = IdValue.GetValueOrDefault();
+            ulong id = DbId.GetValueOrDefault();
             return id > 0 ? id.GetHashCode() : base.GetHashCode();
         }
 
@@ -179,7 +179,7 @@ namespace Bam.Net.Data
         {
             if (obj is Dao dao)
             {
-                return dao.GetType() == this.GetType() && dao.IdValue == this.IdValue;
+                return dao.GetType() == this.GetType() && dao.DbId == this.DbId;
             }
             else
             {
@@ -806,7 +806,7 @@ namespace Bam.Net.Data
         {
             IDatabase db = Database;
             OnBeforeWriteDelete(db);
-            sql.Delete(TableName()).Where(new AssignValue(KeyColumnName, IdValue, sql.ColumnNameFormatter));// db.GetAssignment(KeyColumnName, IdValue, sql.ColumnNameFormatter));
+            sql.Delete(TableName()).Where(new AssignValue(KeyColumnName, DbId, sql.ColumnNameFormatter));
             OnAfterWriteDelete(db);
         }
 
@@ -1150,12 +1150,12 @@ namespace Bam.Net.Data
             return name;
         }
 
-        ulong? _id;
+        ulong? _dbId;
         public virtual ulong? TryGetId(Action<Exception> exceptionHandler = null)
         {
             try
             {
-                return GetId();
+                return GetDbId();
             }
             catch (Exception ex)
             {
@@ -1165,12 +1165,20 @@ namespace Bam.Net.Data
             }
         }
         
-        public virtual void SetId(ulong? id)
+        public virtual void SetDbId(ulong? id)
         {
-            _id = id;
+            _dbId = id;
         }
-        
-        public virtual ulong? GetId()
+
+        public virtual void SetDbId(object value)
+        {
+            if (value != null && value != DBNull.Value)
+            {
+                _dbId = new ulong?(Convert.ToUInt64(value));
+            }
+        }
+
+        public virtual ulong? GetDbId()
         {
             object value = PrimaryKey;
             if (value != null && value != DBNull.Value)
@@ -1179,7 +1187,7 @@ namespace Bam.Net.Data
                 {
                     if (value.IsNumber() || value is string)
                     {
-                        _id = new ulong?(Convert.ToUInt64(value));
+                        _dbId = new ulong?(Convert.ToUInt64(value));
                     }                        
                 }
                 catch (Exception ex)
@@ -1190,16 +1198,19 @@ namespace Bam.Net.Data
                 }
             }
 
-            return _id;
+            return _dbId;
         }
         
         [Exclude]
-        public ulong? IdValue
+        public ulong? DbId
         {
-            get => GetId();
-            set => _id = value;
+            get => GetDbId();
+            set => _dbId = value;
         }
 
+        /// <summary>
+        /// Gets the name of the key column.
+        /// </summary>
         [Exclude]
         public string KeyColumnName { get; protected set; }
 
@@ -1270,22 +1281,23 @@ namespace Bam.Net.Data
 
         bool _isNew;
         /// <summary>
-        /// Returns true if the current instance hasn't been committed
-        /// as determined by whether the IdValue is greater than 0
+        /// Gets or sets a value indiciating whether this instance has 
+        /// been committed as determined by whether the DbId has a value
+        /// greater than 0.
         /// </summary>
         [Exclude]
         public bool IsNew
         {
             get
             {
-                if (IdValue.HasValue && IdValue > 0)
+                if (DbId.HasValue && DbId > 0)
                 {
                     _isNew = false;
                 }
 
                 return _isNew;
             }
-            set => _isNew = value;
+            private set => _isNew = value;
         }
 
         DependencyProvider _incubator;
@@ -1356,7 +1368,7 @@ namespace Bam.Net.Data
             object result = null;
             if (columnName.Equals(KeyColumnName))
             {
-                result = IdValue;
+                result = DbId;
                 if (result == null)
                 {
                     result = PrimaryKey;
@@ -1522,12 +1534,11 @@ namespace Bam.Net.Data
 
         protected internal void SetValue(string columnName, object value, bool mapUlongToLong)
         {
-            // Note To Self: Please don't mess with this logic.  You've faced the consequences of that decision 
-            // too many times now.  Trust that this moronic looking logic is needed for all to function correctly.
-            // - BA (07/14/2018)
+            // If the columnName specified is the key column then set the database id value.
+
             if (columnName.Equals(KeyColumnName))
             {
-                SetId(value);
+                SetDbId(value);
             }
             else
             {
@@ -1544,14 +1555,6 @@ namespace Bam.Net.Data
                 {
                     this.NewValues.Add(columnName, value);
                 }
-            }
-        }
-
-        public virtual void SetId(object value)
-        {
-            if (value != null && value != DBNull.Value)
-            {
-                IdValue = new ulong?(Convert.ToUInt64(value));
             }
         }
         

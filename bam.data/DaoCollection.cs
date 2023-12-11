@@ -292,7 +292,7 @@ namespace Bam.Net.Data
                     if (fk.ReferencedTable.Equals(Dao.TableName(_parent)) && fk.Name.Equals(ReferencingColumn))
                     {
                         Type propertyType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
-                        property.SetValue(instance, System.Convert.ChangeType(_parent.IdValue.Value, propertyType), null);
+                        property.SetValue(instance, System.Convert.ChangeType(_parent.DbId.Value, propertyType), null);
                     }
                 }
             }
@@ -310,7 +310,7 @@ namespace Bam.Net.Data
                 throw new ArgumentNullException($"{this.GetType().Name}.Parent");
             }
 
-            if (_parent.IsNew || _parent.IdValue == null)
+            if (_parent.IsNew || _parent.DbId == null)
             {
                 throw new InvalidOperationException("The parent hasn't been committed, unable to associate child by id");
             }   
@@ -396,7 +396,7 @@ namespace Bam.Net.Data
                     }
 
                     sql.Delete(Dao.TableName(typeof(T)))
-                        .Where(new AssignValue(ReferencingColumn, Parent.IdValue))
+                        .Where(new AssignValue(ReferencingColumn, Parent.DbId))
                         .Go();
                 }
                 

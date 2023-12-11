@@ -14,6 +14,6 @@ namespace Bam.Net.Data
         public DbDataReader DataReader { get; set; }
         public DbCommand Command { get; set; }
         public string Message { get; set; }
-        protected internal Exception Exception { get; set; }
+        public Exception Exception { get; set; }
     }
 }

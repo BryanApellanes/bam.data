@@ -19,10 +19,9 @@ namespace Bam.Net.Data.Oracle
 {
 	/// <summary>
 	/// Internal class used to provide a common implementation of
-	/// GetDataSet for use by the OracleQuerySet and the OracleSqlStringBuilder
-	/// each of which is a SqlStringBuilder.  This class is designed
-	/// to prevent duplicate implementations in each of the afformentioned
-	/// classes.
+	/// GetDataSet for use by the OracleQuerySet and the OracleSqlStringBuilder.  
+	/// This class is designed to prevent duplicate implementations in 
+	/// each of the afformentioned classes.
 	/// </summary>
 	internal class OracleDatasetProvider
 	{
@@ -58,7 +57,7 @@ namespace Bam.Net.Data.Oracle
 			}
 
 			DataSet ds = db.GetDataSetFromSql(SqlStringBuilder, CommandType.Text, releaseConnection, conn, tx, parameters.ToArray());
-			SqlStringBuilder.OnExecuted(db);
+			//SqlStringBuilder.OnExecuted(db);
 			return ds;
 		}
 	}

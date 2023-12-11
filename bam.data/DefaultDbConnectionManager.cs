@@ -1,13 +1,6 @@
 ﻿using Bam.Net.Logging;
-//using Bam.Net.Logging.Counters;
-using System;
-using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Bam.Net.Data
 {
@@ -52,11 +45,8 @@ namespace Bam.Net.Data
                 Task releaseTask = Task.Run(() =>
                 {
                     Thread.Sleep(LifetimeMilliseconds); // give the consumer of the connection a chance to use it and complete
-                    //string timerName = $"{GetType().Name}.{Database.GetType().Name}.ConnectionReleaseTimer_{6.RandomLetters()}";
-                    //Bam.Net.Logging.Counters.Timer releaseTimer = Stats.Start(timerName);
                     Log.Debug($"Waiting for connection to release");
                     ReleaseConnection(c);
-                    //Stats.End(releaseTimer, (timer) => Log.Debug("{0}", timer));
                 });
                 if (BlockOnRelease)
                 {                    

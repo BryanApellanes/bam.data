@@ -30,8 +30,4 @@
     <ProjectReference Include="..\..\bam.configuration\bam.configuration\bam.configuration.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Application\" />
-  </ItemGroup>
-
 </Project>

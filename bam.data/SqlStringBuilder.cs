@@ -59,13 +59,19 @@ namespace Bam.Net.Data
 
         public event SqlExecuteDelegate Executed;
         
+        public DataTable ExecuteGetDataTable(IDatabase db)
+        {
+            DataTable table = GetDataTable(db);
+            OnExecuted(db);
+            return table;
+        }
+
         public DataTable GetDataTable(IDatabase db)
         {
             if (!string.IsNullOrEmpty(this))
             {
                 DbParameter[] dbParameters = db.ServiceProvider.Get<IParameterBuilder>().GetParameters(this);
                 DataTable val = db.GetDataTable(this, CommandType.Text, dbParameters);
-                OnExecuted(db);
                 return val;
             }
             else
@@ -101,7 +107,7 @@ namespace Bam.Net.Data
             return ex == null;
         }
 
-        public void Execute(IDatabase db)
+        public virtual void Execute(IDatabase db)
         {
             if (!string.IsNullOrWhiteSpace(this))
             {
@@ -119,13 +125,14 @@ namespace Bam.Net.Data
             return new List<T>();
         }
 
-        
-        public virtual DataSet GetDataSet(IDatabase db, bool releaseConnection = true, DbConnection conn = null, DbTransaction tx = null)
+        public virtual DataSet ExecuteGetDataSet(IDatabase db)
         {
-            return GetDataSet<object>(db, releaseConnection, conn, tx);
+            DataSet dataSet = GetDataSet(db);
+            OnExecuted(db);
+            return dataSet;
         }
 
-        public virtual DataSet GetDataSet<T>(IDatabase db, bool releaseConnection = true, DbConnection conn = null, DbTransaction tx = null)
+        public virtual DataSet GetDataSet(IDatabase db, bool releaseConnection = true, DbConnection conn = null, DbTransaction tx = null)
         {
             if (conn == null)
             {
@@ -133,9 +140,7 @@ namespace Bam.Net.Data
             }
             if (db.ServiceProvider.TryGet(out IParameterBuilder parameterBuilder))
             {
-                DataSet ds = db.GetDataSetFromSql(this, CommandType.Text, releaseConnection, conn, tx, parameterBuilder.GetParameters(this));
-                OnExecuted(db);
-                return ds;
+                return db.GetDataSetFromSql(this, CommandType.Text, releaseConnection, conn, tx, parameterBuilder.GetParameters(this));
             }
             else
             {
@@ -244,6 +249,27 @@ namespace Bam.Net.Data
         {
             return Select(Dao.TableName(typeof(T)), SelectStar ? "*": ColumnAttribute.GetColumns(typeof(T)).ToDelimited(c => ColumnNameFormatter(c.Name)));
         }
+
+        public virtual ISqlStringBuilder Select(Type daoType)
+        {
+            return Select(Dao.TableName(daoType), SelectStar ? "*" : ColumnAttribute.GetColumns(daoType).ToDelimited(c => ColumnNameFormatter(c.Name)));
+        }
+
+        public virtual ISqlStringBuilder Select(Type daoType, params string[] columns)
+        {
+            List<string> goodColumns = ColumnAttribute.GetColumns(daoType).Select(c => c.Name).ToList();
+            foreach (string column in columns)
+            {
+                if (!SelectStar && !goodColumns.Contains(column))
+                {
+                    throw new InvalidOperationException(string.Format("Invalid column specified {0}", ColumnNameFormatter(column)));
+                }
+            }
+
+            return Select(Dao.TableName(daoType),
+                columns.ToDelimited(c => ColumnNameFormatter(c)));
+        }
+        
 
         public virtual ISqlStringBuilder Select<T>(params string[] columns)
         {

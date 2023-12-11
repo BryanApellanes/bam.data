@@ -82,7 +82,7 @@ namespace Bam.Net.Data
             }
         }
         /// <summary>
-        /// When true will use Star instead of ColumnNames when executing Query instances
+        /// Gets or sets a value indicating whether to use Star instead of ColumnNames when executing Query instances
         /// </summary>
         public bool SelectStar
         {
@@ -764,8 +764,8 @@ namespace Bam.Net.Data
         public virtual DataSet GetDataSetFromSql<T>(string sqlStatement, CommandType commandType, bool releaseConnection, DbConnection conn, DbTransaction tx, params DbParameter[] dbParamaters)
         {
             DbProviderFactory providerFactory = ServiceProvider.Get<DbProviderFactory>();
-
-			DataSet set = new DataSet(Dao.ConnectionName<T>().Or(8.RandomLetters()));
+            string dataSetName = Dao.ConnectionName<T>().Or(8.RandomLetters());
+			DataSet set = new DataSet(dataSetName);
             try
             {
                 DbCommand command = BuildCommand(sqlStatement, commandType, dbParamaters, providerFactory, conn, tx);

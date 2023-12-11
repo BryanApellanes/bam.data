@@ -71,7 +71,7 @@ namespace Bam.Net.Data
 				sql.Top<T>(PageSize);
 				QueryFilter queryFilter = (QueryFilter)Query.FilterDelegate.DynamicInvoke(OrderByColumn);
 				sql.Where(queryFilter && new QueryFilter("Id").In(ids.Select(i => (object)i).ToArray())).OrderBy(OrderByColumn.ToString(), SortOrder);
-				CurrentResults = new DaoCollection<C, T>(Database, sql.GetDataTable(Database));
+				CurrentResults = new DaoCollection<C, T>(Database, sql.ExecuteGetDataTable(Database));
 			}
 			SetLastEntry();
 			results = CurrentResults;
@@ -108,7 +108,7 @@ namespace Bam.Net.Data
 			{
 				string id = "Id";
 				SqlStringBuilder sql = GetBaseIdQuery();
-				DataTable table = sql.GetDataTable(Database);
+				DataTable table = sql.ExecuteGetDataTable(Database);
 				List<long> ids = new List<long>();
 				foreach(DataRow row in table.Rows)
 				{

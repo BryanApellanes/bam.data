@@ -21,10 +21,12 @@ namespace Bam.Net.Data
             incubator.Set(typeof(SqlStringBuilder), builder);
             incubator.Set<SqlStringBuilder>(builder);
         }
+
         public override string GetKeyColumnDefinition(KeyColumnAttribute keyColumn)
         {
             return string.Format(KeyColumnFormat, GetColumnDefinition(keyColumn));
         }
+
         public override string GetColumnDefinition(ColumnAttribute column)
 		{
 			string max = string.Format("({0})", column.MaxLength);

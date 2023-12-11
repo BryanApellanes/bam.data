@@ -62,7 +62,7 @@ namespace Bam.Net.Data
             return this;
         }
 
-        public override void Execute(Database db)
+        public override void Execute(IDatabase db)
         {
             if (Limit > 0)
             {
