@@ -8,7 +8,7 @@ using Bam.Net.UserAccounts;
 
 namespace Bam.Net.Data.Repositories
 {
-    public partial class DataProvider : DatabaseProvider<SQLiteDatabase>, IDataDirectoryProvider
+    public class DataProvider : DatabaseProvider<SQLiteDatabase>, IDataDirectoryProvider
     {
         public DataProvider()
         {

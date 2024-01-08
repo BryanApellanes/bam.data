@@ -138,7 +138,7 @@ namespace Bam.Net.Data
 			return this;
 		}
 
-		protected internal override void SubscribeToExecute()
+		protected override void SubscribeToExecute()
 		{
 			this.Executed += (o, e) =>
 			{

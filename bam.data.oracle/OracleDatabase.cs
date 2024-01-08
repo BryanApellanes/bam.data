@@ -121,7 +121,7 @@ namespace Bam.Net.Data.Oracle
             return null;
         }
 
-        protected internal override DbCommand BuildCommand(string sqlStatement, CommandType commandType, DbParameter[] dbParameters, DbProviderFactory providerFactory, DbConnection conn, DbTransaction tx = null)
+        protected override DbCommand BuildCommand(string sqlStatement, CommandType commandType, DbParameter[] dbParameters, DbProviderFactory providerFactory, DbConnection conn, DbTransaction tx = null)
         {
             OracleCommand command = (OracleCommand)base.BuildCommand(sqlStatement, commandType, dbParameters, providerFactory, conn, tx);
             command.BindByName = true;
@@ -211,7 +211,7 @@ namespace Bam.Net.Data.Oracle
             }
         }
 
-        protected internal override AssignValue GetAssignment(string keyColumn, object value, Func<string, string> columnNameformatter = null)
+        protected override AssignValue GetAssignment(string keyColumn, object value, Func<string, string> columnNameformatter = null)
         {
             AssignValue result = base.GetAssignment(keyColumn, value, columnNameformatter);
             result.ParameterPrefix = ":";

@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Bam.Net.Data.MsSql;
 using Bam.Net.Data.MySql;
 using Bam.Net.Data.Npgsql;
 using Bam.Net.Data.SQLite;
-//using Bam.Net.Server;
 
 namespace Bam.Net.Data
 {
@@ -25,7 +20,7 @@ namespace Bam.Net.Data
                         Credentials.CopyAs<MsSqlCredentials>())
                 },
                 {
-                    RelationalDatabaseTypes.Npgsql,
+                    RelationalDatabaseTypes.Postgres,
                     () => new NpgsqlDatabase(ServerName, DatabaseName, ConnectionName,
                         Credentials.CopyAs<NpgsqlCredentials>())
                 },

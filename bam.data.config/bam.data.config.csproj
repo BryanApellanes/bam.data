@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\bam.data.mssql\bam.data.mssql.csproj" />
+    <ProjectReference Include="..\bam.data.mysql\bam.data.mysql.csproj" />
+    <ProjectReference Include="..\bam.data.oracle\bam.data.oracle.csproj" />
+    <ProjectReference Include="..\bam.data.postgres\bam.data.postgres.csproj" />
+    <ProjectReference Include="..\bam.data\bam.data.csproj" />
+  </ItemGroup>
+
+</Project>

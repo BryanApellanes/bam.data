@@ -9,6 +9,6 @@ namespace Bam.Net.Data
         SQLite,
         MsSql,
         MySql,
-        Npgsql
+        Postgres
     }
 }
