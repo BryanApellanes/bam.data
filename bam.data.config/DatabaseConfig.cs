@@ -1,9 +1,11 @@
+using Bam.Net;
+using Bam.Net.Data;
 using Bam.Net.Data.MsSql;
 using Bam.Net.Data.MySql;
 using Bam.Net.Data.Npgsql;
 using Bam.Net.Data.SQLite;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     public class DatabaseConfig
     {
@@ -31,15 +33,15 @@ namespace Bam.Net.Data
                 }
             };
         }
-        
+
         public string ConnectionName { get; set; }
         public string DatabaseName { get; set; }
         public string ServerName { get; set; }
-        
+
         public DatabaseCredentials Credentials { get; set; }
 
         public RelationalDatabaseTypes DatabaseType { get; set; }
-        
+
         public Database GetDatabase()
         {
             return _databaseTypes[DatabaseType]();
@@ -47,7 +49,7 @@ namespace Bam.Net.Data
 
         public T GetDatabase<T>() where T : Database
         {
-            return (T) GetDatabase();
+            return (T)GetDatabase();
         }
 
         /// <summary>
@@ -57,7 +59,7 @@ namespace Bam.Net.Data
         public static DatabaseConfig[] LoadProfileConfigs()
         {
             string databaseconfigsPath = Path.Combine(BamHome.Profile, $"{nameof(DatabaseConfig).Pluralize()}.yaml");
-            DatabaseConfig[] result = new DatabaseConfig[]{};
+            DatabaseConfig[] result = new DatabaseConfig[] { };
             if (File.Exists(databaseconfigsPath))
             {
                 result = LoadConfigs(databaseconfigsPath);

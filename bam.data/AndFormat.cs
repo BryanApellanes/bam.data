@@ -1,6 +1,8 @@
-namespace Bam.Net.Data
+using Bam.Net.Data;
+
+namespace Bam.Data
 {
-    public class AndFormat: SetFormat
+    public class AndFormat : SetFormat
     {
         public AndFormat() { }
 
@@ -8,9 +10,9 @@ namespace Bam.Net.Data
         {
             foreach (IParameterInfo param in filter.Parameters)
             {
-                this.AddParameter(param);
+                AddParameter(param);
             }
-            this.Filter = filter;
+            Filter = filter;
         }
 
         private IQueryFilter Filter;
@@ -23,13 +25,13 @@ namespace Bam.Net.Data
             string value = string.Empty;
             if (Filter != null)
             {
-                value = string.Format("AND {0} ", Filter.Parse(this.StartNumber));
+                value = string.Format("AND {0} ", Filter.Parse(StartNumber));
             }
             else
             {
-                if(this.Parameters[0] != null)
+                if (Parameters[0] != null)
                 {
-                    value = string.Format("AND {0} ", this.Parameters[0].ToString());
+                    value = string.Format("AND {0} ", Parameters[0].ToString());
                 }
             }
 
