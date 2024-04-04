@@ -55,7 +55,26 @@ namespace Bam.Net.Data
             get;
             set;
         }
-
+        Func<DirectoryInfo> _directoryResolver;
+        object _directoryResolverLock = new object();
+        public Func<DirectoryInfo> DirectoryResolver
+        {
+            get
+            {
+                return _directoryResolverLock.DoubleCheckLock(ref _directoryResolver, () =>
+                {
+                    return () =>
+                    {
+                        DirectoryInfo dirInfo = new DirectoryInfo($".\\{ApplicationNameProvider.Default.GetApplicationName()}");
+                        return dirInfo;
+                    };
+                });
+            }
+            set
+            {
+                _directoryResolver = value;
+            }
+        }
         #region IConnectionStringResolver Members
 
         public ConnectionStringSettings Resolve(string connectionName)

@@ -7,10 +7,76 @@ using System.Threading.Tasks;
 namespace Bam.Net.Data
 {
     /// <summary>
-    /// A class for converting between database type string to instance of Type.
+    /// A class for converting between different type representations.
     /// </summary>
     public class DataTypeTranslator : IDataTypeTranslator
     {
+        private static readonly object _dataTypeTranslatorLock = new object();
+        private static IDataTypeTranslator _dafault;
+        public static IDataTypeTranslator Default
+        {
+            get
+            {
+                return _dataTypeTranslatorLock.DoubleCheckLock(ref _dafault, () => new DataTypeTranslator());
+            }
+            set => _dafault = value;
+        }
+        
+        public virtual DataTypes EnumFromType(Type type)
+        {
+            if (type == typeof(object) || type == null)
+            {
+                return DataTypes.Default;
+            }
+            
+            if (type == typeof(bool))
+            {
+                return DataTypes.Boolean;
+            }
+
+            if (type == typeof(int))
+            {
+                return DataTypes.Int;
+            }
+
+            if (type == typeof(uint))
+            {
+                return DataTypes.UInt;
+            }
+
+            if (type == typeof(ulong))
+            {
+                return DataTypes.ULong;
+            }
+
+            if (type == typeof(long))
+            {
+                return DataTypes.Long;
+            }
+
+            if (type == typeof(decimal))
+            {
+                return DataTypes.Decimal;
+            }
+
+            if (type == typeof(string))
+            {
+                return DataTypes.String;
+            }
+
+            if (type == typeof(byte[]))
+            {
+                return DataTypes.ByteArray;
+            }
+
+            if (type == typeof(DateTime))
+            {
+                return DataTypes.DateTime;
+            }
+            
+            return DataTypes.Default;
+        }
+        
         public virtual Type TypeFromDbDataType(string dbDataType)
         {
             return TypeFromDataType(TranslateDataType(dbDataType));
