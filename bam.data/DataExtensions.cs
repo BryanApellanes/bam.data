@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 using System.Data.Common;
 using System.Data;
 using System.Collections;
+using Bam.Data;
 
 namespace Bam.Net.Data
 {

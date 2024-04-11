@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Bam.Net.Data;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     /// <summary>
     /// A class for converting between different type representations.

@@ -14,6 +14,7 @@ using System.Diagnostics;
 using Bam.Net.Data.Schema;
 using Bam.Net.Logging;
 using System.IO;
+using Bam.Data;
 
 namespace Bam.Net.Data
 {

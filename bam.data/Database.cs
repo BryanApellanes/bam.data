@@ -14,6 +14,7 @@ using System.Threading;
 using System.Reflection;
 using System.IO;
 using System.Diagnostics;
+using Bam.Data;
 
 namespace Bam.Net.Data
 {

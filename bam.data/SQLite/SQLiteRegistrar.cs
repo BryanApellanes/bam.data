@@ -11,6 +11,7 @@ using Bam.Net.Data;
 using Bam.Net;
 using System.Reflection;
 using System.IO;
+using Bam.Data;
 
 namespace Bam.Net.Data
 {
