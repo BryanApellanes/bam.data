@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Bam.Net.Data.FirebirdSql
+namespace Bam.Data.FirebirdSql
 {
     public class FirebirdSqlCredentials
     {

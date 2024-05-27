@@ -4,9 +4,9 @@
 
 using System;
 using System.Reflection;
-using Bam.Net.Incubation;
+using Bam.Incubation;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     public class SQLiteSqlStringBuilder: SchemaWriter
     {

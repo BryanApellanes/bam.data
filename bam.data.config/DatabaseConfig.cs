@@ -1,9 +1,9 @@
-using Bam.Net;
-using Bam.Net.Data;
-using Bam.Net.Data.MsSql;
-using Bam.Net.Data.MySql;
-using Bam.Net.Data.Npgsql;
-using Bam.Net.Data.SQLite;
+using Bam;
+using Bam.Data;
+using Bam.Data.MsSql;
+using Bam.Data.MySql;
+using Bam.Data.Npgsql;
+using Bam.Data.SQLite;
 
 namespace Bam.Data
 {

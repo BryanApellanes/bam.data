@@ -7,13 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
-using Bam.Net;
-using Bam.Net.Data;
-using Bam.Net.Configuration;
-using Bam.Net.Logging;
-using Bam.Net.Incubation;
+using Bam;
+using Bam.Data;
+using Bam.Configuration;
+using Bam.Logging;
+using Bam.Incubation;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     public abstract class ConfiguredDatabaseFactory
     {

@@ -1,6 +1,6 @@
-using Bam.Net.Data.Npqsql;
+using Bam.Data.Npqsql;
 
-namespace Bam.Net.Data.Postgres
+namespace Bam.Data.Postgres
 {
     public class PostgresForeignKeyDescriptor : NpgsqlForeignKeyDescriptor
     {

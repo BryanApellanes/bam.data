@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     public class SQLiteQuerySet: QuerySet
     {

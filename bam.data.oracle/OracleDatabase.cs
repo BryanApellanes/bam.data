@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Bam.Net.Logging;
-using Bam.Net.Incubation;
+using Bam.Logging;
+using Bam.Incubation;
 using System.IO;
 using System.Data;
 using Oracle.ManagedDataAccess;
@@ -15,7 +15,7 @@ using Oracle.ManagedDataAccess.Client;
 using System.Data.Common;
 using System.Reflection;
 
-namespace Bam.Net.Data.Oracle
+namespace Bam.Data.Oracle
 {
     public class OracleDatabase : Database, IHasConnectionStringResolver
     {

@@ -1,8 +1,8 @@
-﻿using Bam.Net.Logging;
+﻿using Bam.Logging;
 using System.Data.Common;
 using System.Diagnostics;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     public class MaxCountDbConnectionManager : DefaultDbConnectionManager
     {

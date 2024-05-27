@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     public delegate SqlStringBuilder CommitDelegate(string tableName, params AssignValue[] values);
 }

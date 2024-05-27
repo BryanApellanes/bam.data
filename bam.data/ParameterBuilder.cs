@@ -6,11 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data.Common;
-using Bam.Net.Data;
-using Bam.Net.Incubation;
+using Bam.Data;
+using Bam.Incubation;
 using System.Data.SqlClient;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     public abstract class ParameterBuilder: IParameterBuilder
     {

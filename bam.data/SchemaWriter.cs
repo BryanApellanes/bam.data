@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
-using Bam.Net.Logging;
+using Bam.Logging;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     public abstract class SchemaWriter: SqlStringBuilder
     {

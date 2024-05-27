@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Bam.Net.Data.Npgsql;
+using Bam.Data.Npgsql;
 
-namespace Bam.Net.Data.Postgres
+namespace Bam.Data.Postgres
 {
     /// <summary>
     /// Provides Npgsql specific expression formatting.

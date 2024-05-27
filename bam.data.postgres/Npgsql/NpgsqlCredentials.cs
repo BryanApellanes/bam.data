@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Bam.Net.Data.Npgsql
+namespace Bam.Data.Npgsql
 {
     public class NpgsqlCredentials : DatabaseCredentials
     {

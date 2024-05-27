@@ -1,4 +1,4 @@
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     /// <summary>
     /// A class that represents the Universal Deterministic Identifier for an object instance.

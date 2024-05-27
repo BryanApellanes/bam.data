@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Bam.Net.Logging;
+using Bam.Logging;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     /// <summary>
     /// Provides hydration mechanism for Dao instances; loads child collections on hydrate.

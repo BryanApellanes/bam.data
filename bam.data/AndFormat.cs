@@ -1,4 +1,4 @@
-using Bam.Net.Data;
+using Bam.Data;
 
 namespace Bam.Data
 {

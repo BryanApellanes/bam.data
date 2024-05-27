@@ -2,7 +2,7 @@
 	Copyright © Bryan Apellanes 2015  
 */
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     public class PostgresQuerySet : NpgsqlQuerySet
     {

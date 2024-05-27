@@ -8,10 +8,10 @@ using System.Text;
 using System.Configuration;
 using System.Data.Common;
 using System.Reflection;
-using Bam.Net.Incubation;
-using Bam.Net.Logging;
+using Bam.Incubation;
+using Bam.Logging;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
 	/// <summary>
 	/// Utility for setting default databases

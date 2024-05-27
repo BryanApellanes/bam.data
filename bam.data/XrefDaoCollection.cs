@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Reflection;
-using Bam.Net;
+using Bam;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     /// <summary>
     /// A collection that represents a cross reference between its

@@ -6,11 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Bam.Data;
-using Bam.Net.Incubation;
-using Bam.Net;
-using Bam.Net.Data;
+using Bam.Incubation;
+using Bam;
+using Bam.Data;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     public static class MsSqlRegistrar
     {

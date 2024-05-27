@@ -5,10 +5,10 @@
 using System;
 using System.Data;
 using System.Data.Common;
-using Bam.Net.Incubation;
+using Bam.Incubation;
 using Npgsql;
 
-namespace Bam.Net.Data.Npgsql
+namespace Bam.Data.Npgsql
 {
     public class NpgsqlDatabase : Database, IHasConnectionStringResolver
     {

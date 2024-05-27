@@ -8,13 +8,13 @@ using System.Text;
 using System.Reflection;
 
 using System.IO;
-using Bam.Net.Data;
-using Bam.Net.Incubation;
-using Bam.Net.Logging;
+using Bam.Data;
+using Bam.Incubation;
+using Bam.Logging;
 using Yahoo.Yui.Compressor;
 using System.Threading;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     public partial class DaoProxyRegistration
     {

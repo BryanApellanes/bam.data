@@ -5,16 +5,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Bam.Net.Incubation;
+using Bam.Incubation;
 using Oracle.ManagedDataAccess;
 using Oracle.ManagedDataAccess.Client;
-using Bam.Net.Data;
-using Bam.Net;
+using Bam.Data;
+using Bam;
 using System.Reflection;
 using System.IO;
 using Bam.Data;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
 	public static class OracleRegistrar
     {

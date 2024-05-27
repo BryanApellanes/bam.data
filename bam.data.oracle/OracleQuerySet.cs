@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using Oracle.ManagedDataAccess;
 using Oracle.ManagedDataAccess.Client;
-using Bam.Net.Data.Oracle;
+using Bam.Data.Oracle;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
 	public class OracleQuerySet : QuerySet, IPLSqlStringBuilder
     {

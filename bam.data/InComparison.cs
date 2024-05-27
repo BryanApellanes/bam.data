@@ -7,12 +7,12 @@ using System.Collections;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
-using Bam.Net;
-using Bam.Net.Data;
-//using Bam.Net.FileExt;
-//using Bam.Net.FileExt.Js;
+using Bam;
+using Bam.Data;
+//using Bam.FileExt;
+//using Bam.FileExt.Js;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     public class InComparison: Comparison
     {

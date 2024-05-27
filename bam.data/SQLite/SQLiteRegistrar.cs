@@ -5,15 +5,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Bam.Net.Incubation;
+using Bam.Incubation;
 using System.Data.SQLite;
-using Bam.Net.Data;
-using Bam.Net;
+using Bam.Data;
+using Bam;
 using System.Reflection;
 using System.IO;
 using Bam.Data;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     public class SQLiteRegistrar
     {
@@ -108,7 +108,7 @@ namespace Bam.Net.Data
         /// </summary>
         public static void RegisterFallback()
         {
-            Bam.Net.Data.Db.DefaultContainer.FallBack = (connectionName, dbDictionary) =>
+            Bam.Data.Db.DefaultContainer.FallBack = (connectionName, dbDictionary) =>
             {
                 Register(connectionName);
             };

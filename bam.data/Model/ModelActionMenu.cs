@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
-using Bam.Net;
+using Bam;
 
-namespace Bam.Net.Data.Model
+namespace Bam.Data.Model
 {
     public class ModelActionMenu
     {

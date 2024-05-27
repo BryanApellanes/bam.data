@@ -6,12 +6,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
-using Bam.Net.Data.Schema;
-using Bam.Net.Incubation;
-using Bam.Net.Data.Npgsql;
+using Bam.Data.Schema;
+using Bam.Incubation;
+using Bam.Data.Npgsql;
 using Bam.Data;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     public class NpgsqlSqlStringBuilder : SchemaWriter
     {

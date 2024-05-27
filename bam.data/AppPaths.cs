@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Bam.Net.Data;
-using Bam.Net.Data.Repositories;
+using Bam.Data;
+using Bam.Data.Repositories;
 
-namespace Bam.Net
+namespace Bam
 {
     // TODO: derive an AppPaths instance that represents all relevant path information for a running application.  AppPaths appPaths = AppPaths.ForApplication(IApplicationNameProvider appNameProvider)
     public class AppPaths

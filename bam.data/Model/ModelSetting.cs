@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Bam.Net.Data.Model
+namespace Bam.Data.Model
 {
     [AttributeUsage(AttributeTargets.Property)]
     public class ModelSetting: Attribute

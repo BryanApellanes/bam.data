@@ -9,10 +9,10 @@ using System.Runtime.InteropServices;
 using System.Data.Common;
 using System.Data;
 using System.Collections;
-using Bam.Net.Logging;
+using Bam.Logging;
 using Newtonsoft.Json.Linq;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     public static partial class DataExtensions
     {

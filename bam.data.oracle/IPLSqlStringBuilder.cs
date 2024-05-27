@@ -8,7 +8,7 @@ using System.Text;
 using Oracle.ManagedDataAccess;
 using Oracle.ManagedDataAccess.Client;
 
-namespace Bam.Net.Data.Oracle
+namespace Bam.Data.Oracle
 {
 	public interface IPLSqlStringBuilder
 	{

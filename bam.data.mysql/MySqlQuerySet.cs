@@ -5,9 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Bam.Net.Data.MySql;
+using Bam.Data.MySql;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     public class MySqlQuerySet : QuerySet
     {

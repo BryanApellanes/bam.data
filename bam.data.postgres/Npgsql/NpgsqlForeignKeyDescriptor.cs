@@ -1,4 +1,4 @@
-namespace Bam.Net.Data.Npqsql
+namespace Bam.Data.Npqsql
 {
     public class NpgsqlForeignKeyDescriptor
     {

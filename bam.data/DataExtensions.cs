@@ -14,7 +14,7 @@ using System.Data;
 using System.Collections;
 using Bam.Data;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     public static partial class DataExtensions
     {

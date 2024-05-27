@@ -6,15 +6,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Bam.Net.Incubation;
+using Bam.Incubation;
 using System.Data.Common;
 using System.Data.SqlClient;
-using Bam.Net.Data;
-using Bam.Net.Data.Npgsql;
-using Bam.Net.Data.Postgres;
+using Bam.Data;
+using Bam.Data.Npgsql;
+using Bam.Data.Postgres;
 using Npgsql;
 
-namespace Bam.Net.Data.Posgres
+namespace Bam.Data.Posgres
 {
     public class PostgresDatabase : NpgsqlDatabase
     {

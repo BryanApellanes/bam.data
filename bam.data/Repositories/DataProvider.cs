@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Bam.Net.Configuration;
-using Bam.Net.Data.SQLite;
-using Bam.Net.Logging;
-using Bam.Net.UserAccounts;
+using Bam.Configuration;
+using Bam.Data.SQLite;
+using Bam.Logging;
+using Bam.UserAccounts;
 
-namespace Bam.Net.Data.Repositories
+namespace Bam.Data.Repositories
 {
     public class DataProvider : DatabaseProvider<SQLiteDatabase>, IDataDirectoryProvider
     {

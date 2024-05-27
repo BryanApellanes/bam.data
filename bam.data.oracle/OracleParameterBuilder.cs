@@ -5,14 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Bam.Net.Data;
+using Bam.Data;
 using System.Data.Common;
 using System.Data;
-using Bam.Net.Incubation;
+using Bam.Incubation;
 using Oracle.ManagedDataAccess;
 using Oracle.ManagedDataAccess.Client;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
 	public class OracleParameterBuilder : ParameterBuilder
     {

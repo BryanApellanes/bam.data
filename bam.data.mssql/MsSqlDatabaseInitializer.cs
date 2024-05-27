@@ -5,12 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Bam.Net.Data;
+using Bam.Data;
 using System.Data;
 using System.Data.Common;
 using System.Configuration;
 
-namespace Bam.Net.Data.MsSql
+namespace Bam.Data.MsSql
 {
     public class MsSqlDatabaseInitializer: DefaultDatabaseInitializer
     {

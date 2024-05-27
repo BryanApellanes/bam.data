@@ -10,7 +10,7 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.Data.Common;
 
-namespace Bam.Net.Data.MsSql
+namespace Bam.Data.MsSql
 {
 	public class MsSqlConnectionStringResolver: IConnectionStringResolver
 	{

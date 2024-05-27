@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Bam.Net.Data.Oracle
+namespace Bam.Data.Oracle
 {
 	/// <summary>
 	/// Provides Oracle specific expression formatting.

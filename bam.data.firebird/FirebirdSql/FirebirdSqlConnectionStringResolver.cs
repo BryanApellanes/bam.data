@@ -6,7 +6,7 @@ using System.Configuration;
 using System.Data.Common;
 using FirebirdSql.Data.FirebirdClient;
 
-namespace Bam.Net.Data.FirebirdSql
+namespace Bam.Data.FirebirdSql
 {
     public class FirebirdSqlConnectionStringResolver : IConnectionStringResolver
     {

@@ -7,15 +7,15 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.Common;
-using Bam.Net.Incubation;
-using Bam.Net;
-using Bam.Net.Data;
-using Bam.Net.Data.Oracle;
+using Bam.Incubation;
+using Bam;
+using Bam.Data;
+using Bam.Data.Oracle;
 using Oracle.ManagedDataAccess;
 using Oracle.ManagedDataAccess.Client;
 using Oracle.ManagedDataAccess.Types;
 
-namespace Bam.Net.Data.Oracle
+namespace Bam.Data.Oracle
 {
 	/// <summary>
 	/// Internal class used to provide a common implementation of

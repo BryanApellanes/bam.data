@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Bam.Net.Data.MySql
+namespace Bam.Data.MySql
 {
     /// <summary>
     /// Provides MySql specific expression formatting.

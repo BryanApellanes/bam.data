@@ -2,9 +2,9 @@
 	Copyright © Bryan Apellanes 2015  
 */
 
-using Bam.Net.Data.Npgsql;
+using Bam.Data.Npgsql;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     public class NpgsqlQuerySet : QuerySet
     {

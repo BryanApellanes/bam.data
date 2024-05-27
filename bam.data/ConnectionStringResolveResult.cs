@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Configuration;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     public class ConnectionStringResolveResult
     {

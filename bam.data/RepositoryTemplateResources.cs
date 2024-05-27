@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     public static class RepositoryTemplateResources
     {

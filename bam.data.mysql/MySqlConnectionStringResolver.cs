@@ -6,7 +6,7 @@ using System.Configuration;
 using System.Data.Common;
 using MySql.Data.MySqlClient;
 
-namespace Bam.Net.Data.MySql
+namespace Bam.Data.MySql
 {
 	public class MySqlConnectionStringResolver: IConnectionStringResolver
 	{

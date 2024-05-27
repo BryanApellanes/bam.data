@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Configuration;
 using System.Data.Common;
-using Bam.Net.Incubation;
+using Bam.Incubation;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     /// <summary>
     /// Acts as a convenience container for any IDatabaseInitializer

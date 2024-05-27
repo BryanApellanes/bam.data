@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
-using Bam.Net.Logging;
+using Bam.Logging;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     /// <summary>
     /// Initializes databases and their related schemas.

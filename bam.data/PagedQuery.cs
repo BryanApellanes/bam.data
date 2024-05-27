@@ -6,10 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data;
-using Bam.Net;
+using Bam;
 using System.Threading.Tasks;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
 	public class PagedQuery<C, T>
 		where C : QueryFilter, IFilterToken, new()

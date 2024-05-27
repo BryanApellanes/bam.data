@@ -5,10 +5,10 @@
 using System;
 using System.Data;
 using System.Data.Common;
-using Bam.Net.Incubation;
+using Bam.Incubation;
 using FirebirdSql.Data.FirebirdClient;
 
-namespace Bam.Net.Data.FirebirdSql
+namespace Bam.Data.FirebirdSql
 {
     public class FirebirdSqlDatabase : Database, IHasConnectionStringResolver
     {

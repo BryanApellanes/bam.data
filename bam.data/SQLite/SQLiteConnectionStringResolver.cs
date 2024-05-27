@@ -10,7 +10,7 @@ using System.IO;
 using System.Web;
 using System.Data.Common;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     /// <summary>
     /// Resolves connection string requests to a sqlite database in the

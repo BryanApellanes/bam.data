@@ -8,7 +8,7 @@ using System.Text;
 using System.Configuration;
 using System.Data.Common;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     public class DefaultConnectionStringResolver: IConnectionStringResolver
     {

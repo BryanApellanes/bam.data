@@ -5,13 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Bam.Net.Data;
+using Bam.Data;
 using System.Data;
 using System.Data.Common;
 using System.Configuration;
-using Bam.Net.Data.Npgsql;
+using Bam.Data.Npgsql;
 
-namespace Bam.Net.Data.Postgres
+namespace Bam.Data.Postgres
 {
     public class PostgresDatabaseInitializer: NpgsqlDatabaseInitializer
     {

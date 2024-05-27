@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace Bam.Net.Data.Repositories
+namespace Bam.Data.Repositories
 {
     public class KeyedRepoData : CompositeKeyAuditRepoData
     {

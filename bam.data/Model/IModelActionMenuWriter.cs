@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Bam.Net.Data.Model
+namespace Bam.Data.Model
 {
     public interface IModelActionMenuWriter
     {

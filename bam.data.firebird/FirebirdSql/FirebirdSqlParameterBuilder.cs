@@ -7,13 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Data.SqlClient;
 using System.Data.Common;
-using Bam.Net.Incubation;
-using Bam.Net;
-using Bam.Net.Data;
+using Bam.Incubation;
+using Bam;
+using Bam.Data;
 using FirebirdSql;
 using FirebirdSql.Data.FirebirdClient;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     public class FirebirdSqlParameterBuilder : ParameterBuilder
     {

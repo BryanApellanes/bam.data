@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     public interface IDaoCollection<C, T>
         where C : IQueryFilter, IFilterToken, new()

@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.Serialization;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
 	[Serializable]
 	public class DatabaseInitializationFailedException: Exception

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Bam.Net.Services.DataReplication
+namespace Bam.Services.DataReplication
 {
     [JsonConverter(typeof(StringEnumConverter))]
     public enum UniversalIdentifiers

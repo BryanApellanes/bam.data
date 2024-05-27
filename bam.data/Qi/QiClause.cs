@@ -5,11 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Bam.Net.Data;
+using Bam.Data;
 using System.Data;
 using System.Data.Common;
 
-namespace Bam.Net.Data.Qi
+namespace Bam.Data.Qi
 {
     /// <summary>
     /// This class exists to deserialize requests built by Qi.js, hence the lowercased property names.

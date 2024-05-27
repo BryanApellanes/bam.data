@@ -1,4 +1,4 @@
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     public class DaoId : QueryValue
     {

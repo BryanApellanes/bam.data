@@ -1,6 +1,6 @@
 using System;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     /// <summary>
     /// Represents a value used in a QueryFilter.

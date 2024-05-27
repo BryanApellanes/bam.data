@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     [JsonConverter(typeof(StringEnumConverter))]
     public enum RelationalDatabaseTypes

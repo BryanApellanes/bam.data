@@ -11,7 +11,7 @@ using System.Web;
 using Oracle.ManagedDataAccess;
 using System.Data.Common;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     /// <summary>
     /// Resolves connection string requests to a Oracle database

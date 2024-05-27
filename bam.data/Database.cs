@@ -8,15 +8,15 @@ using System.Text;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlTypes;
-using Bam.Net.Incubation;
-using Bam.Net.Logging;
+using Bam.Incubation;
+using Bam.Logging;
 using System.Threading;
 using System.Reflection;
 using System.IO;
 using System.Diagnostics;
 using Bam.Data;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     public partial class Database: Loggable, IDatabase
     {

@@ -5,10 +5,10 @@
 using System;
 using System.Data;
 using System.Data.Common;
-using Bam.Net.Incubation;
+using Bam.Incubation;
 using MySql.Data.MySqlClient;
 
-namespace Bam.Net.Data.MySql
+namespace Bam.Data.MySql
 {
     public class MySqlDatabase : Database, IHasConnectionStringResolver
     {

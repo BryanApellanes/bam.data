@@ -6,13 +6,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Bam.Net.Incubation;
+using Bam.Incubation;
 using System.IO;
 using System.Data.SQLite;
 using System.Data.Common;
 using System.Diagnostics;
 
-namespace Bam.Net.Data.SQLite
+namespace Bam.Data.SQLite
 {
     /// <summary>
     /// A SQLite database

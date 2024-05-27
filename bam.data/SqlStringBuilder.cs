@@ -9,7 +9,7 @@ using System.Data;
 using System.Data.Common;
 using Bam.Data;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     public partial class SqlStringBuilder : IHasFilters, ISqlStringBuilder
     {

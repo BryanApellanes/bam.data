@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     [Serializable]
     public class DatabaseExecutionEventArgs: EventArgs

@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Newtonsoft.Json;
 
-namespace Bam.Net.Data.Repositories
+namespace Bam.Data.Repositories
 {
     /// <summary>
     /// The base class to extend for any class whose identity is determined
     /// by multiple properties adorned with CompositeKeyAttribute.
     /// </summary>
-    /// <seealso cref="Bam.Net.Data.Repositories.AuditRepoData" />
-    /// <seealso cref="Bam.Net.Data.Repositories.IHasKeyHash" />
+    /// <seealso cref="Bam.Data.Repositories.AuditRepoData" />
+    /// <seealso cref="Bam.Data.Repositories.IHasKeyHash" />
     [Serializable]
     public abstract class CompositeKeyAuditRepoData : AuditRepoData, IHasKeyHash, IHasKey
     {

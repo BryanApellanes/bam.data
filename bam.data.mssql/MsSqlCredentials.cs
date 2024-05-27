@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Bam.Net.Data.MsSql
+namespace Bam.Data.MsSql
 {
 	public class MsSqlCredentials : DatabaseCredentials
 	{

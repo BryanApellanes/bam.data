@@ -7,16 +7,16 @@ using System.Linq;
 using System.Text;
 using System.Data.Common;
 using System.Data;
-using Bam.Net.Incubation;
+using Bam.Incubation;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Diagnostics;
-using Bam.Net.Data.Schema;
-using Bam.Net.Logging;
+using Bam.Data.Schema;
+using Bam.Logging;
 using System.IO;
 using Bam.Data;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     /// <summary>
     /// Data Access Object

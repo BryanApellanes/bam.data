@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Data.Common;
-using Bam.Net.Data;
+using Bam.Data;
 using Npgsql;
 
-namespace Bam.Net.Data.Npgsql
+namespace Bam.Data.Npgsql
 {
 	public class NpgsqlConnectionStringResolver: IConnectionStringResolver
 	{

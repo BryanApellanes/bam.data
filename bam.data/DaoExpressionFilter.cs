@@ -4,11 +4,11 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-using Bam.Net.Logging;
-using Bam.Net;
+using Bam.Logging;
+using Bam;
 using System.Reflection;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     public class DaoExpressionFilter: ExpressionVisitor, ILoggable
     {

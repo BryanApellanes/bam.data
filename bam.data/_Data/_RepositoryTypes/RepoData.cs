@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Bam.Net.Logging;
-using Bam.Net.Services.DataReplication;
+using Bam.Logging;
+using Bam.Services.DataReplication;
 
-namespace Bam.Net.Data.Repositories
+namespace Bam.Data.Repositories
 {
     /// <summary>
     /// An abstract base class defining common
@@ -73,7 +73,7 @@ namespace Bam.Net.Data.Repositories
             {
                 if (string.IsNullOrEmpty(_cuid))
                 {
-                    _cuid = Bam.Net.Cuid.Generate();
+                    _cuid = Bam.Cuid.Generate();
                 }
                 return _cuid;
             }

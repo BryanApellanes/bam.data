@@ -9,7 +9,7 @@ using System.Text;
 using System.Data;
 using System.Reflection;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     public class DaoCollection<C, T> : PagedEnumerator<T>, IEnumerable<T>, ILoadable, IHasDataTable, IAddable
         where C : QueryFilter, IFilterToken, new()

@@ -2,9 +2,9 @@
 	Copyright © Bryan Apellanes 2015  
 */
 
-using Bam.Net.Data.Npgsql;
+using Bam.Data.Npgsql;
 
-namespace Bam.Net.Data.Postgres
+namespace Bam.Data.Postgres
 {
 	public class PostgresConnectionStringResolver : NpgsqlConnectionStringResolver
 	{

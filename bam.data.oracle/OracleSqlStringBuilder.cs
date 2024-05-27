@@ -6,11 +6,11 @@ using System;
 using System.Data;
 using System.Data.Common;
 using System.Reflection;
-using Bam.Net.Data.Oracle;
-using Bam.Net.Incubation;
+using Bam.Data.Oracle;
+using Bam.Incubation;
 using Oracle.ManagedDataAccess.Client;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     public class OracleSqlStringBuilder: SchemaWriter, IPLSqlStringBuilder
     {

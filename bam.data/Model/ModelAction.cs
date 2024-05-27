@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 
-namespace Bam.Net.Data.Model
+namespace Bam.Data.Model
 {
     public class ModelAction
     {

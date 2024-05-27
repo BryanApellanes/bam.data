@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     public class QueryFilter : IParameterInfoParser, IQueryFilter
     {

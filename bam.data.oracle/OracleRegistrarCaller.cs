@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     /// <summary>
     /// Registrar caller used to register Oracle as the 

@@ -1,12 +1,12 @@
-﻿using Bam.Net.Data;
-using Bam.Net.Data.Repositories;
+﻿using Bam.Data;
+using Bam.Data.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Bam.Net
+namespace Bam
 {
     /// <summary>
     /// A class referencing all file system paths of importance to the bam system.

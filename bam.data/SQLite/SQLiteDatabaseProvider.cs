@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Bam.Net.Data;
-using Bam.Net.Data.SQLite;
+using Bam.Data;
+using Bam.Data.SQLite;
 using System.IO;
-using Bam.Net.Logging;
+using Bam.Logging;
 
-namespace Bam.Net.Data
+namespace Bam.Data
 {
     /// <summary>
     /// Sets database properties for a given object instance.
