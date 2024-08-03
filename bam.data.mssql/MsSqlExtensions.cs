@@ -14,7 +14,7 @@ namespace Bam
         public static string DatabaseName(this string connectionString)
         {
             SqlConnectionStringBuilder destinationConnBuilder = new SqlConnectionStringBuilder(connectionString);
-            string databaseName = destinationConnBuilder["Initial Catalog"] as string;
+            string? databaseName = destinationConnBuilder["Initial Catalog"] as string;
 
             if (string.IsNullOrEmpty(databaseName))
                 databaseName = destinationConnBuilder["Database"] as string;

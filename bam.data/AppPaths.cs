@@ -33,12 +33,12 @@ namespace Bam
 
         public static Dictionary<string, List<Func<DirectoryInfo[]>>> NamedDirectoryBundles { get; }
 
-        public static DirectoryInfo[] GetServicesDirectories(Func<DirectoryInfo[]> directoryBundleRetriever = null)
+        public static DirectoryInfo[] GetServicesDirectories(Func<DirectoryInfo[]>? directoryBundleRetriever = null)
         {
             return GetDirectories("services", directoryBundleRetriever);
         }
         
-        public static DirectoryInfo[] GetDirectories(string directoryBundleName, Func<DirectoryInfo[]> directoryBundleRetriever = null)
+        public static DirectoryInfo[] GetDirectories(string directoryBundleName, Func<DirectoryInfo[]>? directoryBundleRetriever = null)
         {
             if (directoryBundleRetriever != null)
             {

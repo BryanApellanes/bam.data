@@ -12,7 +12,7 @@ namespace Bam.Data
         public string SchemaName { get; set; }
         public EnsureSchemaStatus Status { get; set; }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             EnsureSchemaResult compareTo = obj as EnsureSchemaResult;
             if(compareTo != null)

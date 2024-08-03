@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Bam.Data;
 using Bam.Incubation;
 using Bam;
 using Bam.Data;

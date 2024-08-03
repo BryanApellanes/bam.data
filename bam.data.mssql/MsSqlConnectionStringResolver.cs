@@ -14,7 +14,7 @@ namespace Bam.Data.MsSql
 {
 	public class MsSqlConnectionStringResolver: IConnectionStringResolver
 	{
-		public MsSqlConnectionStringResolver(string serverName, string databaseName, MsSqlCredentials credentials = null)
+		public MsSqlConnectionStringResolver(string serverName, string databaseName, MsSqlCredentials? credentials = null)
 		{
 			this.ServerName = serverName;
 			this.DatabaseName = databaseName;
@@ -27,7 +27,7 @@ namespace Bam.Data.MsSql
 
 		public bool TrustedConnection { get; set; }
 
-		public MsSqlCredentials Credentials { get; set; }
+		public MsSqlCredentials? Credentials { get; set; }
 
 		#region IConnectionStringResolver Members
 
@@ -55,8 +55,11 @@ namespace Bam.Data.MsSql
             }
             else
             {
-                connectionStringBuilder.Add("User ID", Credentials.UserId);
-                connectionStringBuilder.Add("Password", Credentials.Password);
+	            if (Credentials != null)
+	            {
+		            connectionStringBuilder.Add("User ID", Credentials.UserId);
+		            connectionStringBuilder.Add("Password", Credentials.Password);
+	            }
             }
 
             return connectionStringBuilder;

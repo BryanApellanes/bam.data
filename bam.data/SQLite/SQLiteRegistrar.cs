@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using Bam.Incubation;
 using System.Data.SQLite;
-using Bam.Data;
 using Bam;
 using System.Reflection;
 using System.IO;

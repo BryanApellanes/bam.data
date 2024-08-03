@@ -19,11 +19,11 @@ namespace Bam.Data.MsSql
             ConnectionStringResolver = DefaultConnectionStringResolver.Instance;
             Register();
         }
-		public MsSqlDatabase(string serverName, string databaseName, MsSqlCredentials credentials = null)
+		public MsSqlDatabase(string serverName, string databaseName, MsSqlCredentials? credentials = null)
 			: this(serverName, databaseName, databaseName, credentials)
 		{ }
 
-		public MsSqlDatabase(string serverName, string databaseName, string connectionName, MsSqlCredentials credentials = null)
+		public MsSqlDatabase(string serverName, string databaseName, string connectionName, MsSqlCredentials? credentials = null)
 			: base()
 		{
 			ConnectionStringResolver = new MsSqlConnectionStringResolver(serverName, databaseName, credentials);
@@ -38,7 +38,7 @@ namespace Bam.Data.MsSql
             Register();
         }
 
-        public MsSqlDatabase(string connectionString, string connectionName = null) 
+        public MsSqlDatabase(string connectionString, string? connectionName = null) 
             : base(connectionString, connectionName)
         {
             Register();
@@ -52,14 +52,14 @@ namespace Bam.Data.MsSql
             Infos.Add(new DatabaseInfo(this));
         }
 
-		public IConnectionStringResolver ConnectionStringResolver
+		public IConnectionStringResolver? ConnectionStringResolver
 		{
 			get;
 			set;
 		}
 
-		string _connectionString;
-		public override string ConnectionString
+		string? _connectionString;
+		public override string? ConnectionString
 		{
 			get
 			{
@@ -70,10 +70,7 @@ namespace Bam.Data.MsSql
 
 				return _connectionString;
 			}
-			set
-			{
-				_connectionString = value;
-			}
+			set => _connectionString = value;
 		}
 	}
 }

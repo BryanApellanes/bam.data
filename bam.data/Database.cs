@@ -44,7 +44,7 @@ namespace Bam.Data
             }
         }
 
-        public Database(string connectionString, string connectionName = null)
+        public Database(string connectionString, string? connectionName = null)
             : this(new DependencyProvider(), connectionString, connectionName)
         {
         }
@@ -333,13 +333,13 @@ namespace Bam.Data
             return ExecuteReader<T>(sqlStatement, dbParameters.ToDbParameters(this).ToArray(), null, true, onReaderExecuted);
         }
 
-        public virtual IEnumerable<T> ExecuteReader<T>(string sqlStatement, DbParameter[] dbParameters, out DbConnection conn, Action<DbDataReader> onReaderExecuted = null) where T : class, new()
+        public virtual IEnumerable<T> ExecuteReader<T>(string sqlStatement, DbParameter[] dbParameters, out DbConnection conn, Action<DbDataReader>? onReaderExecuted = null) where T : class, new()
         {
             conn = GetOpenDbConnection();
             return ExecuteReader<T>(sqlStatement, dbParameters, conn, false, onReaderExecuted);
         }
 
-        public virtual IEnumerable<T> ExecuteReader<T>(string sqlStatement, DbParameter[] dbParameters, DbConnection conn = null, bool closeConnection = true, Action<DbDataReader> onReaderExecuted = null) where T : class, new()
+        public virtual IEnumerable<T> ExecuteReader<T>(string sqlStatement, DbParameter[] dbParameters, DbConnection? conn = null, bool closeConnection = true, Action<DbDataReader>? onReaderExecuted = null) where T : class, new()
         {
             return ExecuteReader<T>(sqlStatement, CommandType.Text, dbParameters, conn ?? GetOpenDbConnection(), closeConnection, onReaderExecuted);
         }
@@ -349,7 +349,7 @@ namespace Bam.Data
             return ExecuteReader<T>(sqlStatement, CommandType.Text, dbParameters, GetOpenDbConnection());
         }
 
-        public virtual IEnumerable<T> ExecuteReader<T>(string sqlStatement, CommandType commandType, DbParameter[] dbParameters, DbConnection conn, bool closeConnection = true, Action<DbDataReader> onReaderExecuted = null) where T: class, new()
+        public virtual IEnumerable<T> ExecuteReader<T>(string sqlStatement, CommandType commandType, DbParameter[] dbParameters, DbConnection conn, bool closeConnection = true, Action<DbDataReader>? onReaderExecuted = null) where T: class, new()
         {
             DbDataReader reader = ExecuteReader(sqlStatement, commandType, dbParameters, conn);
             onReaderExecuted = onReaderExecuted ?? ((dr) => { });
@@ -831,7 +831,7 @@ namespace Bam.Data
             adapter.Fill(dataSet);
         }
 
-        public virtual string ConnectionString
+        public virtual string? ConnectionString
         {
             get;
             set;
