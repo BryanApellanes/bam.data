@@ -18,7 +18,7 @@ namespace Bam.Data.Repositories
         /// considered a "local" id, meaning it identifies the instance
         /// from the current repository of the current process.  This value
         /// may be different for the same instance in a different process or repository.
-        /// For universal identity use Uuid.
+        /// For universal identity use Uuid + Cuid.
         /// </summary>
         [Key]
 		public ulong Id { get; set; }
@@ -50,6 +50,7 @@ namespace Bam.Data.Repositories
         /// processes.  To confidently identify a unique data instance use a
         /// combination of Uuid and Cuid.  See Cuid.
         /// </summary>
+        [CompositeKey]
         public string Uuid
         {
             get
@@ -67,6 +68,7 @@ namespace Bam.Data.Repositories
         /// <summary>
         /// The collision resistant unique identifier.
         /// </summary>
+        [CompositeKey]
         public string Cuid
         {
             get
