@@ -12,7 +12,7 @@ using Bam;
 namespace Bam.Data
 {
     /// <summary>
-    /// A collection that represents a cross reference between its
+    /// A collection that represents a cross-reference between its
     /// parents and the table represented by L.
     /// </summary>
     /// <typeparam name="X">The Xref type</typeparam>
