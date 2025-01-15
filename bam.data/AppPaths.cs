@@ -29,7 +29,7 @@ namespace Bam
         /// </summary>
         public static string Services => Path.Combine(AppRoot, "services");
 
-        public static string Data => DataPaths.Get(DataProvider.Current, ProcessApplicationNameProvider.Current).AppData;
+        public static string Data => DataPaths.Get(DataSourceProvider.Current, ProcessApplicationNameProvider.Current).AppData;
 
         public static Dictionary<string, List<Func<DirectoryInfo[]>>> NamedDirectoryBundles { get; }
 

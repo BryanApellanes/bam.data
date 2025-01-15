@@ -40,7 +40,7 @@ namespace Bam
         {
             get
             {
-                return Get(DataProvider.Current);
+                return Get(DataSourceProvider.Current);
             }
         }
 
