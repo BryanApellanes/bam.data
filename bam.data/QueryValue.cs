@@ -1,5 +1,3 @@
-using System;
-
 namespace Bam.Data
 {
     /// <summary>

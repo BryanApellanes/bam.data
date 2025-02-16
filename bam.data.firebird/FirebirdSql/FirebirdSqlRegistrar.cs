@@ -1,13 +1,9 @@
 ﻿/*
 	Copyright © Bryan Apellanes 2015  
 */
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Bam.Incubation;
-using Bam;
-using Bam.Data;
+
+using Bam.DependencyInjection;
+using Bam.Services;
 
 namespace Bam.Data
 {

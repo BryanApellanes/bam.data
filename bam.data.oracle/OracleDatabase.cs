@@ -1,19 +1,13 @@
 /*
 	Copyright © Bryan Apellanes 2015  
 */
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Bam.Logging;
-using Bam.Incubation;
-using System.IO;
+
 using System.Data;
-using Oracle.ManagedDataAccess;
 using Oracle.ManagedDataAccess.Client;
 using System.Data.Common;
 using System.Reflection;
+using Bam.DependencyInjection;
+using Bam.Services;
 
 namespace Bam.Data.Oracle
 {

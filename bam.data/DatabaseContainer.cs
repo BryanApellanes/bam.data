@@ -1,15 +1,6 @@
 /*
 	Copyright © Bryan Apellanes 2015  
 */
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Configuration;
-using System.Data.Common;
-using System.Reflection;
-using Bam.Incubation;
-using Bam.Logging;
 
 namespace Bam.Data
 {

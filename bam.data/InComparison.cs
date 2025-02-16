@@ -1,14 +1,9 @@
 /*
 	Copyright © Bryan Apellanes 2015  
 */
-using System;
-using System.Collections.Generic;
+
 using System.Collections;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using Bam;
-using Bam.Data;
+
 //using Bam.FileExt;
 //using Bam.FileExt.Js;
 

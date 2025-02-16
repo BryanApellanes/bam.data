@@ -1,20 +1,13 @@
 /*
 	Copyright © Bryan Apellanes 2015  
 */
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+
 using System.Data;
 using System.Data.Common;
-using System.Data.SqlTypes;
-using Bam.Incubation;
 using Bam.Logging;
-using System.Threading;
 using System.Reflection;
-using System.IO;
-using System.Diagnostics;
-using Bam.Data;
+using Bam.DependencyInjection;
+using Bam.Services;
 
 namespace Bam.Data
 {

@@ -1,11 +1,9 @@
 /*
 	Copyright © Bryan Apellanes 2015  
 */
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using Bam.DependencyInjection;
+using Bam.Services;
 
 namespace Bam.Data
 {
@@ -34,7 +32,7 @@ namespace Bam.Data
             OracleRegistrar.Register<T>();
         }
 
-        public void Register(Incubation.DependencyProvider incubator)
+        public void Register(DependencyProvider incubator)
         {
             OracleRegistrar.Register(incubator);
         }

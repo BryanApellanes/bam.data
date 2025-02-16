@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Bam.Configuration;
-using Bam.Data;
+﻿using Bam.Configuration;
 using Bam.Logging;
 
 namespace Bam.Data

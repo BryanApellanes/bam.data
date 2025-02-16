@@ -2,12 +2,12 @@
 	Copyright © Bryan Apellanes 2015  
 */
 
-using System;
 using System.Data;
 using System.Data.Common;
 using System.Reflection;
 using Bam.Data.Oracle;
-using Bam.Incubation;
+using Bam.DependencyInjection;
+using Bam.Services;
 using Oracle.ManagedDataAccess.Client;
 
 namespace Bam.Data

@@ -1,16 +1,12 @@
 /*
 	Copyright © Bryan Apellanes 2015  
 */
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Bam.Incubation;
-using System.IO;
+
 using System.Data.SQLite;
 using System.Data.Common;
 using System.Diagnostics;
+using Bam.DependencyInjection;
+using Bam.Services;
 
 namespace Bam.Data.SQLite
 {

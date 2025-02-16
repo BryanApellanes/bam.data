@@ -1,19 +1,10 @@
 /*
 	Copyright © Bryan Apellanes 2015  
 */
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+
 using System.Data;
 using System.Data.Common;
-using Bam.Incubation;
-using Bam;
-using Bam.Data;
-using Bam.Data.Oracle;
-using Oracle.ManagedDataAccess;
 using Oracle.ManagedDataAccess.Client;
-using Oracle.ManagedDataAccess.Types;
 
 namespace Bam.Data.Oracle
 {

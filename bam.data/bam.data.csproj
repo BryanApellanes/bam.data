@@ -10,6 +10,7 @@
     <Compile Remove="from_base\**" />
     <EmbeddedResource Remove="from_base\**" />
     <None Remove="from_base\**" />
+    <Compile Remove="_Data\_RepositoryTypes\RepoData.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -29,6 +30,10 @@
   <ItemGroup>
     <ProjectReference Include="..\..\bam.base\bam.base\bam.base.csproj" />
     <ProjectReference Include="..\..\bam.configuration\bam.configuration\bam.configuration.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="_Data\_RepositoryTypes\" />
   </ItemGroup>
 
 </Project>

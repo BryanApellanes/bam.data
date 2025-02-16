@@ -2,10 +2,10 @@
 	Copyright © Bryan Apellanes 2015  
 */
 
-using System;
 using System.Data;
 using System.Data.Common;
-using Bam.Incubation;
+using Bam.DependencyInjection;
+using Bam.Services;
 using FirebirdSql.Data.FirebirdClient;
 
 namespace Bam.Data.FirebirdSql

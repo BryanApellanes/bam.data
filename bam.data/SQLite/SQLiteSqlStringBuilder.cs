@@ -2,9 +2,9 @@
 	Copyright © Bryan Apellanes 2015  
 */
 
-using System;
 using System.Reflection;
-using Bam.Incubation;
+using Bam.DependencyInjection;
+using Bam.Services;
 
 namespace Bam.Data
 {

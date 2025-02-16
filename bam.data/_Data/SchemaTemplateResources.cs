@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-namespace Bam.Data
+﻿namespace Bam.Data
 {
     public static class SchemaTemplateResources
     {

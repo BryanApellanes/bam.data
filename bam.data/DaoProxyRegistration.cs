@@ -1,18 +1,13 @@
 /*
 	Copyright © Bryan Apellanes 2015  
 */
-using System;
-using System.Collections.Generic;
-using System.Linq;
+
 using System.Text;
 using System.Reflection;
-
-using System.IO;
-using Bam.Data;
-using Bam.Incubation;
+using Bam.DependencyInjection;
 using Bam.Logging;
 using Yahoo.Yui.Compressor;
-using System.Threading;
+using Bam.Services;
 
 namespace Bam.Data
 {

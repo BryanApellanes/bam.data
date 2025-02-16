@@ -1,5 +1,3 @@
-using Bam.Data;
-
 namespace Bam.Data
 {
     public class AndFormat : SetFormat

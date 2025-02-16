@@ -1,5 +1,3 @@
-using Bam;
-using Bam.Data;
 using Bam.Data.MsSql;
 using Bam.Data.MySql;
 using Bam.Data.Npgsql;

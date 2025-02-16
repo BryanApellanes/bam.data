@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using Bam.Configuration;
+﻿using Bam.Configuration;
 using Bam.Data.Repositories;
 using Bam.Data.SQLite;
 using Bam.Logging;
