@@ -60,7 +60,7 @@ namespace Bam.Data
                 {
                     return () =>
                     {
-                        DirectoryInfo dirInfo = new DirectoryInfo($".\\{ApplicationNameProvider.Default.GetApplicationName()}");
+                        DirectoryInfo dirInfo = new DirectoryInfo($".\\db\\{ApplicationNameProvider.Default.GetApplicationName()}");
                         return dirInfo;
                     };
                 });

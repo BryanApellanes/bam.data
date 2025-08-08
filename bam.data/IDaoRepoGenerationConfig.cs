@@ -9,5 +9,6 @@
         string TypeAssembly { get; set; }
         bool UseInheritanceSchema { get; set; }
         string WriteSourceTo { get; set; }
+        bool WarningsAsErrors { get; set; }
     }
 }
