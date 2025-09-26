@@ -427,7 +427,7 @@ namespace Bam.Data
             object[] results = new object[this.Count];
             this.Each((o, i) =>
             {
-                results[i] = o.ToJsonSafe();
+                results[i] = o.ColumnsToJsonSafe();
             });
 
             return results;

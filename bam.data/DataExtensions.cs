@@ -22,9 +22,31 @@ namespace Bam.Data
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public static object ToJsonSafe(this object obj, int maxRecursion = 5)
+        public static object ColumnsToJsonSafe(this object obj, int maxRecursion = 5)
         {
-            return ToJsonSafe(obj, maxRecursion, 0);
+            return ToJsonSafe<ColumnAttribute>(obj, maxRecursion);
+        }
+
+        public static object ToJsonSafe(this object obj, Func<PropertyInfo, bool> propertyFilter = null)
+        {
+            return ToJsonSafe(obj, 5, propertyFilter);
+        }
+
+        public static object ToJsonSafe(this object obj, int maxRecursion, Func<PropertyInfo, bool> propertyFilter = null)
+        {
+            propertyFilter = propertyFilter ?? ((pi) => IncludePropertyOfType(pi.PropertyType));
+
+            return ToJsonSafe(obj, maxRecursion, 0, propertyFilter);
+        }
+        
+        private static bool IncludePropertyOfType(Type type)
+        {
+            return type.IsPrimitiveNullableOrString() ||
+                type.IsNullable<DateTime>() ||
+                type.IsNullable<DateTime>() ||
+                type == typeof(DateTime) ||
+                type.IsEnum ||
+                type.IsEnumerable();
         }
         
         /// <summary>
@@ -35,16 +57,11 @@ namespace Bam.Data
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="maxRecursion"></param>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">The type of the attribute adorning properties to include.</typeparam>
         /// <returns></returns>
         public static object ToJsonSafe<T>(this object obj, int maxRecursion = 5) where T: Attribute
         {
             return ToJsonSafe<T>(obj, maxRecursion, 0);
-        }
-
-        private static object ToJsonSafe(this object obj, int maxRecursion, int recursionThusFar)
-        {
-            return ToJsonSafe<ColumnAttribute>(obj, maxRecursion, recursionThusFar);
         }
         
         /// <summary>
@@ -60,6 +77,11 @@ namespace Bam.Data
         /// <returns></returns>
         private static object ToJsonSafe<T>(this object obj, int maxRecursion, int recursionThusFar) where T: Attribute
         {
+            return ToJsonSafe(obj, maxRecursion, recursionThusFar, (pi) => pi.HasCustomAttributeOfType<T>());
+        }
+        
+        private static object ToJsonSafe(this object obj, int maxRecursion, int recursionThusFar, Func<PropertyInfo, bool> propertyFilter)
+        {
             Args.ThrowIfNull(obj, "obj");
 
             if (recursionThusFar >= maxRecursion)
@@ -67,30 +89,65 @@ namespace Bam.Data
                 Log.Warn("{0}: Max recursion reached ({1}) for instance of type ({2})", nameof(ToJsonSafe), maxRecursion, obj.GetType().Name);
                 return null;
             }
-            JObject jobj = new JObject();
-            Type type = obj.GetType();
-            IEnumerable<PropertyInfo> properties = type.GetProperties().Where(pi => pi.HasCustomAttributeOfType<T>());
-            foreach (PropertyInfo prop in properties)
+
+            try
             {
-                object val = prop.GetValue(obj);
-                if (val != null)
+                JObject jobj = new JObject();
+                Type type = obj.GetType();
+                IEnumerable<PropertyInfo> properties = type.GetProperties().Where(propertyFilter);
+                foreach (PropertyInfo prop in properties)
                 {
-                    if (prop.PropertyType.IsPrimitiveNullableOrString() || prop.PropertyType.IsNullable<DateTime>())
+                    object val = prop.GetValue(obj);
+                    if (val != null)
                     {
-                        jobj.Add(prop.Name, new JValue(val));
+                        if (prop.PropertyType.IsPrimitiveNullableOrString() || 
+                            prop.PropertyType.IsNullable<DateTime>() ||
+                            prop.PropertyType == typeof(DateOnly) ||
+                            prop.PropertyType.IsEnum)
+                        {
+                            if (prop.PropertyType.IsEnum)
+                            {
+                                val = val.ToString();
+                            }
+                            jobj.Add(prop.Name, new JValue(val));
+                        }
+                        else if (prop.PropertyType.IsEnumerable() &&
+                            prop.PropertyType != typeof(string))
+                        {
+                            List<object> list = new List<object>();
+                            foreach (object item in (IEnumerable)val)
+                            {
+                                Type itemType = item.GetType();
+                                if (IncludePropertyOfType(itemType) || itemType == typeof(string))
+                                {
+                                    list.Add(item);
+                                }
+                                else
+                                {
+                                    list.Add(ToJsonSafe(item, maxRecursion, propertyFilter));
+                                }
+                            }
+                            jobj.Add(prop.Name, new JArray(list.ToArray()));
+                        }
+                        else
+                        {
+                            jobj.Add(prop.Name, (JObject)ToJsonSafe(val, maxRecursion, ++recursionThusFar, propertyFilter));                        
+                        }
                     }
                     else
                     {
-                        jobj.Add(prop.Name, (JObject)ToJsonSafe(val, maxRecursion, ++recursionThusFar));                        
+                        jobj.Add(prop.Name, null);
                     }
                 }
-                else
-                {
-                    jobj.Add(prop.Name, null);
-                }
-            }
             
-            return jobj;
+                return jobj;
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception converting object to json safe: {0}", ex, ex.Message);
+            }
+
+            return null;
         }
         
         public static object[] ToJsonSafe(this IEnumerable e)
@@ -98,7 +155,7 @@ namespace Bam.Data
             List<object> returnValues = new List<object>();
             foreach (object o in e)
             {
-                returnValues.Add(o.ToJsonSafe());
+                returnValues.Add(o.ColumnsToJsonSafe());
             }
 
             return returnValues.ToArray();

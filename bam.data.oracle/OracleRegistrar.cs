@@ -34,7 +34,7 @@ namespace Bam.Data
 
         /// <summary>
         /// Registers Oracle as the handler for the specified connection name.
-        /// This dao handler will register apropriate DatabaseInitializer and
+        /// This dao handler will register appropriate DatabaseInitializer and
         /// ConnectionStringResolver.  This behavior is different compared to the
         /// SqlClientRegistrar's Register method.
         /// </summary>
