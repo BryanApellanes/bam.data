@@ -70,6 +70,7 @@ public class IntegrationTestCleanup
 
         TryDrop("Firebird", () =>
         {
+            FbConnection.ClearAllPools();
             using var conn = new FbConnection(FirebirdConnectionString);
             conn.Open();
             using var cmd = conn.CreateCommand();
