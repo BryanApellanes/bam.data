@@ -12,16 +12,11 @@ namespace Bam.Data.Tests.Integration;
 public class OracleCrudShould : IntegrationTestMenuContainer
 {
     private const string ContainerName = "bam-data-test-oracle";
-    private const string Image = "gvenzl/oracle-xe:21-slim";
-    private const string Port = "1521:1521";
     private const string Password = "BamTest1!";
 
     private static OracleDatabase SetupDb()
     {
-        PodmanContainerHelper.StartContainer(ContainerName, Image, Port,
-            $"ORACLE_PASSWORD={Password}");
-
-        OracleDatabase db = new OracleDatabase("localhost", "BamDataTest",
+        OracleDatabase db = new OracleDatabase("127.0.0.1", "BamDataTest",
             new OracleCredentials { UserId = "system", Password = Password });
 
         // Override default InstanceName from ORCL to XE for gvenzl/oracle-xe image
@@ -36,12 +31,8 @@ public class OracleCrudShould : IntegrationTestMenuContainer
 
         EnsureSchemaStatus schemaStatus = db.TryEnsureSchema<TestItem>();
         System.Console.WriteLine($"[oracle] TryEnsureSchema returned: {schemaStatus}");
+        db.ExecuteSql("DELETE FROM \"TestItem\"");
         return db;
-    }
-
-    private static void CleanupDb(OracleDatabase db)
-    {
-        PodmanContainerHelper.StopAndRemoveContainer(ContainerName);
     }
 
     [IntegrationTest]
@@ -74,7 +65,7 @@ public class OracleCrudShould : IntegrationTestMenuContainer
             because.ItsTrue("loaded item is not null", loaded != null);
             because.ItsTrue("Name matches", loaded?.Name == "Widget");
         })
-        .SoBeHappy(cleanup => CleanupDb(db))
+        .SoBeHappy(_ => { })
         .UnlessItFailed();
     }
 
@@ -98,7 +89,7 @@ public class OracleCrudShould : IntegrationTestMenuContainer
             because.TheResult.IsNotNull()
                 .As<TestItem>("has updated Name", ti => ti?.Name == "Updated");
         })
-        .SoBeHappy(cleanup => CleanupDb(db))
+        .SoBeHappy(_ => { })
         .UnlessItFailed();
     }
 
@@ -121,7 +112,7 @@ public class OracleCrudShould : IntegrationTestMenuContainer
         {
             because.ItsTrue("item is null after delete", because.Result == null);
         })
-        .SoBeHappy(cleanup => CleanupDb(db))
+        .SoBeHappy(_ => { })
         .UnlessItFailed();
     }
 
@@ -144,7 +135,7 @@ public class OracleCrudShould : IntegrationTestMenuContainer
             because.TheResult.IsNotNull()
                 .As<TestItemCollection>("has 2 matches", col => col?.Count == 2);
         })
-        .SoBeHappy(cleanup => CleanupDb(db))
+        .SoBeHappy(_ => { })
         .UnlessItFailed();
     }
 
@@ -167,7 +158,7 @@ public class OracleCrudShould : IntegrationTestMenuContainer
             because.TheResult.IsNotNull()
                 .As<TestItemCollection>("has 2 matches", col => col?.Count == 2);
         })
-        .SoBeHappy(cleanup => CleanupDb(db))
+        .SoBeHappy(_ => { })
         .UnlessItFailed();
     }
 
@@ -191,7 +182,7 @@ public class OracleCrudShould : IntegrationTestMenuContainer
             because.TheResult.IsNotNull()
                 .As<TestItemCollection>("has 10 items", col => col?.Count == 10);
         })
-        .SoBeHappy(cleanup => CleanupDb(db))
+        .SoBeHappy(_ => { })
         .UnlessItFailed();
     }
 
@@ -227,7 +218,7 @@ public class OracleCrudShould : IntegrationTestMenuContainer
                 .As<TestItem>("IsActive roundtrips", ti => ti?.IsActive == true)
                 .As<TestItem>("Created roundtrips", ti => ti?.Created != null && Math.Abs((ti.Created!.Value - testDate).TotalSeconds) < 2);
         })
-        .SoBeHappy(cleanup => CleanupDb(db))
+        .SoBeHappy(_ => { })
         .UnlessItFailed();
     }
 }

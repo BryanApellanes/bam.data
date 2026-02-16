@@ -11,19 +11,14 @@ namespace Bam.Data.Tests.Integration;
 public class MsSqlCrudShould : IntegrationTestMenuContainer
 {
     private const string ContainerName = "bam-data-test-mssql";
-    private const string Image = "mcr.microsoft.com/mssql/server:2022-latest";
-    private const string Port = "1433:1433";
     private const string SaPassword = "BamTest1!";
     private const string MasterConnectionString =
-        "Data Source=tcp:localhost,1433;Initial Catalog=master;User ID=sa;Password=" + SaPassword + ";TrustServerCertificate=true;";
+        "Data Source=tcp:127.0.0.1,1433;Initial Catalog=master;User ID=sa;Password=" + SaPassword + ";TrustServerCertificate=true;";
     private const string TestDbConnectionString =
-        "Data Source=tcp:localhost,1433;Initial Catalog=BamDataTest;User ID=sa;Password=" + SaPassword + ";TrustServerCertificate=true;";
+        "Data Source=tcp:127.0.0.1,1433;Initial Catalog=BamDataTest;User ID=sa;Password=" + SaPassword + ";TrustServerCertificate=true;";
 
     private static MsSqlDatabase SetupDb()
     {
-        PodmanContainerHelper.StartContainer(ContainerName, Image, Port,
-            "ACCEPT_EULA=Y", $"MSSQL_SA_PASSWORD={SaPassword}");
-
         // Clear stale connections from previous container
         SqlConnection.ClearAllPools();
 
@@ -45,12 +40,8 @@ public class MsSqlCrudShould : IntegrationTestMenuContainer
         MsSqlDatabase db = new MsSqlDatabase(TestDbConnectionString, "BamDataTest");
         EnsureSchemaStatus schemaStatus = db.TryEnsureSchema<TestItem>();
         System.Console.WriteLine($"[mssql] TryEnsureSchema returned: {schemaStatus}");
+        db.ExecuteSql("DELETE FROM TestItem");
         return db;
-    }
-
-    private static void CleanupDb(MsSqlDatabase db)
-    {
-        PodmanContainerHelper.StopAndRemoveContainer(ContainerName);
     }
 
     [IntegrationTest]
@@ -83,7 +74,7 @@ public class MsSqlCrudShould : IntegrationTestMenuContainer
             because.ItsTrue("loaded item is not null", loaded != null);
             because.ItsTrue("Name matches", loaded?.Name == "Widget");
         })
-        .SoBeHappy(cleanup => CleanupDb(db))
+        .SoBeHappy(_ => { })
         .UnlessItFailed();
     }
 
@@ -107,7 +98,7 @@ public class MsSqlCrudShould : IntegrationTestMenuContainer
             because.TheResult.IsNotNull()
                 .As<TestItem>("has updated Name", ti => ti?.Name == "Updated");
         })
-        .SoBeHappy(cleanup => CleanupDb(db))
+        .SoBeHappy(_ => { })
         .UnlessItFailed();
     }
 
@@ -130,7 +121,7 @@ public class MsSqlCrudShould : IntegrationTestMenuContainer
         {
             because.ItsTrue("item is null after delete", because.Result == null);
         })
-        .SoBeHappy(cleanup => CleanupDb(db))
+        .SoBeHappy(_ => { })
         .UnlessItFailed();
     }
 
@@ -153,7 +144,7 @@ public class MsSqlCrudShould : IntegrationTestMenuContainer
             because.TheResult.IsNotNull()
                 .As<TestItemCollection>("has 2 matches", col => col?.Count == 2);
         })
-        .SoBeHappy(cleanup => CleanupDb(db))
+        .SoBeHappy(_ => { })
         .UnlessItFailed();
     }
 
@@ -176,7 +167,7 @@ public class MsSqlCrudShould : IntegrationTestMenuContainer
             because.TheResult.IsNotNull()
                 .As<TestItemCollection>("has 2 matches", col => col?.Count == 2);
         })
-        .SoBeHappy(cleanup => CleanupDb(db))
+        .SoBeHappy(_ => { })
         .UnlessItFailed();
     }
 
@@ -199,7 +190,7 @@ public class MsSqlCrudShould : IntegrationTestMenuContainer
             because.TheResult.IsNotNull()
                 .As<TestItemCollection>("has 2 matches", col => col?.Count == 2);
         })
-        .SoBeHappy(cleanup => CleanupDb(db))
+        .SoBeHappy(_ => { })
         .UnlessItFailed();
     }
 
@@ -223,7 +214,7 @@ public class MsSqlCrudShould : IntegrationTestMenuContainer
             because.TheResult.IsNotNull()
                 .As<TestItemCollection>("has 10 items", col => col?.Count == 10);
         })
-        .SoBeHappy(cleanup => CleanupDb(db))
+        .SoBeHappy(_ => { })
         .UnlessItFailed();
     }
 
@@ -259,7 +250,7 @@ public class MsSqlCrudShould : IntegrationTestMenuContainer
                 .As<TestItem>("IsActive roundtrips", ti => ti?.IsActive == true)
                 .As<TestItem>("Created roundtrips", ti => ti?.Created != null && Math.Abs((ti.Created!.Value - testDate).TotalSeconds) < 2);
         })
-        .SoBeHappy(cleanup => CleanupDb(db))
+        .SoBeHappy(_ => { })
         .UnlessItFailed();
     }
 }

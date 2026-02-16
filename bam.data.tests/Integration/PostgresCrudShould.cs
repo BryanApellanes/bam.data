@@ -12,15 +12,10 @@ namespace Bam.Data.Tests.Integration;
 public class PostgresCrudShould : IntegrationTestMenuContainer
 {
     private const string ContainerName = "bam-data-test-postgres";
-    private const string Image = "postgres:16";
-    private const string Port = "5432:5432";
     private const string Password = "BamTest1!";
 
     private static PostgresDatabase SetupDb()
     {
-        PodmanContainerHelper.StartContainer(ContainerName, Image, Port,
-            $"POSTGRES_PASSWORD={Password}", "POSTGRES_DB=bamtest");
-
         // Clear stale connections from previous container
         NpgsqlConnection.ClearAllPools();
 
@@ -36,12 +31,8 @@ public class PostgresCrudShould : IntegrationTestMenuContainer
 
         EnsureSchemaStatus schemaStatus = db.TryEnsureSchema<TestItem>();
         System.Console.WriteLine($"[postgres] TryEnsureSchema returned: {schemaStatus}");
+        db.ExecuteSql("DELETE FROM \"TestItem\"");
         return db;
-    }
-
-    private static void CleanupDb(PostgresDatabase db)
-    {
-        PodmanContainerHelper.StopAndRemoveContainer(ContainerName);
     }
 
     [IntegrationTest]
@@ -74,7 +65,7 @@ public class PostgresCrudShould : IntegrationTestMenuContainer
             because.ItsTrue("loaded item is not null", loaded != null);
             because.ItsTrue("Name matches", loaded?.Name == "Widget");
         })
-        .SoBeHappy(cleanup => CleanupDb(db))
+        .SoBeHappy(_ => { })
         .UnlessItFailed();
     }
 
@@ -98,7 +89,7 @@ public class PostgresCrudShould : IntegrationTestMenuContainer
             because.TheResult.IsNotNull()
                 .As<TestItem>("has updated Name", ti => ti?.Name == "Updated");
         })
-        .SoBeHappy(cleanup => CleanupDb(db))
+        .SoBeHappy(_ => { })
         .UnlessItFailed();
     }
 
@@ -121,7 +112,7 @@ public class PostgresCrudShould : IntegrationTestMenuContainer
         {
             because.ItsTrue("item is null after delete", because.Result == null);
         })
-        .SoBeHappy(cleanup => CleanupDb(db))
+        .SoBeHappy(_ => { })
         .UnlessItFailed();
     }
 
@@ -144,7 +135,7 @@ public class PostgresCrudShould : IntegrationTestMenuContainer
             because.TheResult.IsNotNull()
                 .As<TestItemCollection>("has 2 matches", col => col?.Count == 2);
         })
-        .SoBeHappy(cleanup => CleanupDb(db))
+        .SoBeHappy(_ => { })
         .UnlessItFailed();
     }
 
@@ -167,7 +158,7 @@ public class PostgresCrudShould : IntegrationTestMenuContainer
             because.TheResult.IsNotNull()
                 .As<TestItemCollection>("has 2 matches", col => col?.Count == 2);
         })
-        .SoBeHappy(cleanup => CleanupDb(db))
+        .SoBeHappy(_ => { })
         .UnlessItFailed();
     }
 
@@ -191,7 +182,7 @@ public class PostgresCrudShould : IntegrationTestMenuContainer
             because.TheResult.IsNotNull()
                 .As<TestItemCollection>("has 10 items", col => col?.Count == 10);
         })
-        .SoBeHappy(cleanup => CleanupDb(db))
+        .SoBeHappy(_ => { })
         .UnlessItFailed();
     }
 
@@ -227,7 +218,7 @@ public class PostgresCrudShould : IntegrationTestMenuContainer
                 .As<TestItem>("IsActive roundtrips", ti => ti?.IsActive == true)
                 .As<TestItem>("Created roundtrips", ti => ti?.Created != null && Math.Abs((ti.Created!.Value - testDate).TotalSeconds) < 2);
         })
-        .SoBeHappy(cleanup => CleanupDb(db))
+        .SoBeHappy(_ => { })
         .UnlessItFailed();
     }
 }
