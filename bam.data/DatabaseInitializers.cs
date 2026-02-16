@@ -46,6 +46,10 @@ namespace Bam.Data
             return result;
         }
 
+        /// <summary>
+        /// Adds an IDatabaseInitializer to the collection if not already present.
+        /// </summary>
+        /// <param name="initializer">The initializer to add.</param>
         public static void AddInitializer(IDatabaseInitializer initializer)
         {
             if (initializer != null)
@@ -58,11 +62,18 @@ namespace Bam.Data
             }
         }
 
+        /// <summary>
+        /// Removes all registered database initializers.
+        /// </summary>
         public static void Clear()
         {
             _initializers.Clear();
         }
 
+        /// <summary>
+        /// Removes the specified database initializer from the collection.
+        /// </summary>
+        /// <param name="instance">The initializer to remove.</param>
         public static void Remove(IDatabaseInitializer instance)
         {
             Type type = instance.GetType();

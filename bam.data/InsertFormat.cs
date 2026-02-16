@@ -4,6 +4,9 @@
 
 namespace Bam.Data
 {
+    /// <summary>
+    /// Formats SQL INSERT statements with column names and parameterized values.
+    /// </summary>
     public class InsertFormat: SetFormat
     {
         public override string Parse()

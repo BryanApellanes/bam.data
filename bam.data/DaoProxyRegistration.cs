@@ -11,10 +11,17 @@ using Bam.Services;
 
 namespace Bam.Data
 {
+    /// <summary>
+    /// Manages registration of Dao types for JavaScript proxy generation and provides methods to build proxy scripts.
+    /// </summary>
     public partial class DaoProxyRegistration
     {
         string[] metaProperties = new string[] { "Uuid", "Cuid" };
 
+        /// <summary>
+        /// Initializes a new DaoProxyRegistration for the specified Dao type and its siblings.
+        /// </summary>
+        /// <param name="daoType">The Dao type to register.</param>
         public DaoProxyRegistration(Type daoType)
         {
             Args.ThrowIfNull(daoType, "daoType");
@@ -28,6 +35,10 @@ namespace Bam.Data
             Dao.RegisterDaoTypes(daoType, this.ServiceProvider);
         }
 
+        /// <summary>
+        /// Initializes a new DaoProxyRegistration for all Dao types in the specified assembly.
+        /// </summary>
+        /// <param name="assembly">The assembly containing Dao types.</param>
         public DaoProxyRegistration(Assembly assembly)
         {
             this.ServiceProvider = new DependencyProvider();
@@ -42,6 +53,9 @@ namespace Bam.Data
             Dao.RegisterDaoTypes(daoType, this.ServiceProvider);
         }
 
+        /// <summary>
+        /// Gets or sets the database associated with this registration.
+        /// </summary>
         public Database Database { get; set; }
 
         static IDictionary<string, DaoProxyRegistration> _registrations;
@@ -98,6 +112,11 @@ namespace Bam.Data
         }
 
         static object _registerLock = new object();
+        /// <summary>
+        /// Registers the specified Dao type and its siblings for proxy generation.
+        /// </summary>
+        /// <param name="daoType">The Dao type to register.</param>
+        /// <returns>The DaoProxyRegistration for the type's connection name.</returns>
         public static DaoProxyRegistration Register(Type daoType)
         {
             string connectionName = Dao.ConnectionName(daoType);
@@ -116,11 +135,23 @@ namespace Bam.Data
             return Registrations[connectionName];
         }
 
+        /// <summary>
+        /// Loads and registers Dao assemblies from the specified directory.
+        /// </summary>
+        /// <param name="dir">The directory to search for Dao assemblies.</param>
+        /// <param name="searchPattern">The file search pattern.</param>
+        /// <returns>An array of DaoProxyRegistration instances.</returns>
         public static DaoProxyRegistration[] FromDirectory(DirectoryInfo dir, string searchPattern = "*.Dao.dll")
         {
             return Register(dir, searchPattern);
         }
 
+        /// <summary>
+        /// Loads and registers all Dao assemblies matching the pattern from the specified directory.
+        /// </summary>
+        /// <param name="dir">The directory to search.</param>
+        /// <param name="searchPattern">The file search pattern.</param>
+        /// <returns>An array of DaoProxyRegistration instances.</returns>
         public static DaoProxyRegistration[] Register(DirectoryInfo dir, string searchPattern = "*.dll")
         {
             DaoProxyRegistration[] results = new DaoProxyRegistration[] { };
@@ -140,12 +171,22 @@ namespace Bam.Data
             return results;
         }
 
+        /// <summary>
+        /// Registers the Dao types from the specified DLL file.
+        /// </summary>
+        /// <param name="daoDll">The DLL file containing Dao types.</param>
+        /// <returns>The DaoProxyRegistration for the loaded assembly.</returns>
         public static DaoProxyRegistration Register(FileInfo daoDll)
         {
             Assembly daoAssembly = Assembly.LoadFrom(daoDll.FullName);
             return Register(daoAssembly);
         }
 
+        /// <summary>
+        /// Registers the Dao types from the specified assembly.
+        /// </summary>
+        /// <param name="assembly">The assembly containing Dao types.</param>
+        /// <returns>The DaoProxyRegistration for the assembly.</returns>
         public static DaoProxyRegistration Register(Assembly assembly)
         {
             Type daoType = (from type in assembly.GetTypes()
@@ -168,6 +209,11 @@ namespace Bam.Data
             return Registrations[connectionName];
         }
 
+        /// <summary>
+        /// Gets the combined JavaScript proxy script for all registrations.
+        /// </summary>
+        /// <param name="min">Whether to return the minified version.</param>
+        /// <returns>A StringBuilder containing the script.</returns>
         public static StringBuilder GetScript(bool min = false)
         {
             StringBuilder result = new StringBuilder();
@@ -178,6 +224,12 @@ namespace Bam.Data
             return result;
         }
 
+        /// <summary>
+        /// Gets the JavaScript proxy script for the specified context name.
+        /// </summary>
+        /// <param name="contextName">The connection/context name.</param>
+        /// <param name="min">Whether to return the minified version.</param>
+        /// <returns>A StringBuilder containing the script.</returns>
         public static StringBuilder GetScript(string contextName, bool min = false)
         {
             Args.ThrowIf<InvalidOperationException>(
@@ -202,12 +254,24 @@ namespace Bam.Data
             return this.GetHashCode(ContextName, Assembly, ServiceProvider);
         }
 
+        /// <summary>
+        /// Gets or sets the connection/context name for this registration.
+        /// </summary>
         public string ContextName { get; set; }
+        /// <summary>
+        /// Gets or sets the assembly containing the registered Dao types.
+        /// </summary>
         public Assembly Assembly { get; set; }
+        /// <summary>
+        /// Gets or sets the dependency provider used to resolve Dao types.
+        /// </summary>
         public DependencyProvider ServiceProvider { get; set; }
 
         StringBuilder _proxiesScript;
         object _proxiesScriptLock = new object();
+        /// <summary>
+        /// Gets the generated JavaScript proxy script for this registration.
+        /// </summary>
         public StringBuilder Proxies
         {
             get
@@ -218,6 +282,9 @@ namespace Bam.Data
 
         StringBuilder _minProxiesScript;
         object _minProxiesScriptLock = new object();
+        /// <summary>
+        /// Gets the minified JavaScript proxy script for this registration.
+        /// </summary>
         public StringBuilder MinProxies
         {
             get
@@ -238,6 +305,9 @@ namespace Bam.Data
         }
         StringBuilder _ctorsScript;
         object _ctorsScriptLock = new object();
+        /// <summary>
+        /// Gets the generated JavaScript constructor script for this registration.
+        /// </summary>
         public StringBuilder Ctors
         {
             get
@@ -248,6 +318,9 @@ namespace Bam.Data
 
         StringBuilder _minCtorsScript;
         object _minCtorsScriptLock = new object();
+        /// <summary>
+        /// Gets the minified JavaScript constructor script for this registration.
+        /// </summary>
         public StringBuilder MinCtors
         {
             get

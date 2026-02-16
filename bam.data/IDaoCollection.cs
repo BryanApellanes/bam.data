@@ -6,6 +6,11 @@ using System.Data;
 
 namespace Bam.Data
 {
+    /// <summary>
+    /// Defines the contract for a typed collection of Dao instances supporting querying, paging, and persistence.
+    /// </summary>
+    /// <typeparam name="C">The query filter/column type.</typeparam>
+    /// <typeparam name="T">The Dao type contained in this collection.</typeparam>
     public interface IDaoCollection<C, T>
         where C : IQueryFilter, IFilterToken, new()
         where T : IDao, new()

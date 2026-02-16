@@ -8,6 +8,9 @@ using System.Data.Common;
 
 namespace Bam.Data
 {
+    /// <summary>
+    /// Builds SQL statements (SELECT, INSERT, UPDATE, DELETE) with parameterized queries and provides execution methods.
+    /// </summary>
     public partial class SqlStringBuilder : IHasFilters, ISqlStringBuilder
     {
         const string InsertFormat = "INSERT INTO {0} ";
@@ -18,6 +21,9 @@ namespace Bam.Data
             return sqlStringBuilder._stringBuilder.ToString();
         }
 
+        /// <summary>
+        /// Initializes a new SqlStringBuilder with default formatters and reset state.
+        /// </summary>
         public SqlStringBuilder()
         {
             Reset();
@@ -35,6 +41,9 @@ namespace Bam.Data
             this._stringBuilder = new StringBuilder(command);
         }
 
+        /// <summary>
+        /// Resets the builder to its initial empty state.
+        /// </summary>
         public virtual void Reset()
         {
             _stringBuilder = new StringBuilder();
@@ -43,20 +52,34 @@ namespace Bam.Data
             NextNumber = 1;
         }
 
+        /// <summary>
+        /// Gets or sets the function used to format table names in SQL (e.g., adding brackets).
+        /// </summary>
         public Func<string, string> TableNameFormatter
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// Gets or sets the function used to format column names in SQL (e.g., adding brackets).
+        /// </summary>
         public Func<string, string> ColumnNameFormatter
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// Event raised after the SQL is executed against a database.
+        /// </summary>
         public event SqlExecuteDelegate Executed;
         
+        /// <summary>
+        /// Executes the SQL and returns a DataTable, then fires the Executed event.
+        /// </summary>
+        /// <param name="db">The database to execute against.</param>
+        /// <returns>A DataTable containing the results.</returns>
         public DataTable ExecuteGetDataTable(IDatabase db)
         {
             DataTable table = GetDataTable(db);
@@ -64,6 +87,11 @@ namespace Bam.Data
             return table;
         }
 
+        /// <summary>
+        /// Gets a DataTable by executing the SQL against the specified database.
+        /// </summary>
+        /// <param name="db">The database to execute against.</param>
+        /// <returns>A DataTable containing the results, or null if the SQL is empty.</returns>
         public DataTable GetDataTable(IDatabase db)
         {
             if (!string.IsNullOrEmpty(this))
@@ -78,6 +106,11 @@ namespace Bam.Data
             }
         }
 
+        /// <summary>
+        /// Attempts to execute the SQL, returning true if no exception occurred.
+        /// </summary>
+        /// <param name="db">The database to execute against.</param>
+        /// <returns>True if execution succeeded.</returns>
         public bool TryExecute(IDatabase db)
         {
             return TryExecute(db, out Exception ignore);
@@ -105,6 +138,10 @@ namespace Bam.Data
             return ex == null;
         }
 
+        /// <summary>
+        /// Executes the SQL against the specified database.
+        /// </summary>
+        /// <param name="db">The database to execute against.</param>
         public virtual void Execute(IDatabase db)
         {
             if (!string.IsNullOrWhiteSpace(this))
@@ -114,6 +151,12 @@ namespace Bam.Data
             }
         }
 
+        /// <summary>
+        /// Executes the SQL and returns typed results via a data reader.
+        /// </summary>
+        /// <typeparam name="T">The type to map each row to.</typeparam>
+        /// <param name="db">The database to execute against.</param>
+        /// <returns>An enumerable of T instances.</returns>
         public IEnumerable<T> ExecuteReader<T>(IDatabase db) where T : class, new()
         {
             if (!string.IsNullOrWhiteSpace(this))
@@ -147,10 +190,19 @@ namespace Bam.Data
             }
         }
 
+        /// <summary>
+        /// Gets the filter tokens (parameters) for this SQL builder.
+        /// </summary>
         public IEnumerable<IFilterToken> Filters => this.parameters.ToArray();
 
+        /// <summary>
+        /// Gets or sets the text used as a statement separator (default is ";\r\n").
+        /// </summary>
         public string GoText { get; set; }
 
+        /// <summary>
+        /// Gets or sets the next parameter number to assign.
+        /// </summary>
         public int? NextNumber { get; set; }
 
         /// <summary>
@@ -241,6 +293,9 @@ namespace Bam.Data
             parameters.AddRange(insert.Parameters);
             return this;
         }
+        /// <summary>
+        /// Gets or sets whether to use SELECT * instead of listing column names.
+        /// </summary>
         public bool SelectStar { get; set; }
 
         public virtual ISqlStringBuilder Select<T>() where T: IDao, new()
@@ -472,6 +527,9 @@ namespace Bam.Data
             return this;
         }
 
+        /// <summary>
+        /// Gets or sets the parameter info array for this SQL builder.
+        /// </summary>
         public IParameterInfo[] Parameters
         {
             get

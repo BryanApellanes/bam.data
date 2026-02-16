@@ -2,6 +2,9 @@
 
 namespace Bam.Data
 {
+    /// <summary>
+    /// Exception thrown when an unsupported expression type is encountered in a Dao expression filter.
+    /// </summary>
     public class ExpressionTypeNotSupportedException: Exception
     {
         public ExpressionTypeNotSupportedException(ExpressionType expressionType) : 

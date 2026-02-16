@@ -6,6 +6,9 @@ using System.Data;
 
 namespace Bam.Data
 {
+    /// <summary>
+    /// Represents the result of a SELECT query, holding the resulting DataTable.
+    /// </summary>
     public class SelectResult : QueryResult
     {
         public SelectResult()

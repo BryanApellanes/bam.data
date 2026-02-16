@@ -4,14 +4,28 @@ using System.Diagnostics;
 
 namespace Bam.Data
 {
+    /// <summary>
+    /// Connection manager that limits the number of connections to a configurable maximum count.
+    /// </summary>
     public class MaxCountDbConnectionManager : DefaultDbConnectionManager
     {
+        /// <summary>
+        /// Initializes a new MaxCountDbConnectionManager for the specified database.
+        /// </summary>
+        /// <param name="database">The database to manage connections for.</param>
         public MaxCountDbConnectionManager(Database database) : base(database) { }
     }
 
+    /// <summary>
+    /// Default connection manager that pools connections using a round-robin index with configurable maximum count.
+    /// </summary>
     public class DefaultDbConnectionManager : DbConnectionManager
     {
         int _next;
+        /// <summary>
+        /// Initializes a new DefaultDbConnectionManager for the specified database.
+        /// </summary>
+        /// <param name="database">The database to manage connections for.</param>
         public DefaultDbConnectionManager(Database database)
         {
             Database = database;
@@ -29,6 +43,10 @@ namespace Bam.Data
             set => _maxConnections = value;
         }
 
+        /// <summary>
+        /// Gets a database connection from the pool, releasing the previous connection at the same index.
+        /// </summary>
+        /// <returns>A new DbConnection instance.</returns>
         public override DbConnection GetDbConnection()
         {
             if(Connections == null || Connections.Count == 0)
@@ -61,6 +79,10 @@ namespace Bam.Data
         }
         
         [DebuggerStepThrough]
+        /// <summary>
+        /// Releases a database connection by closing and disposing it.
+        /// </summary>
+        /// <param name="dbConnection">The connection to release.</param>
         public override void ReleaseConnection(DbConnection dbConnection)
         {
             try

@@ -7,6 +7,9 @@ using System.Runtime.Serialization;
 namespace Bam.Data
 {
 	[Serializable]
+	/// <summary>
+	/// Exception thrown when database initialization fails.
+	/// </summary>
 	public class DatabaseInitializationFailedException: Exception
 	{
 		public DatabaseInitializationFailedException() : base() { }

@@ -20,6 +20,11 @@ namespace Bam.Data
         List<L> _values;
         Book<L> _book;
 
+        /// <summary>
+        /// Initializes a new XrefDaoCollection for the specified parent, optionally loading xref entries.
+        /// </summary>
+        /// <param name="parent">The parent Dao instance owning this cross-reference collection.</param>
+        /// <param name="load">Whether to load from the database immediately.</param>
         public XrefDaoCollection(IDao parent, bool load = true)
         {
             Parent = parent;
@@ -53,9 +58,15 @@ namespace Bam.Data
             set;
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this collection has been loaded from the database.
+        /// </summary>
         public bool Loaded => _loaded;
 
         bool _loaded;
+        /// <summary>
+        /// Reloads the collection from the database by resetting the loaded flag and reloading.
+        /// </summary>
         public void Reload()
         {
             _loaded = false;
@@ -63,6 +74,9 @@ namespace Bam.Data
         }
 
         IDatabase _database;
+        /// <summary>
+        /// Gets or sets the database for this collection.
+        /// </summary>
         public IDatabase Database
         {
             get
@@ -81,12 +95,19 @@ namespace Bam.Data
             }
         }
 
+        /// <summary>
+        /// Loads the collection from the database.
+        /// </summary>
         public void Load()
         {
             Load(Database);
         }
 
         readonly object _loadLock = new object();
+        /// <summary>
+        /// Loads the cross-reference entries and referenced items from the specified database.
+        /// </summary>
+        /// <param name="db">The database to load from.</param>
         public void Load(IDatabase db)
         {
             if (!_loaded && Parent != null)
@@ -132,6 +153,9 @@ namespace Bam.Data
             }
         }
 
+        /// <summary>
+        /// Gets the total number of items in this collection.
+        /// </summary>
         public int Count => _book.ItemCount;
 
         public void Save()

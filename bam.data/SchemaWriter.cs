@@ -7,6 +7,9 @@ using Bam.Logging;
 
 namespace Bam.Data
 {
+    /// <summary>
+    /// Abstract base class that generates SQL DDL statements for creating tables, foreign keys, and dropping schema objects.
+    /// </summary>
     public abstract class SchemaWriter: SqlStringBuilder
     {
         public SchemaWriter()
@@ -16,6 +19,9 @@ namespace Bam.Data
             CreateTableFormat= "CREATE TABLE {0} ({1})"; 
         }
 
+        /// <summary>
+        /// Event fired when drop operations are enabled on this SchemaWriter.
+        /// </summary>
         public event SqlStringBuilderDelegate DropEnabled;
 
         protected void OnDropEnabled()
@@ -26,18 +32,27 @@ namespace Bam.Data
             }
         }
 
+        /// <summary>
+        /// Gets or sets the format string for CREATE TABLE statements.
+        /// </summary>
         public string CreateTableFormat
         {
             get;
             protected set;
         }
 
+        /// <summary>
+        /// Gets or sets the format string for key column definitions.
+        /// </summary>
         public string KeyColumnFormat
         {
             get;
             protected set;
         }
 
+        /// <summary>
+        /// Gets or sets the format string for ALTER TABLE ADD FOREIGN KEY statements.
+        /// </summary>
         public string AddForeignKeyColumnFormat
         {
             get;
@@ -45,6 +60,9 @@ namespace Bam.Data
         }
 
         bool _dropEnabled;
+        /// <summary>
+        /// Gets or sets a value indicating whether drop operations are enabled; fires DropEnabled event when set to true.
+        /// </summary>
         public bool EnableDrop
         {
             get
@@ -73,6 +91,11 @@ namespace Bam.Data
 			return WriteSchemaScript(typeof(T));
         }
 
+        /// <summary>
+        /// Writes the SQL schema script for all tables associated with the specified type's connection name.
+        /// </summary>
+        /// <param name="type">The Dao type whose schema to generate.</param>
+        /// <returns>True after the script is written.</returns>
         public bool WriteSchemaScript(Type type)
         {
             ForEachTable(type, this.WriteCreateTable);
@@ -80,6 +103,11 @@ namespace Bam.Data
             return true;
         }
 
+		/// <summary>
+		/// Writes the SQL schema script for all types with a TableAttribute in the specified assembly.
+		/// </summary>
+		/// <param name="assembly">The assembly containing Dao types to generate schema for.</param>
+		/// <returns>True after the script is written.</returns>
 		public bool WriteSchemaScript(Assembly assembly)
 		{
 			ForEachTable(assembly, this.WriteCreateTable, t => t.HasCustomAttributeOfType<TableAttribute>());
@@ -119,6 +147,10 @@ namespace Bam.Data
 			}
 		}
 
+        /// <summary>
+        /// Writes a DROP TABLE script for the specified Dao type. Throws DropNotEnabledException if EnableDrop is false.
+        /// </summary>
+        /// <param name="daoType">The Dao type whose table to drop.</param>
         public void DropTable(Type daoType)
         {
             if (!this.EnableDrop)
@@ -154,6 +186,12 @@ namespace Bam.Data
             WriteCreateTable(Dao.TableName(daoType), columnDefinitions);            
         }
 
+        /// <summary>
+        /// Writes a CREATE TABLE statement with the specified table name and column definitions.
+        /// </summary>
+        /// <param name="tableName">The name of the table to create.</param>
+        /// <param name="columnDefinitions">The column definition SQL string.</param>
+        /// <param name="fks">Optional foreign key definitions.</param>
         public virtual void WriteCreateTable(string tableName, string columnDefinitions, dynamic[] fks = null)
         {
             tableName = TableNameFormatter(tableName);
@@ -176,6 +214,11 @@ namespace Bam.Data
                 }
             });
         }
+        /// <summary>
+        /// Gets the SQL column definition text for a primary key column.
+        /// </summary>
+        /// <param name="keyColumn">The key column attribute describing the primary key.</param>
+        /// <returns>The SQL column definition string for the key column.</returns>
         public abstract string GetKeyColumnDefinition(KeyColumnAttribute keyColumn);
 
         /// <summary>
@@ -228,6 +271,14 @@ namespace Bam.Data
             }
         }
 
+        /// <summary>
+        /// Writes an ALTER TABLE ADD FOREIGN KEY constraint statement.
+        /// </summary>
+        /// <param name="tableName">The table containing the foreign key column.</param>
+        /// <param name="nameOfReference">The constraint name.</param>
+        /// <param name="nameOfColumn">The foreign key column name.</param>
+        /// <param name="referencedTable">The referenced (parent) table name.</param>
+        /// <param name="referencedKey">The referenced primary key column name.</param>
         public virtual void WriteAddForeignKey(string tableName, string nameOfReference, string nameOfColumn, string referencedTable, string referencedKey)
         {
             tableName = TableNameFormatter(tableName);
@@ -245,6 +296,11 @@ namespace Bam.Data
             }
         }
 
+        /// <summary>
+        /// Writes a conditional DROP TABLE statement for the specified table name.
+        /// </summary>
+        /// <param name="tableName">The name of the table to drop.</param>
+        /// <returns>This SchemaWriter instance for method chaining.</returns>
         public virtual SchemaWriter WriteDropTable(string tableName)
         {
             Builder.AppendFormat("IF OBJECT_ID(N'dbo.{0}') IS NOT NULL\r\nBEGIN\r\nDROP TABLE [{0}]\r\nEND", tableName);

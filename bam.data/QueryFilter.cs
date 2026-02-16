@@ -8,6 +8,9 @@ using System.Text;
 
 namespace Bam.Data
 {
+    /// <summary>
+    /// Builds SQL WHERE clause filters using a fluent API and operator overloads for comparisons, AND/OR logic, and IN clauses.
+    /// </summary>
     public class QueryFilter : IParameterInfoParser, IQueryFilter
     {
         protected readonly List<IFilterToken> _filters;
@@ -28,8 +31,16 @@ namespace Bam.Data
             this.ColumnName = columnName;
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this filter has no column name and no filter tokens.
+        /// </summary>
         public bool IsEmpty => string.IsNullOrWhiteSpace(ColumnName) && this._filters.Count == 0;
 
+        /// <summary>
+        /// Creates a QueryFilter from a dynamic object, generating equality comparisons for each property.
+        /// </summary>
+        /// <param name="query">The dynamic object whose properties define the filter.</param>
+        /// <returns>A new QueryFilter with AND-joined equality comparisons.</returns>
         public static QueryFilter FromDynamic(dynamic query)
         {
             Type type = query.GetType();
@@ -52,6 +63,11 @@ namespace Bam.Data
             return filter;
         }
 
+        /// <summary>
+        /// Creates a new QueryFilter for a WHERE clause on the specified column.
+        /// </summary>
+        /// <param name="columnName">The column name to filter on.</param>
+        /// <returns>A new QueryFilter instance.</returns>
         public static QueryFilter Where(string columnName)
         {
             return Query.Where(columnName);
@@ -59,6 +75,9 @@ namespace Bam.Data
         
         protected internal string ColumnName { get; set; }
 
+        /// <summary>
+        /// Gets the collection of filter tokens that compose this filter.
+        /// </summary>
         public IEnumerable<IFilterToken> Filters => this._filters;
         IEnumerable<IParameterInfo> _parameters;
         public virtual IParameterInfo[] Parameters
@@ -88,6 +107,11 @@ namespace Bam.Data
             return Parse(1);
         }
 
+        /// <summary>
+        /// Parses the filter into a SQL string, assigning parameter numbers starting at the specified value.
+        /// </summary>
+        /// <param name="number">The starting parameter number.</param>
+        /// <returns>The parsed SQL filter string.</returns>
         public string Parse(int? number)
         {
             StringBuilder builder = new StringBuilder();
@@ -104,6 +128,11 @@ namespace Bam.Data
             return builder.ToString();
         }
 
+        /// <summary>
+        /// Adds a filter token to this filter.
+        /// </summary>
+        /// <param name="c">The filter token to add.</param>
+        /// <returns>This QueryFilter instance for method chaining.</returns>
         public QueryFilter Add(IFilterToken c)
         {
             this._filters.Add(c);
@@ -122,35 +151,65 @@ namespace Bam.Data
             return this;
         }
 
+        /// <summary>
+        /// Adds a LIKE comparison that matches values starting with the specified value.
+        /// </summary>
+        /// <param name="value">The value prefix to match.</param>
+        /// <returns>This QueryFilter instance for method chaining.</returns>
         public QueryFilter StartsWith(object value)
         {
             this.Add(new StartsWithComparison(this.ColumnName, value));
             return this;
         }
 
+        /// <summary>
+        /// Adds a NOT LIKE comparison that excludes values starting with the specified value.
+        /// </summary>
+        /// <param name="value">The value prefix to exclude.</param>
+        /// <returns>This QueryFilter instance for method chaining.</returns>
         public QueryFilter DoesntStartWith(object value)
         {
             this.Add(new DoesntStartWithComparison(this.ColumnName, value));
             return this;
         }
 
+        /// <summary>
+        /// Adds a NOT LIKE comparison that excludes values containing the specified value.
+        /// </summary>
+        /// <param name="value">The value to exclude.</param>
+        /// <returns>This QueryFilter instance for method chaining.</returns>
         public QueryFilter DoesntContain(object value)
         {
             this.Add(new DoesntContainComparison(this.ColumnName, value));
             return this;
         }
         
+        /// <summary>
+        /// Adds a LIKE comparison that matches values ending with the specified value.
+        /// </summary>
+        /// <param name="value">The value suffix to match.</param>
+        /// <returns>This QueryFilter instance for method chaining.</returns>
         public QueryFilter EndsWith(object value)
         {
             this.Add(new EndsWithComparison(this.ColumnName, value));
             return this;
         }
 
+        /// <summary>
+        /// Adds a LIKE comparison that matches values containing the specified value.
+        /// </summary>
+        /// <param name="value">The value to search for.</param>
+        /// <returns>This QueryFilter instance for method chaining.</returns>
         public QueryFilter Contains(object value)
         {
             this.Add(new ContainsComparison(this.ColumnName, value));
             return this;
         }
+		/// <summary>
+		/// Adds an IN comparison that matches any of the specified values.
+		/// </summary>
+		/// <param name="values">The values to match against.</param>
+		/// <returns>This QueryFilter instance for method chaining.</returns>
 		public QueryFilter In(object[] values)
 		{
 			return In(values, "@");
@@ -162,6 +221,11 @@ namespace Bam.Data
             return this;
         }
 
+		/// <summary>
+		/// Adds an IN comparison that matches any of the specified long values.
+		/// </summary>
+		/// <param name="values">The long values to match against.</param>
+		/// <returns>This QueryFilter instance for method chaining.</returns>
 		public QueryFilter In(long[] values)
 		{
 			return In(values, "@");
@@ -173,6 +237,11 @@ namespace Bam.Data
             return this;
         }
 
+		/// <summary>
+		/// Adds an IN comparison that matches any of the specified string values.
+		/// </summary>
+		/// <param name="values">The string values to match against.</param>
+		/// <returns>This QueryFilter instance for method chaining.</returns>
 		public QueryFilter In(string[] values)
 		{
 			return In(values, "@");
@@ -184,22 +253,40 @@ namespace Bam.Data
             return this;
         }
 
+        /// <summary>
+        /// Adds an IS NULL comparison for this column.
+        /// </summary>
+        /// <returns>This QueryFilter instance for method chaining.</returns>
         public QueryFilter IsNull()
         {
             return this.Add(new NullComparison(ColumnName, "IS"));
         }
 
+        /// <summary>
+        /// Adds an IS NOT NULL comparison for this column.
+        /// </summary>
+        /// <returns>This QueryFilter instance for method chaining.</returns>
         public QueryFilter IsNotNull()
         {
             return this.Add(new NullComparison(ColumnName, "IS NOT"));
         }
         
+        /// <summary>
+        /// Combines this filter with another using AND logic.
+        /// </summary>
+        /// <param name="c">The filter to AND with.</param>
+        /// <returns>This QueryFilter instance for method chaining.</returns>
         public QueryFilter And(QueryFilter c)
         {
             return this.Add(new LiteralFilterToken(" AND "))
                 .AddRange(c);
         }
 
+        /// <summary>
+        /// Combines this filter with another using OR logic.
+        /// </summary>
+        /// <param name="c">The filter to OR with.</param>
+        /// <returns>This QueryFilter instance for method chaining.</returns>
         public QueryFilter Or(QueryFilter c)
         {
             return this.Add(new LiteralFilterToken(" OR "))
@@ -218,6 +305,11 @@ namespace Bam.Data
             return And(expressionFilter.Where<T>(expression));
         }
 
+        /// <summary>
+        /// Adds an equality comparison for this column with the specified value.
+        /// </summary>
+        /// <param name="value">The value to compare against.</param>
+        /// <returns>A QueryFilter with the equality comparison.</returns>
         public virtual QueryFilter IsEqualTo(object value)
         {
             object compareTo = value;
@@ -229,6 +321,11 @@ namespace Bam.Data
             return this == Query.Value(compareTo);
         }
 
+        /// <summary>
+        /// Adds an inequality comparison for this column with the specified value.
+        /// </summary>
+        /// <param name="value">The value to compare against.</param>
+        /// <returns>A QueryFilter with the inequality comparison.</returns>
         public virtual QueryFilter IsNotEqualTo(object value)
         {
             object compareTo = value;

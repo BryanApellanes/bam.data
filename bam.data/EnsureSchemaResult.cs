@@ -1,9 +1,23 @@
 ﻿namespace Bam.Data
 {
+    /// <summary>
+    /// Represents the result of an EnsureSchema operation, including the database, schema name, and status.
+    /// </summary>
     public class EnsureSchemaResult
     {
+        /// <summary>
+        /// Gets or sets the database that the schema was ensured on.
+        /// </summary>
         public IDatabase Database { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of the schema that was ensured.
+        /// </summary>
         public string SchemaName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the status of the EnsureSchema operation.
+        /// </summary>
         public EnsureSchemaStatus Status { get; set; }
 
         public override bool Equals(object? obj)

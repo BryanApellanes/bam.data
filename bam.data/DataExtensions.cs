@@ -12,6 +12,9 @@ using Newtonsoft.Json.Linq;
 
 namespace Bam.Data
 {
+    /// <summary>
+    /// Provides extension methods for data conversion, serialization, querying, and parameter building.
+    /// </summary>
     public static partial class DataExtensions
     {
 /// <summary>

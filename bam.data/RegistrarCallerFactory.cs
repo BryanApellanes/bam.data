@@ -6,8 +6,17 @@ using Bam.Logging;
 
 namespace Bam.Data
 {
+    /// <summary>
+    /// Factory for creating IRegistrarCaller instances from assembly-qualified type names.
+    /// </summary>
     public class RegistrarCallerFactory
     {
+        /// <summary>
+        /// Attempts to create an IRegistrarCaller from the specified assembly-qualified type name.
+        /// </summary>
+        /// <param name="assemblyQualifiedName">The assembly-qualified type name of the registrar caller.</param>
+        /// <param name="result">The created IRegistrarCaller, or null if creation failed.</param>
+        /// <returns>True if the caller was created successfully.</returns>
         public bool TryCreateRegistrarCaller(string assemblyQualifiedName, out IRegistrarCaller result)
         {
             bool success = false;
@@ -26,6 +35,11 @@ namespace Bam.Data
             return success;
         }
 
+        /// <summary>
+        /// Creates an IRegistrarCaller from the specified assembly-qualified type name.
+        /// </summary>
+        /// <param name="assemblyQualifiedName">The assembly-qualified type name of the registrar caller.</param>
+        /// <returns>The created IRegistrarCaller, or null if the type was not found.</returns>
         public IRegistrarCaller CreateRegistrarCaller(string assemblyQualifiedName)
         {
             Type returnType = Type.GetType(assemblyQualifiedName);

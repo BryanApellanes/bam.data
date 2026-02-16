@@ -8,6 +8,11 @@ using System.Reflection;
 
 namespace Bam.Data
 {
+    /// <summary>
+    /// A typed collection of Dao instances that supports paging, parent-child relationships, and batch persistence operations.
+    /// </summary>
+    /// <typeparam name="C">The query filter/column type used for querying.</typeparam>
+    /// <typeparam name="T">The Dao type contained in this collection.</typeparam>
     public class DaoCollection<C, T> : PagedEnumerator<T>, IEnumerable<T>, ILoadable, IHasDataTable, IAddable
         where C : QueryFilter, IFilterToken, new()
         where T : IDao, new()
@@ -20,17 +25,30 @@ namespace Bam.Data
 
         ConstructorInfo _ctor;
 
+        /// <summary>
+        /// Implicitly converts a DataTable to a DaoCollection.
+        /// </summary>
+        /// <param name="table">The DataTable to convert.</param>
         public static implicit operator DaoCollection<C, T>(DataTable table)
         {
             return new DaoCollection<C, T>(table);
         }
 
+        /// <summary>
+        /// Initializes a new empty DaoCollection.
+        /// </summary>
         public DaoCollection()
         {
             this._book = new Book<T>();
             this._values = new List<T>();
         }
 
+        /// <summary>
+        /// Initializes a new DaoCollection from a DataTable.
+        /// </summary>
+        /// <param name="table">The DataTable containing the row data.</param>
+        /// <param name="parent">The optional parent Dao instance.</param>
+        /// <param name="referencingColumn">The foreign key column name referencing the parent.</param>
         public DaoCollection(DataTable table, IDao parent = null, string referencingColumn = null)
             : this()
         {
@@ -41,6 +59,13 @@ namespace Bam.Data
             SetDataTable(table);
         }
 
+		/// <summary>
+		/// Initializes a new DaoCollection from a DataTable using the specified database.
+		/// </summary>
+		/// <param name="database">The database to associate with this collection.</param>
+		/// <param name="table">The DataTable containing the row data.</param>
+		/// <param name="parent">The optional parent Dao instance.</param>
+		/// <param name="referencingColumn">The foreign key column name referencing the parent.</param>
 		public DaoCollection(IDatabase database, DataTable table, IDao parent = null, string referencingColumn = null)
 			: this()
 		{
@@ -53,6 +78,12 @@ namespace Bam.Data
 		}
 
 
+        /// <summary>
+        /// Initializes a new DaoCollection from a query.
+        /// </summary>
+        /// <param name="query">The query to use for loading data.</param>
+        /// <param name="parent">The optional parent Dao instance.</param>
+        /// <param name="referencingColumn">The foreign key column name referencing the parent.</param>
         public DaoCollection(IQuery<C, T> query, IDao parent = null, string referencingColumn = null): this()
         {
             this._parent = parent;
@@ -61,6 +92,12 @@ namespace Bam.Data
             this.ReferencingColumn = referencingColumn;
         }
         
+        /// <summary>
+        /// Initializes a new DaoCollection from a query, optionally loading immediately.
+        /// </summary>
+        /// <param name="db">The database to load from.</param>
+        /// <param name="query">The query to use for loading data.</param>
+        /// <param name="load">If true, loads the collection immediately.</param>
         public DaoCollection(IDatabase db, IQuery<C, T> query, bool load = false): this(query, null, null)
         {
             if (load)
@@ -69,6 +106,11 @@ namespace Bam.Data
             }
         }
 
+        /// <summary>
+        /// Initializes a new DaoCollection from a query, optionally loading immediately using the default database.
+        /// </summary>
+        /// <param name="query">The query to use for loading data.</param>
+        /// <param name="load">If true, loads the collection immediately.</param>
         public DaoCollection(IQuery<C, T> query, bool load = false): this(query, null, null)
         {
             if (load)
@@ -77,6 +119,11 @@ namespace Bam.Data
             }
         }
 
+        /// <summary>
+        /// Converts this collection to a different DaoCollection type, preserving the parent reference.
+        /// </summary>
+        /// <typeparam name="Co">The target DaoCollection type.</typeparam>
+        /// <returns>A new collection of the specified type.</returns>
         public Co Convert<Co>() where Co : DaoCollection<C, T>, IHasDataTable, new()
         {
             Co val = As<Co>();
@@ -90,12 +137,18 @@ namespace Bam.Data
             set;
         }
 
+        /// <summary>
+        /// Gets or sets the query used to load this collection.
+        /// </summary>
         public IQuery<C, T> Query
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// Gets the first DataRow in this collection, or a default row if no data is present.
+        /// </summary>
         public DataRow DataRow
         {
             get => DataTable?.Rows?[0] ?? typeof(T).ToDataRow(Dao.TableName(typeof(T)));
@@ -103,6 +156,9 @@ namespace Bam.Data
         }
 
         IDatabase _database;
+        /// <summary>
+        /// Gets or sets the database associated with this collection. Defaults to the parent's database or the default database for type T.
+        /// </summary>
         public IDatabase Database
         {
             get
@@ -141,17 +197,27 @@ namespace Bam.Data
             return val;
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether this collection has been loaded from the database.
+        /// </summary>
         public bool Loaded
         {
             get;
             set;
         }
         
+        /// <summary>
+        /// Loads the collection from the default database using the configured query.
+        /// </summary>
         public void Load()
         {
             Load(Database);
         }
 
+        /// <summary>
+        /// Loads the collection from the specified database using the configured query.
+        /// </summary>
+        /// <param name="db">The database to load from.</param>
         public void Load(IDatabase db)
         {
             if (Query == null)
@@ -171,6 +237,10 @@ namespace Bam.Data
             Load();
         }
 
+        /// <summary>
+        /// Sets the DataTable backing this collection and initializes its items.
+        /// </summary>
+        /// <param name="table">The DataTable to set.</param>
         public void SetDataTable(DataTable table)
         {
             Initialize(table);
@@ -178,6 +248,9 @@ namespace Bam.Data
             Loaded = true;
         }
 
+        /// <summary>
+        /// Gets the parent Dao instance that this collection belongs to.
+        /// </summary>
         public IDao Parent
         {
             get => this._parent;
@@ -196,12 +269,20 @@ namespace Bam.Data
             this._book = new Book<T>(_values);
         }
         
+        /// <summary>
+        /// Gets or sets the underlying DataTable for this collection.
+        /// </summary>
         public DataTable DataTable
         {
             get => this._table;
             set => this._table = value;
         }
 
+        /// <summary>
+        /// Gets the Dao instance at the specified index.
+        /// </summary>
+        /// <param name="index">The zero-based index.</param>
+        /// <returns>The Dao instance at the specified index.</returns>
         public T this[int index] => this._values[index];
 
         /// <summary>
@@ -254,6 +335,10 @@ namespace Bam.Data
             _book = new Book<T>();
         }
 
+        /// <summary>
+        /// Adds a range of Dao instances to this collection, associating each to the parent if one is set.
+        /// </summary>
+        /// <param name="values">The Dao instances to add.</param>
         public virtual void AddRange(IEnumerable<T> values)
         {
             if (values == null)
@@ -313,22 +398,40 @@ namespace Bam.Data
             }   
         }
         
+        /// <summary>
+        /// Saves all items in this collection to the default database. Same as Commit.
+        /// </summary>
         public void Save()
         {
             Commit();
         }
 
+		/// <summary>
+		/// Saves all items in this collection to the specified database.
+		/// </summary>
+		/// <param name="db">The database to save to.</param>
 		public void Save(Database db)
 		{
 			Commit(db);
 		}
 
+        /// <summary>
+        /// Commits all items in this collection to the default database.
+        /// </summary>
         public void Commit()
         {
             Commit(Database);
         }
 
+        /// <summary>
+        /// Event fired after a commit operation completes.
+        /// </summary>
         public event ICommittableDelegate AfterCommit;
+
+        /// <summary>
+        /// Commits all items in this collection to the specified database.
+        /// </summary>
+        /// <param name="db">The database to commit to.</param>
         public void Commit(IDatabase db)
         {
 			db = db ?? Database;
@@ -340,6 +443,11 @@ namespace Bam.Data
             AfterCommit?.Invoke(db, this);
         }
 
+        /// <summary>
+        /// Writes commit SQL statements for all items with new values into the specified SqlStringBuilder.
+        /// </summary>
+        /// <param name="sql">The SqlStringBuilder to write commit statements into.</param>
+        /// <param name="db">The optional database context.</param>
         public void WriteCommit(ISqlStringBuilder sql, IDatabase db = null)
         {
 			db = db ?? Database;
@@ -360,6 +468,10 @@ namespace Bam.Data
             };
         }
 
+        /// <summary>
+        /// Deletes all items in this collection from the specified database.
+        /// </summary>
+        /// <param name="db">The database to delete from; defaults to the collection's database.</param>
         public void Delete(IDatabase db = null)
         {
 			db = db ?? Database;
@@ -415,6 +527,11 @@ namespace Bam.Data
             }
         }
 
+        /// <summary>
+        /// Returns a sorted copy of this collection's items using the specified comparison.
+        /// </summary>
+        /// <param name="comparison">The comparison delegate for sorting.</param>
+        /// <returns>A sorted list of items.</returns>
         public List<T> Sorted(Comparison<T> comparison)
         {
             T[] results = new T[this._values.Count];
@@ -463,6 +580,10 @@ namespace Bam.Data
             return result;
         }
 
+        /// <summary>
+        /// Converts each item in the collection to a JSON-safe object representation.
+        /// </summary>
+        /// <returns>An array of JSON-safe objects.</returns>
         public object[] ToJsonSafe()
         {
             object[] result = new object[this.Count];
@@ -483,16 +604,29 @@ namespace Bam.Data
             return _book[pageNum - 1];
         }    
 
+        /// <summary>
+        /// Gets the total number of pages in this collection.
+        /// </summary>
         public int PageCount => this._book.PageCount;
 
+        /// <summary>
+        /// Gets the total number of items in this collection.
+        /// </summary>
         public int Count => this._book.ItemCount;
 
+        /// <summary>
+        /// Gets or sets the page size for paging operations.
+        /// </summary>
         public int PageSize
         {
             get => this._book.PageSize;
             set => this._book.PageSize = value;
         }
 
+        /// <summary>
+        /// Advances to the next page in the collection.
+        /// </summary>
+        /// <returns>True if there is a next page; otherwise false.</returns>
         public override bool MoveNextPage()
         {
             CurrentPageIndex++;
@@ -507,6 +641,10 @@ namespace Bam.Data
 
         #region IEnumerable<T> Members
 
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>An enumerator for the collection.</returns>
         public IEnumerator<T> GetEnumerator()
         {
             return this;
@@ -525,6 +663,10 @@ namespace Bam.Data
 
 		#region IAddable Members
 
+		/// <summary>
+		/// Adds a value to this collection by casting to the collection's element type.
+		/// </summary>
+		/// <param name="value">The value to add, which must be castable to T.</param>
 		public void Add(object value)
 		{
 			this.Add((T)value);

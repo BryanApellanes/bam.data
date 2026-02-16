@@ -4,6 +4,10 @@
 
 namespace Bam.Data
 {
+    /// <summary>
+    /// Abstract base class for enumerating paged results of type T.
+    /// </summary>
+    /// <typeparam name="T">The type of items to enumerate.</typeparam>
     public abstract class PagedEnumerator<T> : IEnumerator<T>
     {
         protected int currentItemIndex;
@@ -22,6 +26,9 @@ namespace Bam.Data
         /// <returns></returns>
         public abstract bool MoveNextPage();
 
+        /// <summary>
+        /// Gets the list of items on the current page.
+        /// </summary>
         public List<T> CurrentPage
         {
             get => this.currentPage;
@@ -70,6 +77,10 @@ namespace Bam.Data
 
         object System.Collections.IEnumerator.Current => Current;
 
+        /// <summary>
+        /// Advances to the next item, moving to the next page if needed.
+        /// </summary>
+        /// <returns>True if there is a next item; false if enumeration is complete.</returns>
         public bool MoveNext()
         {
             currentItemIndex++;

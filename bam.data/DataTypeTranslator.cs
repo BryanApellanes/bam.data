@@ -7,6 +7,9 @@
     {
         private static readonly object _dataTypeTranslatorLock = new object();
         private static IDataTypeTranslator _dafault;
+        /// <summary>
+        /// Gets or sets the default IDataTypeTranslator instance.
+        /// </summary>
         public static IDataTypeTranslator Default
         {
             get
@@ -16,6 +19,11 @@
             set => _dafault = value;
         }
         
+        /// <summary>
+        /// Converts a CLR Type to its corresponding DataTypes enum value.
+        /// </summary>
+        /// <param name="type">The CLR type to convert.</param>
+        /// <returns>The corresponding DataTypes enum value.</returns>
         public virtual DataTypes EnumFromType(Type type)
         {
             if (type == typeof(object) || type == null)
@@ -71,11 +79,21 @@
             return DataTypes.Default;
         }
         
+        /// <summary>
+        /// Converts a database data type string to its corresponding CLR Type.
+        /// </summary>
+        /// <param name="dbDataType">The database data type string.</param>
+        /// <returns>The corresponding CLR Type.</returns>
         public virtual Type TypeFromDbDataType(string dbDataType)
         {
             return TypeFromDataType(TranslateDataType(dbDataType));
         }
 
+        /// <summary>
+        /// Converts a DataTypes enum value to its corresponding CLR Type.
+        /// </summary>
+        /// <param name="dataType">The DataTypes enum value.</param>
+        /// <returns>The corresponding CLR Type.</returns>
         public virtual Type TypeFromDataType(DataTypes dataType)
         {
             switch (dataType)
@@ -105,6 +123,11 @@
             }
         }
 
+        /// <summary>
+        /// Translates a database data type string to its corresponding DataTypes enum value.
+        /// </summary>
+        /// <param name="dbDataType">The database data type string (e.g., "varchar", "int").</param>
+        /// <returns>The corresponding DataTypes enum value.</returns>
         public virtual DataTypes TranslateDataType(string dbDataType)
         {
             string dataType = dbDataType.ToLowerInvariant();

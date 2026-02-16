@@ -5,12 +5,24 @@ namespace Bam.Data
     /// </summary>
     public class UniversalDeterministicIdResolver: IUniversalIdResolver
     {
+        /// <summary>
+        /// Initializes a new UniversalDeterministicIdResolver with the specified data object.
+        /// </summary>
+        /// <param name="data">The data object to resolve an identifier for.</param>
         public UniversalDeterministicIdResolver(object data)
         {
             this.Data = data;
         }
         
+        /// <summary>
+        /// Gets or sets the data object associated with this resolver.
+        /// </summary>
         public object Data { get; set; }
+        /// <summary>
+        /// Gets the deterministic identifier for the specified data object. Not yet implemented.
+        /// </summary>
+        /// <param name="data">The data object to get an identifier for.</param>
+        /// <returns>The deterministic identifier.</returns>
         public ulong GetId(object data)
         {
             throw new System.NotImplementedException();

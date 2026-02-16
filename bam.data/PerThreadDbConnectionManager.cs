@@ -5,9 +5,16 @@ using System.Diagnostics;
 
 namespace Bam.Data
 {
+    /// <summary>
+    /// Connection manager that tracks one connection per thread, releasing previous connections when threads complete.
+    /// </summary>
     public class PerThreadDbConnectionManager : DbConnectionManager
     {
         ConcurrentDictionary<int, DbConnection> _connections;
+        /// <summary>
+        /// Initializes a new PerThreadDbConnectionManager for the specified database.
+        /// </summary>
+        /// <param name="database">The database to manage connections for.</param>
         public PerThreadDbConnectionManager(Database database)
         {
             Database = database;
@@ -16,6 +23,10 @@ namespace Bam.Data
             _connections = new ConcurrentDictionary<int, DbConnection>();
         }
         
+        /// <summary>
+        /// Gets a database connection for the current thread, releasing any previous connection for this thread.
+        /// </summary>
+        /// <returns>A new DbConnection instance.</returns>
         public override DbConnection GetDbConnection()
         {
             int threadId = Thread.CurrentThread.ManagedThreadId;            
@@ -37,6 +48,10 @@ namespace Bam.Data
             return connection;
         }
 
+        /// <summary>
+        /// Releases a database connection by closing and disposing it.
+        /// </summary>
+        /// <param name="connection">The connection to release.</param>
         public override void ReleaseConnection(DbConnection connection)
         {
             try

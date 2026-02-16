@@ -14,6 +14,9 @@ namespace Bam.Data
         readonly List<List<T>> allPages;
         readonly List<T> allItems;
 
+        /// <summary>
+        /// Initializes a new empty Book instance.
+        /// </summary>
         public Book()
             : base()
         {
@@ -33,6 +36,11 @@ namespace Bam.Data
             this.PageSize = 10;
         }
 
+        /// <summary>
+        /// Initializes a new Book with the specified items and page size.
+        /// </summary>
+        /// <param name="items">The items to page.</param>
+        /// <param name="pageSize">The number of items per page.</param>
         public Book(IEnumerable<T> items, int pageSize)
             : this()
         {
@@ -41,6 +49,9 @@ namespace Bam.Data
         }
 
         int pageSize;
+        /// <summary>
+        /// Gets or sets the number of items per page; setting reinitializes all pages.
+        /// </summary>
         public int PageSize
         {
             get => this.pageSize;
@@ -51,14 +62,24 @@ namespace Bam.Data
             }
         }
 
+        /// <summary>
+        /// Gets or sets the total number of pages.
+        /// </summary>
         public int PageCount
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// Gets the total number of items across all pages.
+        /// </summary>
         public int ItemCount => this.allItems.Count;
 
+        /// <summary>
+        /// Adds an item and reinitializes the page layout.
+        /// </summary>
+        /// <param name="item">The item to add.</param>
         public void Add(T item)
         {
             this.allItems.Add(item);

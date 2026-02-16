@@ -4,6 +4,9 @@
 
 namespace Bam.Data
 {
+    /// <summary>
+    /// Formats SQL WHERE clauses from query filter parameters.
+    /// </summary>
     public class WhereFormat: SetFormat
     {
         public WhereFormat() { }

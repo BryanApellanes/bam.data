@@ -23,17 +23,28 @@ namespace Bam.Data
             PostConstructActions = new Dictionary<Type, Action<Dao>>();
         }
 
+        /// <summary>
+        /// Initializes a new Dao instance.
+        /// </summary>
         public Dao()
         {
             Initialize();
         }
 
+        /// <summary>
+        /// Initializes a new Dao instance with the specified database.
+        /// </summary>
+        /// <param name="database">The database to associate with this Dao.</param>
         public Dao(IDatabase database)
         {
             Database = database;
             Initialize();
         }
 
+        /// <summary>
+        /// Initializes a new Dao instance from the specified DataRow.
+        /// </summary>
+        /// <param name="row">The DataRow to hydrate from.</param>
         public Dao(DataRow row)
             : this()
         {
@@ -41,6 +52,11 @@ namespace Bam.Data
             IsNew = false;
         }
 
+        /// <summary>
+        /// Initializes a new Dao instance with the specified database and DataRow.
+        /// </summary>
+        /// <param name="database">The database to associate with this Dao.</param>
+        /// <param name="row">The DataRow to hydrate from.</param>
         public Dao(IDatabase database, DataRow row)
         {
             Database = database;
@@ -96,12 +112,21 @@ namespace Bam.Data
             }
         }
 
+        /// <summary>
+        /// Returns all schema types from the same assembly as this Dao's type.
+        /// </summary>
+        /// <returns>An array of types with TableAttribute in this Dao's assembly.</returns>
         public Type[] GetSchemaTypes()
         {
             Type thisType = this.GetType();
             return GetSchemaTypes(thisType);
         }
 
+        /// <summary>
+        /// Returns all schema types from the same assembly as the specified generic type T.
+        /// </summary>
+        /// <typeparam name="T">The type whose assembly to scan.</typeparam>
+        /// <returns>An array of types with TableAttribute in T's assembly.</returns>
         public static Type[] GetSchemaTypes<T>()
         {
             return GetSchemaTypes(typeof(T));
@@ -144,15 +169,24 @@ namespace Bam.Data
         }
 
         Action<IDao> _initializer;
+        /// <summary>
+        /// Gets or sets the initialization action for this Dao instance. Falls back to GlobalInitializer if not set.
+        /// </summary>
         public Action<IDao> Initializer
         {
             get => _initializer ?? GlobalInitializer;
             set => _initializer = value;
         }
 
+        /// <summary>
+        /// Gets DBNull.Value as a convenience property.
+        /// </summary>
         public static DBNull Null => DBNull.Value;
         
         static Action<IDao> _globalInitializer;
+        /// <summary>
+        /// Gets or sets the global initialization action applied to all Dao instances when no instance-level initializer is set.
+        /// </summary>
         public static Action<IDao> GlobalInitializer
         {
             get
@@ -162,12 +196,21 @@ namespace Bam.Data
             set => _globalInitializer = value;
         }
 
+        /// <summary>
+        /// Returns a hash code based on the database ID if available; otherwise uses the default implementation.
+        /// </summary>
+        /// <returns>The hash code.</returns>
         public override int GetHashCode()
         {
             ulong id = DbId.GetValueOrDefault();
             return id > 0 ? id.GetHashCode() : base.GetHashCode();
         }
 
+        /// <summary>
+        /// Determines whether this Dao equals another by comparing type and database ID.
+        /// </summary>
+        /// <param name="obj">The object to compare.</param>
+        /// <returns>True if the objects are the same type with the same database ID.</returns>
         public override bool Equals(object obj)
         {
             if (obj is Dao dao)
@@ -185,6 +228,11 @@ namespace Bam.Data
         /// </summary>
         public string DefaultSortProperty { get; set; }
 
+        /// <summary>
+        /// Compares this Dao to another object using the DefaultSortProperty or the Name/IdValue property.
+        /// </summary>
+        /// <param name="obj">The object to compare to.</param>
+        /// <returns>A comparison result integer.</returns>
         public virtual int CompareTo(object obj)
         {
             Type thisType = GetType();
@@ -233,6 +281,9 @@ namespace Bam.Data
 
         protected IDatabase _database;
         readonly object _databaseSync = new object();
+        /// <summary>
+        /// Gets or sets the database associated with this Dao instance. Lazily resolves from Db.For if not set.
+        /// </summary>
         public IDatabase Database
         {
             get
@@ -244,6 +295,9 @@ namespace Bam.Data
 
         List<string> _columns;
         readonly object _columnsLock = new object();
+        /// <summary>
+        /// Gets the column names from this Dao's backing DataRow table.
+        /// </summary>
         public string[] Columns
         {
             get
@@ -262,6 +316,11 @@ namespace Bam.Data
             }
         }
 
+        /// <summary>
+        /// Converts a DataTypes enum value to its corresponding TypeCode.
+        /// </summary>
+        /// <param name="dataTypes">The DataTypes value to convert.</param>
+        /// <returns>The corresponding TypeCode.</returns>
         public TypeCode GetTypeCode(DataTypes dataTypes)
         {
             switch (dataTypes)
@@ -291,12 +350,22 @@ namespace Bam.Data
             }
         }
 
+        /// <summary>
+        /// Gets the DataTypes enum value for the specified column name using the database's data type translator.
+        /// </summary>
+        /// <param name="columnName">The column name to look up.</param>
+        /// <returns>The DataTypes enum value for the column.</returns>
         public DataTypes GetDataType(string columnName)
         {
             return Database.GetDataTypeTranslator().TranslateDataType(columnName);
         }
 
         Dictionary<string, string> _columnDataTypes;
+        /// <summary>
+        /// Gets the database data type string for the specified column name.
+        /// </summary>
+        /// <param name="columnName">The column name.</param>
+        /// <returns>The database data type string (e.g., "VARCHAR").</returns>
         public virtual string GetDbDataType(string columnName)
         {
             if(_columnDataTypes == null)
@@ -310,6 +379,12 @@ namespace Bam.Data
             return _columnDataTypes[columnName];
         }
 
+        /// <summary>
+        /// Gets the database data type string for the specified column name on the given type.
+        /// </summary>
+        /// <param name="type">The Dao type to inspect.</param>
+        /// <param name="columnName">The column name.</param>
+        /// <returns>The database data type string, or "VARCHAR" if not found.</returns>
         public static string GetDbDataType(Type type, string columnName)
         {
             PropertyInfo prop = type.GetProperty(columnName);
@@ -354,6 +429,12 @@ namespace Bam.Data
             return val == null ? default(T) : (T)val;
         }
 
+        /// <summary>
+        /// Gets or sets the value of the specified column. Creates the column if it does not exist and a value is provided.
+        /// </summary>
+        /// <param name="columnName">The name of the column.</param>
+        /// <param name="value">The optional value to set.</param>
+        /// <returns>The current value of the column, or null if not set.</returns>
         public object ColumnValue(string columnName, object value = null)
         {
             DataTable table = DataRow.Table;
@@ -396,7 +477,13 @@ namespace Bam.Data
         [Exclude]
         public bool AutoHydrateChildrenOnDelete { get; set; }
 
+        /// <summary>
+        /// Event fired before a commit is written for this instance.
+        /// </summary>
         public event DaoDelegate BeforeWriteCommit;
+        /// <summary>
+        /// Event fired before a commit is written for any Dao instance.
+        /// </summary>
         public static event DaoDelegate BeforeWriteCommitAny;
         protected internal void OnBeforeWriteCommit(IDatabase db)
         {
@@ -404,7 +491,13 @@ namespace Bam.Data
             BeforeWriteCommitAny?.Invoke(db, this);
         }
 
+        /// <summary>
+        /// Event fired after a commit is written for this instance.
+        /// </summary>
         public event DaoDelegate AfterWriteCommit;
+        /// <summary>
+        /// Event fired after a commit is written for any Dao instance.
+        /// </summary>
         public static event DaoDelegate AfterWriteCommitAny;
         protected internal void OnAfterWriteCommit(IDatabase db)
         {
@@ -412,7 +505,13 @@ namespace Bam.Data
             AfterWriteCommitAny?.Invoke(db, this);
         }
 
+        /// <summary>
+        /// Event fired before this instance is committed.
+        /// </summary>
         public event DaoDelegate BeforeCommit;
+        /// <summary>
+        /// Event fired before any Dao instance is committed.
+        /// </summary>
         public static event DaoDelegate BeforeCommitAny;
         protected internal void OnBeforeCommit(IDatabase db)
         {
@@ -439,7 +538,13 @@ namespace Bam.Data
             AfterCommitAny?.Invoke(db, this);
         }
 
+        /// <summary>
+        /// Event fired before a delete is written for this instance.
+        /// </summary>
         public event DaoDelegate BeforeWriteDelete;
+        /// <summary>
+        /// Event fired before a delete is written for any Dao instance.
+        /// </summary>
         public static event DaoDelegate BeforeWriteDeleteAny;
         protected void OnBeforeWriteDelete(IDatabase db)
         {
@@ -447,7 +552,13 @@ namespace Bam.Data
             BeforeWriteDeleteAny?.Invoke(db, this);
         }
 
+        /// <summary>
+        /// Event fired after a delete is written for this instance.
+        /// </summary>
         public event DaoDelegate AfterWriteDelete;
+        /// <summary>
+        /// Event fired after a delete is written for any Dao instance.
+        /// </summary>
         public static event DaoDelegate AfterWriteDeleteAny;
         protected void OnAfterWriteDelete(IDatabase db)
         {
@@ -455,7 +566,13 @@ namespace Bam.Data
             AfterWriteDeleteAny?.Invoke(db, this);
         }
 
+        /// <summary>
+        /// Event fired before this instance is deleted.
+        /// </summary>
         public event DaoDelegate BeforeDelete;
+        /// <summary>
+        /// Event fired before any Dao instance is deleted.
+        /// </summary>
         public static event DaoDelegate BeforeDeleteAny;
         protected void OnBeforeDelete(IDatabase db)
         {
@@ -463,7 +580,13 @@ namespace Bam.Data
             BeforeDeleteAny?.Invoke(db, this);
         }
 
+        /// <summary>
+        /// Event fired after this instance is deleted.
+        /// </summary>
         public event DaoDelegate AfterDelete;
+        /// <summary>
+        /// Event fired after any Dao instance is deleted.
+        /// </summary>
         public static event DaoDelegate AfterDeleteAny;
         protected void OnAfterDelete(IDatabase db)
         {
@@ -473,11 +596,19 @@ namespace Bam.Data
 
         protected internal Dictionary<string, ILoadable> ChildCollections => _childCollections;
 
+        /// <summary>
+        /// Hydrates this Dao's child collections from the specified database.
+        /// </summary>
+        /// <param name="database">The database to hydrate from.</param>
         public virtual void Hydrate(IDatabase database = null)
         {
             database.Hydrate(this);
         }
 
+        /// <summary>
+        /// Loads all child collections for this Dao instance from the specified database.
+        /// </summary>
+        /// <param name="database">The database to load child collections from.</param>
         public virtual void HydrateChildren(IDatabase database = null)
         {
             foreach (string key in ChildCollections.Keys)
@@ -495,12 +626,19 @@ namespace Bam.Data
             _childCollections.Clear();
         }
 
+        /// <summary>
+        /// Validates this Dao instance using the configured Validator function.
+        /// </summary>
+        /// <returns>A DaoValidationResult indicating success or failure.</returns>
         public virtual DaoValidationResult Validate()
         {
             return Validator(this);
         }
 
         Func<Dao, DaoValidationResult> _validator;
+        /// <summary>
+        /// Gets or sets the validation function for this Dao instance. Falls back to GlobalValidator if not set.
+        /// </summary>
         public Func<Dao, DaoValidationResult> Validator
         {
             get
@@ -516,6 +654,9 @@ namespace Bam.Data
         }
 
         static Func<Dao, DaoValidationResult> _globalValidator;
+        /// <summary>
+        /// Gets or sets the global validation function applied to all Dao instances when no instance-level validator is set.
+        /// </summary>
         public static Func<Dao, DaoValidationResult> GlobalValidator
         {
             get
@@ -618,6 +759,10 @@ namespace Bam.Data
             Commit(tx.Database);
         }
 
+        /// <summary>
+        /// Commits this Dao instance and its children to the specified database.
+        /// </summary>
+        /// <param name="db">The database to commit to.</param>
         public void Commit(IDatabase db)
         {
             Commit(db, true);
@@ -652,6 +797,10 @@ namespace Bam.Data
             }
         }
 
+        /// <summary>
+        /// Forces an update of this Dao instance in the specified database, regardless of its IsNew state.
+        /// </summary>
+        /// <param name="db">The database to update in; uses default if null.</param>
         public void Update(IDatabase db = null)
         {
             db = db ?? Database;
@@ -665,6 +814,10 @@ namespace Bam.Data
             }
         }
 
+        /// <summary>
+        /// Forces an insert of this Dao instance into the specified database, regardless of its IsNew state.
+        /// </summary>
+        /// <param name="db">The database to insert into; uses default if null.</param>
         public void Insert(IDatabase db = null)
         {
             db = db ?? Database;
@@ -693,6 +846,10 @@ namespace Bam.Data
             };
         }
 
+        /// <summary>
+        /// Writes delete SQL statements for all child collections into the specified SqlStringBuilder.
+        /// </summary>
+        /// <param name="sql">The SqlStringBuilder to write delete statements into.</param>
         public void WriteChildDeletes(ISqlStringBuilder sql)
         {
             foreach (string key in ChildCollections.Keys)
@@ -710,6 +867,10 @@ namespace Bam.Data
             }
         }
 
+        /// <summary>
+        /// Deletes this Dao instance and optionally its children from the specified database.
+        /// </summary>
+        /// <param name="database">The database to delete from; uses default if null.</param>
         public virtual void Delete(IDatabase database = null)
         {
             ISqlStringBuilder sql = GetSqlStringBuilder(out IDatabase db);
@@ -795,6 +956,10 @@ namespace Bam.Data
             return db.GetQuerySet();
         }
 
+        /// <summary>
+        /// Writes the delete SQL statement for this Dao instance into the specified SqlStringBuilder.
+        /// </summary>
+        /// <param name="sql">The SqlStringBuilder to write the delete statement into.</param>
         public virtual void WriteDelete(ISqlStringBuilder sql)
         {
             IDatabase db = Database;
@@ -819,6 +984,11 @@ namespace Bam.Data
             WriteCommit(sqlStringBuilder, db);
         }
 
+        /// <summary>
+        /// Writes the commit (insert or update) SQL statement for this Dao instance into the specified SqlStringBuilder.
+        /// </summary>
+        /// <param name="sqlStringBuilder">The SqlStringBuilder to write into.</param>
+        /// <param name="db">The database context.</param>
         public virtual void WriteCommit(ISqlStringBuilder sqlStringBuilder, IDatabase db)
         {
             OnBeforeWriteCommit(db);
@@ -950,12 +1120,19 @@ namespace Bam.Data
         /// <returns></returns>
         public abstract IQueryFilter GetUniqueFilter();
 
+        /// <summary>
+        /// Gets or sets a custom function that provides the unique filter for this Dao instance.
+        /// </summary>
         public Func<IDao, IQueryFilter> UniqueFilterProvider
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// Returns the connection name for this Dao instance.
+        /// </summary>
+        /// <returns>The connection name.</returns>
         public string ConnectionName()
         {
             return ConnectionName(this);
@@ -973,6 +1150,11 @@ namespace Bam.Data
             return ConnectionName(type);
         }
 
+        /// <summary>
+        /// Returns the connection name for the specified generic type T.
+        /// </summary>
+        /// <typeparam name="T">The type to get the connection name for.</typeparam>
+        /// <returns>The connection name.</returns>
         public static string ConnectionName<T>()
         {
             return ConnectionName(typeof(T));
@@ -1085,11 +1267,20 @@ namespace Bam.Data
             _proxiedConnectionNames[originalConnectionName] = newConnectionName;
         }
 
+        /// <summary>
+        /// Returns the table name for this Dao instance.
+        /// </summary>
+        /// <returns>The table name.</returns>
         public string TableName()
         {
             return TableName(this);
         }
 
+        /// <summary>
+        /// Returns the table name for the specified object instance.
+        /// </summary>
+        /// <param name="instance">The object to get the table name for.</param>
+        /// <returns>The table name, or empty string if instance is null.</returns>
         public static string TableName(object instance)
         {
             if(instance != null)
@@ -1118,6 +1309,11 @@ namespace Bam.Data
             return value;
         }
 
+        /// <summary>
+        /// Gets the key column name for the specified Dao type T.
+        /// </summary>
+        /// <typeparam name="T">The Dao type to inspect.</typeparam>
+        /// <returns>The key column name.</returns>
         public static string GetKeyColumnName<T>() where T : Dao, new()
         {
             return GetKeyColumnName(typeof(T));
@@ -1144,6 +1340,11 @@ namespace Bam.Data
         }
 
         ulong? _dbId;
+        /// <summary>
+        /// Attempts to get the database ID, returning null and invoking the exception handler on failure.
+        /// </summary>
+        /// <param name="exceptionHandler">Optional handler for exceptions.</param>
+        /// <returns>The database ID, or null if retrieval failed.</returns>
         public virtual ulong? TryGetId(Action<Exception> exceptionHandler = null)
         {
             try
@@ -1158,11 +1359,19 @@ namespace Bam.Data
             }
         }
         
+        /// <summary>
+        /// Sets the database ID to the specified value.
+        /// </summary>
+        /// <param name="id">The ID value to set.</param>
         public virtual void SetDbId(ulong? id)
         {
             _dbId = id;
         }
 
+        /// <summary>
+        /// Sets the database ID by converting the specified object to a ulong.
+        /// </summary>
+        /// <param name="value">The value to convert and set as the database ID.</param>
         public virtual void SetDbId(object value)
         {
             if (value != null && value != DBNull.Value)
@@ -1171,6 +1380,10 @@ namespace Bam.Data
             }
         }
 
+        /// <summary>
+        /// Gets the database ID from the primary key value.
+        /// </summary>
+        /// <returns>The database ID as a nullable ulong.</returns>
         public virtual ulong? GetDbId()
         {
             object value = PrimaryKey;
@@ -1194,6 +1407,9 @@ namespace Bam.Data
             return _dbId;
         }
         
+        /// <summary>
+        /// Gets or sets the database ID for this Dao instance.
+        /// </summary>
         [Exclude]
         public ulong? DbId
         {
@@ -1294,6 +1510,9 @@ namespace Bam.Data
         }
 
         DependencyProvider _incubator;
+        /// <summary>
+        /// Gets or sets the dependency injection service provider for this Dao instance.
+        /// </summary>
         [Exclude]
         public DependencyProvider ServiceProvider
         {
@@ -1311,6 +1530,9 @@ namespace Bam.Data
             protected internal set => _incubator = value;
         }
 
+        /// <summary>
+        /// Gets or sets the backing DataRow for this Dao instance.
+        /// </summary>
         [Exclude]
         public DataRow DataRow { get; set; }
 
@@ -1414,11 +1636,21 @@ namespace Bam.Data
             return new long?();
         }
 
+        /// <summary>
+        /// Maps a ulong value to a long for storage in databases that do not support unsigned types.
+        /// </summary>
+        /// <param name="ulongValue">The ulong value to map.</param>
+        /// <returns>The mapped long value.</returns>
         public static long MapUlongToLong(ulong ulongValue)
         {
             return unchecked((long)ulongValue + long.MinValue);
         }
 
+        /// <summary>
+        /// Maps a long value back to a ulong, reversing the MapUlongToLong transformation.
+        /// </summary>
+        /// <param name="longValue">The long value to map.</param>
+        /// <returns>The mapped ulong value.</returns>
         public static ulong MapLongToUlong(long longValue)
         {
             return unchecked((ulong)(longValue - long.MinValue));
@@ -1519,6 +1751,11 @@ namespace Bam.Data
             }
         }
 
+        /// <summary>
+        /// Sets the value of the specified column.
+        /// </summary>
+        /// <param name="columnName">The column name to set.</param>
+        /// <param name="value">The value to set.</param>
         public void SetValue(string columnName, object value)
         {
             SetValue(columnName, value, true);
@@ -1570,6 +1807,9 @@ namespace Bam.Data
             this.OnInitialize();
         }
 
+        /// <summary>
+        /// Sets the Uuid property to a new GUID if the property exists and is currently empty.
+        /// </summary>
         public void SetUuid()
         {
             if (HasUuidProperty(out PropertyInfo uuid))

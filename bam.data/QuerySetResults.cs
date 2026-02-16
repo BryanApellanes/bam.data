@@ -4,6 +4,9 @@
 
 namespace Bam.Data
 {
+    /// <summary>
+    /// Holds the results of executing a QuerySet, providing indexed access to individual result sets.
+    /// </summary>
     public class QuerySetResults : IQuerySetResults
     {
         List<IHasDataTable> _values;
@@ -13,6 +16,9 @@ namespace Bam.Data
             this.Database = database;
         }
 
+        /// <summary>
+        /// Gets or sets the database that produced these results.
+        /// </summary>
         public IDatabase Database { get; set; }
         /// <summary>
         /// Instantiates a new instance of T and calls SetDataTable passing
@@ -26,6 +32,11 @@ namespace Bam.Data
             return _values[index].As<T>();
         }
 
+        /// <summary>
+        /// Gets the result at the specified index.
+        /// </summary>
+        /// <param name="index">The zero-based index.</param>
+        /// <returns>The IHasDataTable result at the index.</returns>
         public IHasDataTable this[int index]
         {
             get
@@ -54,6 +65,11 @@ namespace Bam.Data
             return result;
         }
 
+        /// <summary>
+        /// Gets the count value from the result at the specified index; only valid for count results.
+        /// </summary>
+        /// <param name="index">The zero-based index of the count result.</param>
+        /// <returns>The count value.</returns>
         public long ToCountResult(int index)
         {
             CountResult cr = _values[index] as CountResult;
@@ -65,6 +81,9 @@ namespace Bam.Data
             return cr.Value;
         }
                 
+        /// <summary>
+        /// Gets the number of result sets.
+        /// </summary>
         public int Count
         {
             get

@@ -4,6 +4,9 @@
 
 namespace Bam.Data
 {
+    /// <summary>
+    /// Exception thrown when a Dao validation check fails.
+    /// </summary>
     public class ValidationException: Exception
     {
         public ValidationException(string msg) : base(msg) { }

@@ -75,6 +75,11 @@ namespace Bam.Data
             }
         }
 
+        /// <summary>
+        /// Initializes a database for the specified connection name by resolving the connection string from configuration.
+        /// </summary>
+        /// <param name="connectionName">The connection name to initialize.</param>
+        /// <returns>The initialization result indicating success or failure.</returns>
         public virtual DatabaseInitializationResult Initialize(string connectionName)
         {
             if (_ignoreConnectionNames.Contains(connectionName))
@@ -160,6 +165,11 @@ namespace Bam.Data
             return factoryType;
         }
 
+        /// <summary>
+        /// Resolves a connection string for the specified connection name using the registered resolvers.
+        /// </summary>
+        /// <param name="connectionName">The connection name to resolve.</param>
+        /// <returns>The resolve result containing the connection string settings.</returns>
         public virtual ConnectionStringResolveResult ResolveConnectionString(string connectionName)
         {
             ConnectionStringResolveResult r = ConnectionStringResolvers.TryResolve(connectionName);

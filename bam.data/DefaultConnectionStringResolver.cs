@@ -7,10 +7,16 @@ using System.Data.Common;
 
 namespace Bam.Data
 {
+    /// <summary>
+    /// Resolves connection strings from the default configuration file or a custom resolver function.
+    /// </summary>
     public class DefaultConnectionStringResolver: IConnectionStringResolver
     {
         static DefaultConnectionStringResolver _instance;
         static object _instanceLock = new object();
+        /// <summary>
+        /// Gets the singleton instance of DefaultConnectionStringResolver.
+        /// </summary>
         public static DefaultConnectionStringResolver Instance
         {
             get
@@ -41,6 +47,11 @@ namespace Bam.Data
 
         #region IConnectionStringResolver Members
 
+        /// <summary>
+        /// Resolves the connection string settings for the specified connection name.
+        /// </summary>
+        /// <param name="connectionName">The connection name to resolve.</param>
+        /// <returns>The resolved ConnectionStringSettings.</returns>
         public System.Configuration.ConnectionStringSettings Resolve(string connectionName)
         {
             if (Resolver != null)
@@ -54,6 +65,10 @@ namespace Bam.Data
         }
 
 
+        /// <summary>
+        /// Gets a DbConnectionStringBuilder initialized with the default connection string.
+        /// </summary>
+        /// <returns>A DbConnectionStringBuilder instance.</returns>
         public DbConnectionStringBuilder GetConnectionStringBuilder()
         {
             return new DbConnectionStringBuilder { ConnectionString = Resolve("Default")?.ConnectionString };

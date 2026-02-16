@@ -5,6 +5,9 @@ using System.Reflection;
 
 namespace Bam.Data
 {
+    /// <summary>
+    /// Converts LINQ expressions into QueryFilter instances for Dao queries.
+    /// </summary>
     public class DaoExpressionFilter: ExpressionVisitor, ILoggable
     {
         ILogger _logger;
@@ -14,6 +17,10 @@ namespace Bam.Data
         int _counter = 0;
         static List<ExpressionType> _comparisonTypes;
 
+        /// <summary>
+        /// Initializes a new DaoExpressionFilter with an optional logger.
+        /// </summary>
+        /// <param name="logger">The logger for tracing expression visitor operations.</param>
         public DaoExpressionFilter(ILogger logger = null)
         {
             _traceLog = new StringBuilder();
@@ -32,13 +39,29 @@ namespace Bam.Data
             };
         }
 
+        /// <summary>
+        /// Gets or sets the log verbosity level.
+        /// </summary>
         public VerbosityLevel LogVerbosity { get; set; }
+
+        /// <summary>
+        /// Gets the array of subscribed loggers.
+        /// </summary>
         public ILogger[] Subscribers => _eventEmitter.Subscribers;
 
+        /// <summary>
+        /// Subscribes the specified logger to expression filter events.
+        /// </summary>
+        /// <param name="logger">The logger to subscribe.</param>
         public void Subscribe(ILogger logger)
         {
             _eventEmitter.Subscribe(logger);
         }
+        /// <summary>
+        /// Subscribes a handler for events at the specified verbosity level.
+        /// </summary>
+        /// <param name="levelToSubscribe">The verbosity level to subscribe to.</param>
+        /// <param name="handler">The handler to invoke when events at the level occur.</param>
         public virtual void Subscribe(VerbosityLevel levelToSubscribe, Action<ILoggable, LoggableEventArgs> handler)
         {
             Type emittingType = _eventEmitter.GetType();
@@ -58,11 +81,22 @@ namespace Bam.Data
             });
         }
 
+        /// <summary>
+        /// Returns whether the specified logger is subscribed.
+        /// </summary>
+        /// <param name="logger">The logger to check.</param>
+        /// <returns>True if the logger is subscribed; otherwise false.</returns>
         public bool IsSubscribed(ILogger logger)
         {
             return _eventEmitter.IsSubscribed(logger);
         }
         
+        /// <summary>
+        /// Converts a LINQ expression to a QueryFilter.
+        /// </summary>
+        /// <typeparam name="T">The type the expression applies to.</typeparam>
+        /// <param name="expression">The LINQ expression to convert.</param>
+        /// <returns>A QueryFilter representing the expression.</returns>
         public QueryFilter Where<T>(Expression<Func<T, bool>> expression)
         {
             Visit(expression);

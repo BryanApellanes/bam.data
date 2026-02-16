@@ -6,8 +6,14 @@ using Bam.UserAccounts;
 
 namespace Bam.Data
 {
+    /// <summary>
+    /// Provides SQLite database instances and data directory resolution for application and system data.
+    /// </summary>
     public class DataSourceProvider : DatabaseProvider<SQLiteDatabase>, IDataDirectoryProvider
     {
+        /// <summary>
+        /// Initializes a new DataSourceProvider with default directory configuration.
+        /// </summary>
         public DataSourceProvider()
         {
             DataRootDirectory = BamHome.DataPath;
@@ -25,32 +31,58 @@ namespace Bam.Data
             Logger = Log.Default;            
         }
 
+        /// <summary>
+        /// Initializes a new DataSourceProvider with the specified process mode and optional logger.
+        /// </summary>
+        /// <param name="processMode">The process mode to use for directory resolution.</param>
+        /// <param name="logger">The optional logger instance.</param>
         public DataSourceProvider(ProcessMode processMode, ILogger logger = null):this()
         {
             ProcessMode = processMode;
             Logger = logger ?? Log.Default;
         }
 
+        /// <summary>
+        /// Gets system paths resolved from the default DataSourceProvider instance.
+        /// </summary>
+        /// <returns>A SystemPaths instance.</returns>
         public static SystemPaths GetPaths()
         {
             return SystemPaths.Get(Instance);
         }
 
+        /// <summary>
+        /// Gets data paths resolved for the current process mode.
+        /// </summary>
+        /// <returns>A DataPaths instance.</returns>
         public static DataPaths GetDataPaths()
         {
             return GetDataPaths(ProcessMode.Current);
         }
 
+        /// <summary>
+        /// Gets data paths resolved for the specified process mode enum.
+        /// </summary>
+        /// <param name="mode">The process mode enum value.</param>
+        /// <returns>A DataPaths instance.</returns>
         public static DataPaths GetDataPaths(ProcessModes mode)
         {
             return GetDataPaths(ProcessMode.FromEnum(mode));
         }
 
+        /// <summary>
+        /// Gets data paths resolved for the specified process mode.
+        /// </summary>
+        /// <param name="mode">The process mode.</param>
+        /// <returns>A DataPaths instance.</returns>
         public static DataPaths GetDataPaths(ProcessMode mode)
         {
             return DataPaths.Get(new DataSourceProvider(mode));
         }
 
+        /// <summary>
+        /// Gets or sets the process mode determining directory layout (e.g., Dev, Test, Prod).
+        /// </summary>
         public ProcessMode ProcessMode { get; set; }
 
         /// <summary>
