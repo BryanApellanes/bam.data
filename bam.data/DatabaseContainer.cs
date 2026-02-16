@@ -4,6 +4,9 @@
 
 namespace Bam.Data
 {
+    /// <summary>
+    /// A container that manages database instances by connection name, initializing them on demand.
+    /// </summary>
     public class DatabaseContainer
     {
         readonly Dictionary<string, IDatabase> _databases;        
@@ -13,6 +16,10 @@ namespace Bam.Data
             this.TriedFallback = new List<string>();
         }
 
+        /// <summary>
+        /// Gets information about all databases currently managed by this container.
+        /// </summary>
+        /// <returns>An array of <see cref="DatabaseInfo"/> objects describing each managed database.</returns>
         public DatabaseInfo[] GetInfos()
         {
             List<DatabaseInfo> infos = new List<DatabaseInfo>();
@@ -45,16 +52,31 @@ namespace Bam.Data
             return this[connectionName];
         }
 
+        /// <summary>
+        /// Gets the database for the specified Dao type.
+        /// </summary>
+        /// <param name="type">The Dao type to get the database for.</param>
+        /// <returns>The database instance.</returns>
         public IDatabase For(Type type)
         {
             return this[type];
         }
 
+        /// <summary>
+        /// Begins a new transaction for the database associated with the specified Dao type.
+        /// </summary>
+        /// <typeparam name="T">The Dao type whose database will host the transaction.</typeparam>
+        /// <returns>A new <see cref="IDaoTransaction"/>.</returns>
         public IDaoTransaction BeginTransaction<T>() where T : IDao
         {
             return Db.BeginTransaction<T>();
         }
 
+        /// <summary>
+        /// Begins a new transaction for the database associated with the specified Dao type.
+        /// </summary>
+        /// <param name="type">The Dao type whose database will host the transaction.</param>
+        /// <returns>A new <see cref="IDaoTransaction"/>.</returns>
         public IDaoTransaction BeginTransaction(Type type)
         {
             return Db.BeginTransaction(type);

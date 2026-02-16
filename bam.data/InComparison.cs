@@ -9,8 +9,14 @@ using System.Collections;
 
 namespace Bam.Data
 {
+    /// <summary>
+    /// A SQL IN comparison that checks if a column value matches any value in a given set (e.g., column IN (1, 2, 3)).
+    /// </summary>
     public class InComparison: Comparison
     {
+        /// <summary>
+        /// Represents a single parameter within an IN clause.
+        /// </summary>
         public class ParameterInfo: IParameterInfo
         {
             public ParameterInfo(int number, object value)
@@ -65,6 +71,12 @@ namespace Bam.Data
             #endregion
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InComparison"/> class with an array of object values.
+        /// </summary>
+        /// <param name="columnName">The column name to filter on.</param>
+        /// <param name="values">The set of values to match against.</param>
+        /// <param name="parameterPrefix">The parameter prefix for the database provider.</param>
         public InComparison(string columnName, object[] values, string parameterPrefix = "@")
             :base(columnName, " IN ", values)
         {
@@ -79,6 +91,12 @@ namespace Bam.Data
 			numbers = new int[] { };			
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InComparison"/> class with an array of long values.
+        /// </summary>
+        /// <param name="columnName">The column name to filter on.</param>
+        /// <param name="values">The set of long values to match against.</param>
+        /// <param name="parameterPrefix">The parameter prefix for the database provider.</param>
         public InComparison(string columnName, long[] values, string parameterPrefix = "@")
             :base(columnName, " IN ", values)
         {
@@ -93,6 +111,12 @@ namespace Bam.Data
             numbers = new int[] { };
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InComparison"/> class with an array of unsigned long values.
+        /// </summary>
+        /// <param name="columnName">The column name to filter on.</param>
+        /// <param name="values">The set of unsigned long values to match against.</param>
+        /// <param name="parameterPrefix">The parameter prefix for the database provider.</param>
         public InComparison(string columnName, ulong[] values, string parameterPrefix = "@")
            : base(columnName, " IN ", values)
         {
@@ -107,6 +131,12 @@ namespace Bam.Data
             numbers = new int[] { };
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InComparison"/> class with an array of string values.
+        /// </summary>
+        /// <param name="columnName">The column name to filter on.</param>
+        /// <param name="values">The set of string values to match against.</param>
+        /// <param name="parameterPrefix">The parameter prefix for the database provider.</param>
         public InComparison(string columnName, string[] values, string parameterPrefix = "@")
             : base(columnName, " IN ", values)
         {
@@ -122,10 +152,19 @@ namespace Bam.Data
             numbers = new int[] { };
         }
         
+        /// <summary>
+        /// Gets or sets the array of values for the IN clause.
+        /// </summary>
         public object[] Values { get; set; }
 
         // the number of the parameter names (@P1)
         int[] numbers;
+
+        /// <summary>
+        /// Sets the parameter numbers for all values in the IN clause and returns the next available number.
+        /// </summary>
+        /// <param name="value">The starting parameter number.</param>
+        /// <returns>The next available parameter number after all IN clause values.</returns>
         public override int? SetNumber(int? value)
         {
             if (Values.Length > 0)
@@ -145,6 +184,9 @@ namespace Bam.Data
             }
         }
 
+        /// <summary>
+        /// Gets the array of parameter info objects, one for each value in the IN clause.
+        /// </summary>
         public ParameterInfo[] Parameters
         {
             get

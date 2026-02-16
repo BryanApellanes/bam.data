@@ -1,9 +1,19 @@
 namespace Bam.Data
 {
+    /// <summary>
+    /// A SQL format part that generates an AND clause from a query filter or parameter.
+    /// </summary>
     public class AndFormat : SetFormat
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AndFormat"/> class.
+        /// </summary>
         public AndFormat() { }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AndFormat"/> class with the specified query filter.
+        /// </summary>
+        /// <param name="filter">The query filter to use in the AND clause.</param>
         public AndFormat(IQueryFilter filter)
         {
             foreach (IParameterInfo param in filter.Parameters)

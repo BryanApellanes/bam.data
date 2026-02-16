@@ -4,16 +4,35 @@
 
 namespace Bam.Data
 {
+    /// <summary>
+    /// Provides transaction-like behavior for Dao operations by tracking inserts, updates, and deletes
+    /// and supporting rollback by undoing those operations.
+    /// </summary>
     public class DaoTransaction: IDaoTransaction, IDisposable
     {
+        /// <summary>
+        /// Occurs after the transaction has been committed.
+        /// </summary>
         public event EventHandler Committed;
+
+        /// <summary>
+        /// Occurs after the transaction has been rolled back.
+        /// </summary>
         public event EventHandler RolledBack;
+
+        /// <summary>
+        /// Occurs when the transaction is disposed.
+        /// </summary>
         public event EventHandler Disposed;
 
         List<IDao> _toDelete = new List<IDao>();
         List<IDao> _toUndo = new List<IDao>();
         List<IDao> _toUndelete = new List<IDao>();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DaoTransaction"/> class, subscribing to Dao commit and delete events.
+        /// </summary>
+        /// <param name="database">The database to use for the transaction.</param>
         public DaoTransaction(IDatabase database)
         {
             this._db = new Database(database.ServiceProvider.Clone(), database.ConnectionString, database.ConnectionName);
@@ -45,6 +64,10 @@ namespace Bam.Data
         }
 
         IDatabase _db;
+
+        /// <summary>
+        /// Gets the database associated with this transaction.
+        /// </summary>
         public IDatabase Database
         {
             get
@@ -55,6 +78,9 @@ namespace Bam.Data
 
         protected bool WasCommitted { get; set; }
 
+        /// <summary>
+        /// Commits the transaction, marking it as completed and preventing rollback on dispose.
+        /// </summary>
         public void Commit()
         {
             WasCommitted = true;
