@@ -23,6 +23,7 @@ namespace Bam.Data.FirebirdSql
             Pooling = true;
             Port = 3050;
             ConnectionLifetime = 15;
+            MaxPoolSize = 50;
             PacketSize = 8192;
         }
 

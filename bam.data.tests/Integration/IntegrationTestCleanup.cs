@@ -1,6 +1,7 @@
 using System.Data.SqlClient;
 using Bam.Console;
 using Bam.Test;
+using FirebirdSql.Data.FirebirdClient;
 using MySql.Data.MySqlClient;
 using Npgsql;
 using Oracle.ManagedDataAccess.Client;
@@ -22,6 +23,9 @@ public class IntegrationTestCleanup
 
     private const string OracleConnectionString =
         "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=127.0.0.1)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=XE)));User Id=system;Password=" + Password + ";";
+
+    private const string FirebirdConnectionString =
+        "DataSource=localhost;Database=/firebird/data/bamtest.fdb;User=SYSDBA;Password=" + Password + ";Port=3050";
 
     [AfterIntegrationTests]
     public static void DropTestTables()
@@ -61,6 +65,15 @@ public class IntegrationTestCleanup
             conn.Open();
             using var cmd = conn.CreateCommand();
             cmd.CommandText = "BEGIN EXECUTE IMMEDIATE 'DROP TABLE \"TESTITEM\"'; EXCEPTION WHEN OTHERS THEN NULL; END;";
+            cmd.ExecuteNonQuery();
+        });
+
+        TryDrop("Firebird", () =>
+        {
+            using var conn = new FbConnection(FirebirdConnectionString);
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "EXECUTE BLOCK AS BEGIN IF (EXISTS(SELECT 1 FROM RDB$RELATIONS WHERE RDB$RELATION_NAME = 'TestItem')) THEN EXECUTE STATEMENT 'DROP TABLE \"TestItem\"'; END";
             cmd.ExecuteNonQuery();
         });
     }

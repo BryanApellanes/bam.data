@@ -57,5 +57,8 @@ ensure_container "bam-data-test-mysql" "mysql:8.0" "3306:3306" \
 ensure_container "bam-data-test-oracle" "gvenzl/oracle-xe:21-slim" "1521:1521" \
     "ORACLE_PASSWORD=$PASSWORD"
 
+ensure_container "bam-data-test-firebird" "jacobalberty/firebird:v4.0" "3050:3050" \
+    "ISC_PASSWORD=$PASSWORD" "FIREBIRD_DATABASE=bamtest.fdb"
+
 echo ""
 echo "All test containers running."

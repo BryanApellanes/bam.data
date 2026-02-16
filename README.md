@@ -10,7 +10,7 @@ dotnet run --project bam.data.tests/bam.data.tests.csproj -- --ut
 
 ### Integration Tests
 
-Integration tests require database containers to be running. A helper script starts all four containers via podman:
+Integration tests require database containers to be running. A helper script starts all five containers via podman:
 
 ```bash
 bash start-test-containers.sh
@@ -24,6 +24,7 @@ This starts (or skips if already running):
 | bam-data-test-mssql | mcr.microsoft.com/mssql/server:2022-latest | 1433 |
 | bam-data-test-mysql | mysql:8.0 | 3306 |
 | bam-data-test-oracle | gvenzl/oracle-xe:21-slim | 1521 |
+| bam-data-test-firebird | jacobalberty/firebird:v4.0 | 3050 |
 
 Run all integration tests:
 
@@ -38,6 +39,7 @@ dotnet run --project bam.data.tests/bam.data.tests.csproj -- --it=pg   # Postgre
 dotnet run --project bam.data.tests/bam.data.tests.csproj -- --it=ms   # MSSQL
 dotnet run --project bam.data.tests/bam.data.tests.csproj -- --it=my   # MySQL
 dotnet run --project bam.data.tests/bam.data.tests.csproj -- --it=or   # Oracle
+dotnet run --project bam.data.tests/bam.data.tests.csproj -- --it=fb   # Firebird
 ```
 
 After all integration tests complete, the `[AfterIntegrationTests]` teardown automatically drops the `TestItem` table from each database.

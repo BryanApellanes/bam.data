@@ -39,44 +39,14 @@ namespace Bam.Data
             return this;
         }
 
-
-        public int Limit
-        {
-            get;
-            set;
-        }
-
         public override SqlStringBuilder SelectTop(int topCount, string tableName, params string[] columnNames)
         {
-            this.Limit = topCount;
-
             if (columnNames.Length == 0)
             {
                 columnNames = new string[] { "*" };
             }
             string cols = columnNames.ToDelimited(s => string.Format("{0}", s));
-            StringBuilder.AppendFormat("SELECT {0} FROM {1} ", cols, TableNameFormatter(tableName));
-            return this;
-        }
-
-        public override void Execute(IDatabase db)
-        {
-            if (Limit > 0)
-            {
-                Go();
-            }
-            base.Execute(db);
-        }
-
-        public override SqlStringBuilder Go()
-        {
-            if (this.Limit > 0)
-            {
-                StringBuilder.AppendFormat(" Limit {0} ", this.Limit);
-            }
-
-            base.Go();
-            this.Limit = -1;
+            StringBuilder.AppendFormat("SELECT FIRST {0} {1} FROM {2} ", topCount, cols, TableNameFormatter(tableName));
             return this;
         }
     }

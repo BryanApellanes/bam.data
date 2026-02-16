@@ -17,6 +17,7 @@
       <ProjectReference Include="..\bam.data.mysql\bam.data.mysql.csproj" />
       <ProjectReference Include="..\bam.data.postgres\bam.data.postgres.csproj" />
       <ProjectReference Include="..\bam.data.oracle\bam.data.oracle.csproj" />
+      <ProjectReference Include="..\bam.data.firebird\bam.data.firebird.csproj" />
     </ItemGroup>
 
 </Project>
