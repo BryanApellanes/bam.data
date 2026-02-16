@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Bam.CommandLine;
 
 namespace Bam.Data.Tests.Helpers
 {
@@ -10,7 +11,7 @@ namespace Bam.Data.Tests.Helpers
 
             string envArgs = string.Join(" ", envVars.Select(e => $"-e {e}"));
             string args = $"run -d --name {name} -p {portMapping} {envArgs} {image}";
-            return RunCommand(args).Trim();
+            return RunPodman(args).Trim();
         }
 
         public static bool WaitForReady(string name, int maxWaitSeconds, Func<bool> isReady)
@@ -40,7 +41,7 @@ namespace Bam.Data.Tests.Helpers
         {
             try
             {
-                RunCommand($"stop {name}");
+                RunPodman($"stop {name}");
             }
             catch
             {
@@ -49,7 +50,7 @@ namespace Bam.Data.Tests.Helpers
 
             try
             {
-                RunCommand($"rm -f {name}");
+                RunPodman($"rm -f {name}");
             }
             catch
             {
@@ -61,7 +62,7 @@ namespace Bam.Data.Tests.Helpers
         {
             try
             {
-                string output = RunCommand($"inspect --format \"{{{{.State.Running}}}}\" {name}").Trim();
+                string output = RunPodman($"inspect --format \"{{{{.State.Running}}}}\" {name}").Trim();
                 return output.Equals("true", StringComparison.OrdinalIgnoreCase);
             }
             catch
@@ -70,7 +71,7 @@ namespace Bam.Data.Tests.Helpers
             }
         }
 
-        private static string RunCommand(string args)
+        private static string RunPodman(string args)
         {
             ProcessStartInfo psi = new ProcessStartInfo
             {
@@ -82,22 +83,14 @@ namespace Bam.Data.Tests.Helpers
                 CreateNoWindow = true
             };
 
-            using Process? process = Process.Start(psi);
-            if (process == null)
+            ProcessOutput result = psi.Run();
+
+            if (result.ExitCode != 0 && !string.IsNullOrWhiteSpace(result.StandardError))
             {
-                throw new InvalidOperationException("Failed to start podman process");
+                throw new InvalidOperationException($"podman {args} failed: {result.StandardError}");
             }
 
-            string output = process.StandardOutput.ReadToEnd();
-            string error = process.StandardError.ReadToEnd();
-            process.WaitForExit();
-
-            if (process.ExitCode != 0 && !string.IsNullOrWhiteSpace(error))
-            {
-                throw new InvalidOperationException($"podman {args} failed: {error}");
-            }
-
-            return output;
+            return result.StandardOutput;
         }
     }
 }
