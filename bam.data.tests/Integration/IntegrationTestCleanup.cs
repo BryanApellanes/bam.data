@@ -1,4 +1,4 @@
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using Bam.Console;
 using Bam.Test;
 using FirebirdSql.Data.FirebirdClient;

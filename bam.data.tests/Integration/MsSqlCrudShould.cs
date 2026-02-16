@@ -1,4 +1,4 @@
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using Bam.Data.MsSql;
 using Bam.Data.Tests.Dao;
 using Bam.Data.Tests.Helpers;

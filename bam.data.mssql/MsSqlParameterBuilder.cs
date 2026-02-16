@@ -2,7 +2,7 @@
 	Copyright © Bryan Apellanes 2015  
 */
 
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Data.Common;
 using System.Data;
 
