@@ -33,7 +33,7 @@ public class IntegrationTestCleanup
             using var conn = new NpgsqlConnection(PostgresConnectionString);
             conn.Open();
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = "DROP TABLE IF EXISTS \"TestItem\"";
+            cmd.CommandText = "DROP TABLE IF EXISTS TestItem";
             cmd.ExecuteNonQuery();
         });
 
@@ -60,7 +60,7 @@ public class IntegrationTestCleanup
             using var conn = new OracleConnection(OracleConnectionString);
             conn.Open();
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = "BEGIN EXECUTE IMMEDIATE 'DROP TABLE \"TestItem\"'; EXCEPTION WHEN OTHERS THEN NULL; END;";
+            cmd.CommandText = "BEGIN EXECUTE IMMEDIATE 'DROP TABLE \"TESTITEM\"'; EXCEPTION WHEN OTHERS THEN NULL; END;";
             cmd.ExecuteNonQuery();
         });
     }

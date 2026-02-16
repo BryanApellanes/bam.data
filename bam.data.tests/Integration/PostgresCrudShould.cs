@@ -31,7 +31,7 @@ public class PostgresCrudShould : IntegrationTestMenuContainer
 
         EnsureSchemaStatus schemaStatus = db.TryEnsureSchema<TestItem>();
         System.Console.WriteLine($"[postgres] TryEnsureSchema returned: {schemaStatus}");
-        db.ExecuteSql("DELETE FROM \"TestItem\"");
+        db.ExecuteSql("DELETE FROM TestItem");
         return db;
     }
 

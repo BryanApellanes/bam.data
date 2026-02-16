@@ -24,13 +24,19 @@ namespace Bam.Data.Oracle
         /// Instantiate a new OracleDatabase instance using the specified serverName
         /// connectionName and credentials
         /// </summary>
-        /// <param name="directoryPath"></param>
+        /// <param name="serverName"></param>
         /// <param name="connectionName"></param>
-        public OracleDatabase(string serverName, string connectionName, OracleCredentials creds = null)
+        /// <param name="creds"></param>
+        /// <param name="instanceName">The Oracle instance/service name (default "ORCL"). For Oracle XE images, use "XE".</param>
+        public OracleDatabase(string serverName, string connectionName, OracleCredentials creds = null, string instanceName = null)
             : base()
         {
             ConnectionStringResolver = new OracleConnectionStringResolver(serverName, creds);
             ConnectionName = connectionName;
+            if (!string.IsNullOrEmpty(instanceName))
+            {
+                ((OracleConnectionStringResolver)ConnectionStringResolver).InstanceName = instanceName;
+            }
             Register();
         }
 
@@ -38,8 +44,8 @@ namespace Bam.Data.Oracle
         /// Instantiate a new OracleDatabase instance using the specified serverName and
         /// credentials
         /// </summary>
-        public OracleDatabase(string serverName, OracleCredentials creds = null)
-            : this(serverName, "Oracle", creds)
+        public OracleDatabase(string serverName, OracleCredentials creds = null, string instanceName = null)
+            : this(serverName, "Oracle", creds, instanceName)
         { }
 
         /// <summary>
@@ -62,6 +68,24 @@ namespace Bam.Data.Oracle
         {
             get;
             set;
+        }
+
+        /// <summary>
+        /// Gets or sets the Oracle instance/service name. Setting this property
+        /// automatically invalidates the cached connection string so it re-resolves
+        /// with the new value.
+        /// </summary>
+        public string InstanceName
+        {
+            get => (ConnectionStringResolver as OracleConnectionStringResolver)?.InstanceName;
+            set
+            {
+                if (ConnectionStringResolver is OracleConnectionStringResolver resolver)
+                {
+                    resolver.InstanceName = value;
+                    _connectionString = null;
+                }
+            }
         }
 
         string _connectionString;

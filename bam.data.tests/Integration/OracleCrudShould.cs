@@ -3,7 +3,6 @@ using Bam.Data.Tests.Helpers;
 using Bam.Test;
 using Bam.Test.Integration;
 using OracleDatabase = Bam.Data.Oracle.OracleDatabase;
-using OracleConnectionStringResolver = Bam.Data.OracleConnectionStringResolver;
 using OracleConnection = Oracle.ManagedDataAccess.Client.OracleConnection;
 
 namespace Bam.Data.Tests.Integration;
@@ -17,10 +16,8 @@ public class OracleCrudShould : IntegrationTestMenuContainer
     private static OracleDatabase SetupDb()
     {
         OracleDatabase db = new OracleDatabase("127.0.0.1", "BamDataTest",
-            new OracleCredentials { UserId = "system", Password = Password });
-
-        // Override default InstanceName from ORCL to XE for gvenzl/oracle-xe image
-        ((OracleConnectionStringResolver)db.ConnectionStringResolver).InstanceName = "XE";
+            new OracleCredentials { UserId = "system", Password = Password },
+            instanceName: "XE");
 
         PodmanContainerHelper.WaitForReady(ContainerName, 120, () =>
         {
@@ -31,7 +28,7 @@ public class OracleCrudShould : IntegrationTestMenuContainer
 
         EnsureSchemaStatus schemaStatus = db.TryEnsureSchema<TestItem>();
         System.Console.WriteLine($"[oracle] TryEnsureSchema returned: {schemaStatus}");
-        db.ExecuteSql("DELETE FROM \"TestItem\"");
+        db.ExecuteSql("DELETE FROM \"TESTITEM\"");
         return db;
     }
 

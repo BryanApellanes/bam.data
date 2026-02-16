@@ -23,7 +23,7 @@ namespace Bam.Data.Npgsql
 
         public NpgsqlDatabase(string serverName, string databaseName, string connectionName, NpgsqlCredentials credentials = null)
         {
-            ColumnNameProvider = (c) => $"{c.Name}";
+            ColumnNameProvider = (c) => $"\"{c.Name}\"";
             ConnectionStringResolver = new NpgsqlConnectionStringResolver(serverName, databaseName.ToLowerInvariant(), credentials);
             ConnectionName = connectionName;
             Register();

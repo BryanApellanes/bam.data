@@ -146,8 +146,8 @@ namespace Bam.Data
 						InsertResult insertResult = result as InsertResult;
 						if (insertResult != null)
 						{
-							long id = long.Parse(IdParameter.Value.ToString());
-							insertResult.Value.Property("Id", id);
+							ulong id = ulong.Parse(IdParameter.Value.ToString());
+							((Dao)insertResult.Value).SetDbId(id);
 						}
 						else
 						{
