@@ -5,7 +5,7 @@
 using Bam.Data.Npgsql;
 using Bam.Data.Postgres;
 
-namespace Bam.Data.Posgres
+namespace Bam.Data.Postgres
 {
     public class PostgresDatabase : NpgsqlDatabase
     {
