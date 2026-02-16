@@ -20,6 +20,9 @@ public class MySqlCrudShould : IntegrationTestMenuContainer
         PodmanContainerHelper.StartContainer(ContainerName, Image, Port,
             $"MYSQL_ROOT_PASSWORD={RootPassword}", "MYSQL_DATABASE=bamtest");
 
+        // Clear stale connections from previous container
+        MySqlConnection.ClearAllPools();
+
         MySqlDatabase db = new MySqlDatabase("localhost", "bamtest",
             new MySqlCredentials { UserId = "root", Password = RootPassword });
 
@@ -30,7 +33,8 @@ public class MySqlCrudShould : IntegrationTestMenuContainer
             return true;
         });
 
-        db.TryEnsureSchema<TestItem>();
+        EnsureSchemaStatus schemaStatus = db.TryEnsureSchema<TestItem>();
+        System.Console.WriteLine($"[mysql] TryEnsureSchema returned: {schemaStatus}");
         return db;
     }
 
@@ -215,6 +219,7 @@ public class MySqlCrudShould : IntegrationTestMenuContainer
         .ShouldPass(because =>
         {
             because.TheResult.IsNotNull()
+                .As<TestItem>("Id is greater than 0", ti => ti?.Id > 0)
                 .As<TestItem>("Name roundtrips", ti => ti?.Name == "AllTypes")
                 .As<TestItem>("Description roundtrips", ti => ti?.Description == "Testing all column types")
                 .As<TestItem>("Quantity roundtrips", ti => ti?.Quantity == 42)

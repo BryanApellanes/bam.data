@@ -21,6 +21,9 @@ public class PostgresCrudShould : IntegrationTestMenuContainer
         PodmanContainerHelper.StartContainer(ContainerName, Image, Port,
             $"POSTGRES_PASSWORD={Password}", "POSTGRES_DB=bamtest");
 
+        // Clear stale connections from previous container
+        NpgsqlConnection.ClearAllPools();
+
         PostgresDatabase db = new PostgresDatabase("localhost", "bamtest",
             new NpgsqlCredentials { UserId = "postgres", Password = Password });
 
@@ -31,7 +34,8 @@ public class PostgresCrudShould : IntegrationTestMenuContainer
             return true;
         });
 
-        db.TryEnsureSchema<TestItem>();
+        EnsureSchemaStatus schemaStatus = db.TryEnsureSchema<TestItem>();
+        System.Console.WriteLine($"[postgres] TryEnsureSchema returned: {schemaStatus}");
         return db;
     }
 

@@ -23,7 +23,7 @@ namespace Bam.Data
         
         public override SqlStringBuilder Id(string idAs)
         {
-            Builder.AppendFormat(" RETURNING Id AS {0}{1}", idAs, this.GoText);
+            Builder.AppendFormat(" RETURNING {0} AS {1}{2}", ColumnNameFormatter("Id"), idAs, this.GoText);
             return this;
         }
         

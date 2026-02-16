@@ -14,23 +14,37 @@ public class MsSqlCrudShould : IntegrationTestMenuContainer
     private const string Image = "mcr.microsoft.com/mssql/server:2022-latest";
     private const string Port = "1433:1433";
     private const string SaPassword = "BamTest1!";
+    private const string MasterConnectionString =
+        "Data Source=tcp:localhost,1433;Initial Catalog=master;User ID=sa;Password=" + SaPassword + ";TrustServerCertificate=true;";
+    private const string TestDbConnectionString =
+        "Data Source=tcp:localhost,1433;Initial Catalog=BamDataTest;User ID=sa;Password=" + SaPassword + ";TrustServerCertificate=true;";
 
     private static MsSqlDatabase SetupDb()
     {
         PodmanContainerHelper.StartContainer(ContainerName, Image, Port,
             "ACCEPT_EULA=Y", $"MSSQL_SA_PASSWORD={SaPassword}");
 
-        MsSqlDatabase db = new MsSqlDatabase("localhost", "BamDataTest",
-            new MsSqlCredentials { UserId = "sa", Password = SaPassword });
+        // Clear stale connections from previous container
+        SqlConnection.ClearAllPools();
 
         PodmanContainerHelper.WaitForReady(ContainerName, 60, () =>
         {
-            using var conn = new SqlConnection(db.ConnectionString);
+            using var conn = new SqlConnection(MasterConnectionString);
             conn.Open();
             return true;
         });
 
-        db.TryEnsureSchema<TestItem>();
+        using (var conn = new SqlConnection(MasterConnectionString))
+        {
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'BamDataTest') CREATE DATABASE BamDataTest";
+            cmd.ExecuteNonQuery();
+        }
+
+        MsSqlDatabase db = new MsSqlDatabase(TestDbConnectionString, "BamDataTest");
+        EnsureSchemaStatus schemaStatus = db.TryEnsureSchema<TestItem>();
+        System.Console.WriteLine($"[mssql] TryEnsureSchema returned: {schemaStatus}");
         return db;
     }
 
