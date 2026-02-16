@@ -12,7 +12,7 @@ namespace Bam.Data
     {
         public override DbParameter BuildParameter(string name, object value)
         {
-            return new SqlParameter($"@{name}", value ?? DBNull.Value);
+            return new SqlParameter(EnsurePrefix(name, "@"), value ?? DBNull.Value);
         }
         public override DbParameter BuildParameter(IParameterInfo c)
         {

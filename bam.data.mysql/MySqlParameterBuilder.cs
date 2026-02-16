@@ -11,7 +11,7 @@ namespace Bam.Data
     {
         public override DbParameter BuildParameter(string name, object value)
         {
-            return new MySqlParameter($"@{name}", value);
+            return new MySqlParameter(EnsurePrefix(name, "@"), value);
         }
         public override DbParameter BuildParameter(IParameterInfo c)
         {

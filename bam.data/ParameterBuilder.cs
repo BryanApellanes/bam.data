@@ -12,6 +12,17 @@ namespace Bam.Data
     public abstract class ParameterBuilder: IParameterBuilder
     {
         /// <summary>
+        /// Ensures the parameter name starts with the specified prefix, adding it only if not already present.
+        /// </summary>
+        /// <param name="name">The parameter name.</param>
+        /// <param name="prefix">The prefix to ensure (e.g., "@" or ":").</param>
+        /// <returns>The name with the prefix applied exactly once.</returns>
+        protected static string EnsurePrefix(string name, string prefix)
+        {
+            return name.StartsWith(prefix) ? name : $"{prefix}{name}";
+        }
+
+        /// <summary>
         /// Builds a database parameter with the specified name and value.
         /// </summary>
         /// <param name="name">The parameter name.</param>

@@ -11,7 +11,7 @@ namespace Bam.Data
     {
         public override DbParameter BuildParameter(string name, object value)
         {
-            return new NpgsqlParameter($":{name}", value);
+            return new NpgsqlParameter(EnsurePrefix(name, ":"), value);
         }
 
         public override DbParameter BuildParameter(IParameterInfo c)

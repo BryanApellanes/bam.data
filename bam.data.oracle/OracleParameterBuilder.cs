@@ -12,7 +12,7 @@ namespace Bam.Data
     {
         public override DbParameter BuildParameter(string name, object value)
         {
-            return new OracleParameter($":{name}", value);
+            return new OracleParameter(EnsurePrefix(name, ":"), value);
         }
         public override DbParameter BuildParameter(IParameterInfo c)
         {
