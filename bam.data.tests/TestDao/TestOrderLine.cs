@@ -178,7 +178,7 @@ namespace Bam.Data.Tests.Dao
 			IQuerySet query = GetQuerySet(db);
 			query.Count<TestOrderLine>();
 			query.Execute(db);
-			return (long)query.Results[0].DataRow[0];
+			return Convert.ToInt64(query.Results[0].DataRow[0]);
 		}
 	}
 }

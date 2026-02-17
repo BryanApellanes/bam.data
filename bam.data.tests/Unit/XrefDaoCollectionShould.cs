@@ -167,7 +167,7 @@ public class XrefDaoCollectionShould : UnitTestMenuContainer
 
             var reloaded = TestOrder.Where(c => c.CustomerName == "XrefCharlie", database);
             int xrefCount = reloaded[0].TestTags.Count;
-            long tagCount = TestTag.Count(database);
+            int tagCount = TestTag.LoadAll(database).Count;
 
             return new object[] { xrefCount, tagCount };
         })
@@ -176,7 +176,7 @@ public class XrefDaoCollectionShould : UnitTestMenuContainer
         {
             var results = (object[])because.Result!;
             because.ItsTrue("xref has 0 tags after clear", (int)results[0] == 0);
-            because.ItsTrue("all 3 tags still exist in DB", (long)results[1] == 3);
+            because.ItsTrue("all 3 tags still exist in DB", (int)results[1] == 3);
         })
         .SoBeHappy(cleanup => CleanupDb(db))
         .UnlessItFailed();

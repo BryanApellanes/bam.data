@@ -125,7 +125,7 @@ public class PostgresCollectionShould : IntegrationTestMenuContainer
             xref.Add(tag3);
             xref.Commit(database);
 
-            xref.Remove(tag1);
+            xref.Remove(tag1, db);
             var afterRemoveCol = TestOrder.Where(c => c.CustomerName == "Pg-Charlie", database);
             int countAfterRemove = afterRemoveCol[0].TestTags.Count;
 
@@ -133,7 +133,7 @@ public class PostgresCollectionShould : IntegrationTestMenuContainer
             var afterClearCol = TestOrder.Where(c => c.CustomerName == "Pg-Charlie", database);
             int countAfterClear = afterClearCol[0].TestTags.Count;
 
-            long tagCount = TestTag.Count(database);
+            int tagCount = TestTag.LoadAll(database).Count;
 
             return new object[] { countAfterRemove, countAfterClear, tagCount };
         })
@@ -143,7 +143,7 @@ public class PostgresCollectionShould : IntegrationTestMenuContainer
             var results = (object[])because.Result!;
             because.ItsTrue("2 tags after remove", (int)results[0] == 2);
             because.ItsTrue("0 tags after clear", (int)results[1] == 0);
-            because.ItsTrue("all 3 tags still in DB", (long)results[2] == 3);
+            because.ItsTrue("all 3 tags still in DB", (int)results[2] == 3);
         })
         .SoBeHappy(_ => { })
         .UnlessItFailed();
