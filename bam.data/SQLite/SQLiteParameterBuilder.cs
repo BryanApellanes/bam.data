@@ -17,7 +17,7 @@ namespace Bam.Data
         public override DbParameter BuildParameter(IParameterInfo c)
         {
             string parameterName = $"@{c.ColumnName}{c.Number}";
-            object value = c.Value;
+            object? value = c.Value;
             if (value is DateTime || value is DateTime?)
             {
                 value = new Instant((DateTime) value).ToDateTime();

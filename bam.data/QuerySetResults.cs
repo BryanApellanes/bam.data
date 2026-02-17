@@ -54,7 +54,7 @@ namespace Bam.Data
         /// <returns></returns>
         public T ToDao<T>(int index) where T : IDao, new()
         {
-            InsertResult ir = _values[index] as InsertResult;
+            InsertResult? ir = _values[index] as InsertResult;
             if (ir == null)
             {
                 throw new InvalidOperationException("The specified index was not an InsertResult");
@@ -72,7 +72,7 @@ namespace Bam.Data
         /// <returns>The count value.</returns>
         public long ToCountResult(int index)
         {
-            CountResult cr = _values[index] as CountResult;
+            CountResult? cr = _values[index] as CountResult;
             if (cr == null)
             {
                 throw new InvalidOperationException("The specified index was not CountResult");

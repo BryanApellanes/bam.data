@@ -12,7 +12,7 @@ namespace Bam.Data
     {
         protected int currentItemIndex;
         protected int currentPageIndex;
-        protected List<T> currentPage;
+        protected List<T> currentPage = null!;
 
         public PagedEnumerator()
         {
@@ -60,7 +60,7 @@ namespace Bam.Data
         /// Returns the item of the current page at 
         /// the current item index.
         /// </summary>
-        public T Current => CurrentPage != null ? CurrentPage[CurrentItemIndex] : default(T);
+        public T Current => CurrentPage != null ? CurrentPage[CurrentItemIndex] : default(T)!;
 
         #endregion
 
@@ -75,7 +75,7 @@ namespace Bam.Data
 
         #region IEnumerator Members
 
-        object System.Collections.IEnumerator.Current => Current;
+        object System.Collections.IEnumerator.Current => Current!;
 
         /// <summary>
         /// Advances to the next item, moving to the next page if needed.

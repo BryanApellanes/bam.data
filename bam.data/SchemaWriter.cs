@@ -22,7 +22,7 @@ namespace Bam.Data
         /// <summary>
         /// Event fired when drop operations are enabled on this SchemaWriter.
         /// </summary>
-        public event SqlStringBuilderDelegate DropEnabled;
+        public event SqlStringBuilderDelegate DropEnabled = null!;
 
         protected void OnDropEnabled()
         {
@@ -192,7 +192,7 @@ namespace Bam.Data
         /// <param name="tableName">The name of the table to create.</param>
         /// <param name="columnDefinitions">The column definition SQL string.</param>
         /// <param name="fks">Optional foreign key definitions.</param>
-        public virtual void WriteCreateTable(string tableName, string columnDefinitions, dynamic[] fks = null)
+        public virtual void WriteCreateTable(string tableName, string columnDefinitions, dynamic[] fks = null!)
         {
             tableName = TableNameFormatter(tableName);
             Builder.AppendFormat(CreateTableFormat,
@@ -235,7 +235,7 @@ namespace Bam.Data
 			string datasetName = Dao.ConnectionName(daoType);
             foreach (Type type in daoType.Assembly.GetTypes())
             {
-                TableAttribute tableAttr = null;
+                TableAttribute? tableAttr = null;
                 if (type.HasCustomAttributeOfType<TableAttribute>(out tableAttr))
                 {
                     if (Dao.ConnectionName(type).Equals(datasetName))
@@ -246,7 +246,7 @@ namespace Bam.Data
             }
         }
 
-		protected virtual void WriteForeignKeys(Assembly daoAssembly, Func<Type, bool> typePredicate = null)
+		protected virtual void WriteForeignKeys(Assembly daoAssembly, Func<Type, bool> typePredicate = null!)
 		{
 			Args.ThrowIfNull(daoAssembly, "daoAssembly");
 			typePredicate = typePredicate == null ? t => t.HasCustomAttributeOfType<TableAttribute>() : typePredicate;
@@ -289,7 +289,7 @@ namespace Bam.Data
 
         protected virtual void WriteDropTable(Type daoType)
         {
-            TableAttribute attr = null;
+            TableAttribute? attr = null;
             if (daoType.HasCustomAttributeOfType<TableAttribute>(out attr))
             {
                 WriteDropTable(attr.TableName);
@@ -310,13 +310,13 @@ namespace Bam.Data
 
         protected virtual void WriteDropForeignKeys(Type daoType)
         {
-            TableAttribute table = null;
+            TableAttribute? table = null;
             if (daoType.HasCustomAttributeOfType<TableAttribute>(out table))
             {
                 PropertyInfo[] properties = daoType.GetProperties();
                 foreach (PropertyInfo prop in properties)
                 {
-                    ForeignKeyAttribute fk = null;
+                    ForeignKeyAttribute? fk = null;
                     if (prop.HasCustomAttributeOfType<ForeignKeyAttribute>(out fk))
                     {
                         Builder.AppendFormat(@"
@@ -340,10 +340,10 @@ IF EXISTS (
             ColumnAttribute[] columns = Db.GetColumns(daoType);
             if (columns.FirstOrDefault(c => c is KeyColumnAttribute) == null)
             {
-                ColumnAttribute idColumn = columns.FirstOrDefault(c => c.Name.Equals("Id"));
+                ColumnAttribute? idColumn = columns.FirstOrDefault(c => c.Name.Equals("Id"));
                 if (idColumn == null)
                 {
-                    Log.Warn("Specified dao type ({0}) has no KeyColumn specified and no 'Id' property", daoType.FullName);
+                    Log.Warn("Specified dao type ({0}) has no KeyColumn specified and no 'Id' property", daoType.FullName!);
                 }
                 else
                 {

@@ -16,7 +16,7 @@ namespace Bam.Data
 
         }
 
-        public object Value { get; set; }
+        public object Value { get; set; } = null!;
 
         #region IHasDataTable Members
         

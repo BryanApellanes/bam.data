@@ -15,7 +15,7 @@ namespace Bam.Data
 	/// </summary>
     public class DefaultDatabaseInitializer: IDatabaseInitializer
     {
-        static DefaultDatabaseInitializer _instance;
+        static DefaultDatabaseInitializer _instance = null!;
         static object _instanceLock = new object();
         /// <summary>
         /// The DefaultInitilizer Instance
@@ -84,7 +84,7 @@ namespace Bam.Data
         {
             if (_ignoreConnectionNames.Contains(connectionName))
             {
-                DatabaseInitializationResult result = new DatabaseInitializationResult(null, Args.Exception<Exception>("connection explicitly ignored: {0}", connectionName));                
+                DatabaseInitializationResult result = new DatabaseInitializationResult(null!, Args.Exception<Exception>("connection explicitly ignored: {0}", connectionName));                
                 return result;
             }
 
@@ -106,7 +106,7 @@ namespace Bam.Data
 
                 Type factoryType = ResolveFactoryType(conn);
                 
-                DbProviderFactory factory = factoryType.GetField("Instance").GetValue(null) as DbProviderFactory;
+                DbProviderFactory? factory = factoryType.GetField("Instance")!.GetValue(null) as DbProviderFactory;
                 if (factory == null)
                 {
                     throw new InvalidOperationException(string.Format("Unable to find Instance field of specified DbProviderFactory ({0})", conn.ProviderName));
@@ -118,7 +118,7 @@ namespace Bam.Data
             }
             catch (Exception ex)
             {
-                return new DatabaseInitializationResult(null, ex);
+                return new DatabaseInitializationResult(null!, ex);
             }
         }
 
@@ -156,7 +156,7 @@ namespace Bam.Data
                 throw new ArgumentNullException(string.Format("ProviderName was not specified for connection ({0}).", conn.Name));
             }
 
-            Type factoryType = Type.GetType(conn.ProviderName);
+            Type? factoryType = Type.GetType(conn.ProviderName);
 
             if (factoryType == null)
             {

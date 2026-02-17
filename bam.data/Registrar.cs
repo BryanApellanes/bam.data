@@ -9,7 +9,7 @@ namespace Bam.Data
     /// </summary>
     public class Registrar
     {
-        static Action<string> _current;
+        static Action<string> _current = null!;
         static object _currentLock = new object();
         /// <summary>
         /// Gets or sets the default registration action. Throws if not set when accessed.

@@ -20,7 +20,7 @@ namespace Bam.Data.Model
                 this.Type = value.GetType();
             }
             this.Writer = writer;
-            this.Menu = new ModelActionMenu(value, typeof(ModelActionAttribute));
+            this.Menu = new ModelActionMenu(value!, typeof(ModelActionAttribute));
         }        
 
         public abstract void Show();
@@ -29,7 +29,7 @@ namespace Bam.Data.Model
         {
             get;
             set;
-        }
+        } = null!;
 
         /// <summary>
         /// The menu writer
@@ -53,7 +53,7 @@ namespace Bam.Data.Model
         {
             get;
             private set;
-        }
+        } = null!;
 
         /// <summary>
         /// The previous menu
@@ -62,6 +62,6 @@ namespace Bam.Data.Model
         {
             get;
             set;
-        }
+        } = null!;
     }
 }

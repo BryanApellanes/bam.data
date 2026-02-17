@@ -33,7 +33,7 @@ namespace Bam.Data
                 return StartNumber + Parameters.Count();
             }
         }
-        Func<string, string> _columnNameProvider;
+        Func<string, string> _columnNameProvider = null!;
 
         /// <summary>
         /// Gets or sets the function used to format column names in SQL output (defaults to bracket wrapping).

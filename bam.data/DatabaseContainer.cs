@@ -123,7 +123,7 @@ namespace Bam.Data
         {
             get;
             set;
-        }
+        } = null!;
 
         protected internal List<string> TriedFallback
         {
@@ -136,7 +136,7 @@ namespace Bam.Data
             DatabaseInitializationResult dir = DatabaseInitializers.TryInitialize(connectionName);
             if (dir.Success)
             {
-                databases.AddMissing(connectionName, dir.Database);
+                databases.TryAdd(connectionName, dir.Database!);
             }
             else
             {
@@ -148,7 +148,7 @@ namespace Bam.Data
                 }
                 else
                 {
-                    throw dir.Exception;
+                    throw dir.Exception!;
                 }
             }
         }

@@ -64,7 +64,7 @@ namespace Bam.Data
 
                     conn.Close();
                     conn.Dispose();
-                    conn = null;
+                    conn = null!;
                 }
             }
             catch (Exception ex)

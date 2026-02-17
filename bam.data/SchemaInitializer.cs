@@ -20,7 +20,7 @@ namespace Bam.Data
             this.RegistrarCaller = registrarCallerAssemblyQaulifiedName;
         }
         public SchemaInitializer(Type schemaContextType, Type registrarCallerType)
-            : this(schemaContextType.AssemblyQualifiedName, registrarCallerType.AssemblyQualifiedName)
+            : this(schemaContextType.AssemblyQualifiedName!, registrarCallerType.AssemblyQualifiedName!)
         {
         }
 
@@ -28,21 +28,21 @@ namespace Bam.Data
         /// The FullName of the database context to initialize if AssemblyPath is specified.
         /// Otherwise, the assembly qualified type name.
         /// </summary>
-        public string SchemaContext { get; set; }
+        public string SchemaContext { get; set; } = null!;
 
         /// <summary>
         /// The AssemblyQualifiedName of an IRegistrarCaller implementation
         /// used to register the underlying database type (SQLite, SqlClient, etc.)
         /// </summary>
-        public string RegistrarCaller { get; set; }
+        public string RegistrarCaller { get; set; } = null!;
 
         /// <summary>
         /// If specified, should be the path to the assembly containing the 
         /// SchemaContext to be initialized.
         /// </summary>
-        public string SchemaAssemblyPath { get; set; }
+        public string SchemaAssemblyPath { get; set; } = null!;
 
-        protected internal string SchemaName { get; set; }
+        protected internal string SchemaName { get; set; } = null!;
 
         public override string ToString()
         {
@@ -52,36 +52,36 @@ namespace Bam.Data
         public bool Initialize(ILogger logger, out Exception ex)
         {
             bool success = false;
-            ex = null;
+            ex = null!;
             try
             {
                 Type context;
                 if (!string.IsNullOrEmpty(SchemaAssemblyPath))
                 {
                     Assembly assembly = Assembly.LoadFrom(SchemaAssemblyPath);
-                    context = assembly.GetType(SchemaContext); 
+                    context = assembly.GetType(SchemaContext)!;
                     if (context == null)
                     {
-                        context = assembly.GetTypes().FirstOrDefault(t => t.AssemblyQualifiedName.Equals(SchemaContext));
+                        context = assembly.GetTypes().FirstOrDefault(t => t!.AssemblyQualifiedName!.Equals(SchemaContext))!;
                     }
                 }
                 else
                 {
-                    context = Type.GetType(SchemaContext);
+                    context = Type.GetType(SchemaContext)!;
                 }
                 
                 Args.ThrowIf<ArgumentException>(context == null, "The specified SchemaContext ({0}) was not found", SchemaContext);
 
-                PropertyInfo prop = context.GetProperty("ConnectionName");
-                Args.ThrowIf<ArgumentException>(prop == null, "{0}.ConnectionName property was not found, make sure you're using the latest BamFramework.", context.Name);                
+                PropertyInfo? prop = context!.GetProperty("ConnectionName");
+                Args.ThrowIf<ArgumentException>(prop == null, "{0}.ConnectionName property was not found, make sure you're using the latest BamFramework.", context!.Name);
 
-                SchemaName = (string)prop.GetValue(null);
+                SchemaName = (string)prop!.GetValue(null)!;
 
                 RegistrarCallerFactory registrarFactory = new RegistrarCallerFactory();
                 IRegistrarCaller registrarCaller = registrarFactory.CreateRegistrarCaller(RegistrarCaller);
                 Args.ThrowIf<ArgumentException>(registrarCaller == null, "Unable to instantiate IRegistrarCaller of type ({0})", RegistrarCaller);
 
-                registrarCaller.Register(SchemaName);
+                registrarCaller!.Register(SchemaName!);
 
                 Exception ensureSchemaException;
                 if (!Db.TryEnsureSchema(SchemaName, out ensureSchemaException))

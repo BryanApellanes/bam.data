@@ -106,7 +106,7 @@ namespace Bam.Data
                 }
             }
             
-            return new DatabaseInitializationResult(null, new DatabaseInitializationFailedException(_exceptionMessages));
+            return new DatabaseInitializationResult(null!, new DatabaseInitializationFailedException(_exceptionMessages));
         }
         
     }

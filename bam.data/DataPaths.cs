@@ -1,4 +1,4 @@
-﻿using Bam.Configuration;
+using Bam.Configuration;
 
 namespace Bam.Data
 {
@@ -13,7 +13,7 @@ namespace Bam.Data
         /// <param name="dataDirectoryProvider">The provider that resolves directory paths.</param>
         /// <param name="applicationNameProvider">The optional application name provider; defaults to DefaultConfigurationApplicationNameProvider.</param>
         /// <returns>A DataPaths instance with resolved paths.</returns>
-        public static DataPaths Get(IDataDirectoryProvider dataDirectoryProvider, IApplicationNameProvider applicationNameProvider = null)
+        public static DataPaths Get(IDataDirectoryProvider dataDirectoryProvider, IApplicationNameProvider applicationNameProvider = null!)
         {
             applicationNameProvider = applicationNameProvider ?? DefaultConfigurationApplicationNameProvider.Instance;
             return new DataPaths
@@ -33,41 +33,41 @@ namespace Bam.Data
         /// <summary>
         /// Gets or sets the root data directory path.
         /// </summary>
-        public string DataRoot { get; set; }
+        public string DataRoot { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the system data directory path.
         /// </summary>
-        public string SysData { get; set; }
+        public string SysData { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the application data directory path.
         /// </summary>
-        public string AppData { get; set; }
+        public string AppData { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the user data directory path.
         /// </summary>
-        public string UserData { get; set; }
+        public string UserData { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the application database directory path.
         /// </summary>
-        public string AppDatabase { get; set; }
+        public string AppDatabase { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the application repository directory path.
         /// </summary>
-        public string AppRepository { get; set; }
+        public string AppRepository { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the application files directory path.
         /// </summary>
-        public string AppFiles { get; set; }
+        public string AppFiles { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the application email templates directory path.
         /// </summary>
-        public string AppEmailTemplates { get; set; }
+        public string AppEmailTemplates { get; set; } = null!;
     }
 }

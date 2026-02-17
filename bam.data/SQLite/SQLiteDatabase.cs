@@ -30,8 +30,8 @@ namespace Bam.Data.SQLite
         public SQLiteDatabase(FileInfo databaseFile)
         {
             _databaseFile = databaseFile;
-            DirectoryInfo directoryInfo = databaseFile.Directory;
-            SetDirectory(directoryInfo.FullName);
+            DirectoryInfo? directoryInfo = databaseFile.Directory;
+            SetDirectory(directoryInfo!.FullName);
             ConnectionName = Path.GetFileNameWithoutExtension(databaseFile.FullName);
             Register();
         }
@@ -57,36 +57,36 @@ namespace Bam.Data.SQLite
             return new SQLiteDatabase(builder.DataSource);
         }
         
-        public IConnectionStringResolver ConnectionStringResolver
+        public IConnectionStringResolver? ConnectionStringResolver
         {
             get;
             set;
         }
 
-        string _connectionString;
-        public override string ConnectionString
+        string _connectionString = null!;
+        public override string? ConnectionString
         {
             get
             {
                 if (string.IsNullOrEmpty(_connectionString))
                 {
-                    _connectionString = ConnectionStringResolver?.Resolve(ConnectionName).ConnectionString;
+                    _connectionString = ConnectionStringResolver?.Resolve(ConnectionName!).ConnectionString!;
                 }
 
-                return _connectionString;
+                return _connectionString!;
             }
-            set => _connectionString = value;
+            set => _connectionString = value!;
         }
 
-        FileInfo _databaseFile;
+        FileInfo _databaseFile = null!;
         public FileInfo DatabaseFile
         {
             get
             {
                 if (_databaseFile == null)
                 {
-                    ConnectionStringResolver.IsInstanceOfType<SQLiteConnectionStringResolver>("ConnectionStringResolver was not of the expected SQLiteConnectionStringResolver type");
-                    _databaseFile = new FileInfo(((SQLiteConnectionStringResolver)ConnectionStringResolver).GetDatabaseFilePath(ConnectionName));
+                    ConnectionStringResolver!.IsInstanceOfType<SQLiteConnectionStringResolver>("ConnectionStringResolver was not of the expected SQLiteConnectionStringResolver type");
+                    _databaseFile = new FileInfo(((SQLiteConnectionStringResolver)ConnectionStringResolver!).GetDatabaseFilePath(ConnectionName!));
                 }
 
                 return _databaseFile;

@@ -1,4 +1,4 @@
-﻿/*
+/*
 	Copyright © Bryan Apellanes 2015  
 */
 
@@ -35,11 +35,11 @@ namespace Bam.Data
         T AddChild();
         void AddRange(IEnumerable<T> values);
         To As<To>() where To : IHasDataTable, new();
-        void Clear(IDatabase db = null);
+        void Clear(IDatabase db = null!);
         void Commit();
         void Commit(IDatabase db);
         Co Convert<Co>() where Co : IDaoCollection<C, T>, IHasDataTable, new();
-        void Delete(IDatabase db = null);
+        void Delete(IDatabase db = null!);
         IEnumerator<T> GetEnumerator();
         List<T> GetPage(int pageNum);
         T JustOne(bool saveIfNew = false);
@@ -53,7 +53,7 @@ namespace Bam.Data
         void SetDataTable(DataTable table);
         List<T> Sorted(Comparison<T> comparison);
         object[] ToJsonSafe();
-        void WriteCommit(ISqlStringBuilder sql, IDatabase db = null);
+        void WriteCommit(ISqlStringBuilder sql, IDatabase db = null!);
         void WriteDelete(ISqlStringBuilder sql);
     }
 }

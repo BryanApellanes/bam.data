@@ -14,8 +14,8 @@ namespace Bam.Data
     public partial class SqlStringBuilder : IHasFilters, ISqlStringBuilder
     {
         const string InsertFormat = "INSERT INTO {0} ";
-        StringBuilder _stringBuilder;
-        protected List<IParameterInfo> parameters;
+        StringBuilder _stringBuilder = null!;
+        protected List<IParameterInfo> parameters = null!;
         public static implicit operator string(SqlStringBuilder sqlStringBuilder)
         {
             return sqlStringBuilder._stringBuilder.ToString();
@@ -102,7 +102,7 @@ namespace Bam.Data
             }
             else
             {
-                return null;
+                return null!;
             }
         }
 
@@ -125,7 +125,7 @@ namespace Bam.Data
         /// <returns></returns>
         public bool TryExecute(IDatabase db, out Exception ex)
         {
-            ex = null;
+            ex = null!;
             try
             {
                 Execute(db);
@@ -173,7 +173,7 @@ namespace Bam.Data
             return dataSet;
         }
 
-        public virtual DataSet GetDataSet(IDatabase db, bool releaseConnection = true, DbConnection conn = null, DbTransaction tx = null)
+        public virtual DataSet GetDataSet(IDatabase db, bool releaseConnection = true, DbConnection? conn = null!, DbTransaction? tx = null)
         {
             if (conn == null)
             {
@@ -181,12 +181,12 @@ namespace Bam.Data
             }
             if (db.ServiceProvider.TryGet(out IParameterBuilder parameterBuilder))
             {
-                return db.GetDataSetFromSql(this, CommandType.Text, releaseConnection, conn, tx, parameterBuilder.GetParameters(this));
+                return db.GetDataSetFromSql(this, CommandType.Text, releaseConnection, conn, tx!, parameterBuilder.GetParameters(this));
             }
             else
             {
-                Args.Throw<InvalidOperationException>("Unable to get IParameterBuilder for the database with connection string ({0}), should you specify a Database instance of your own instead of depending on the default database initializer?  Be sure to call the appropriate Registrar method first", db.ConnectionString);
-                return null;
+                Args.Throw<InvalidOperationException>("Unable to get IParameterBuilder for the database with connection string ({0}), should you specify a Database instance of your own instead of depending on the default database initializer?  Be sure to call the appropriate Registrar method first", db.ConnectionString!);
+                return null!;
             }
         }
 
@@ -198,7 +198,7 @@ namespace Bam.Data
         /// <summary>
         /// Gets or sets the text used as a statement separator (default is ";\r\n").
         /// </summary>
-        public string GoText { get; set; }
+        public string GoText { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the next parameter number to assign.
@@ -435,7 +435,7 @@ namespace Bam.Data
 
         public ISqlStringBuilder OrderBy<C>(IOrderBy<C> orderBy) where C : IQueryFilter, IFilterToken, new()
         {
-            return OrderBy(orderBy.Column.ToString(), orderBy.SortOrder);
+            return OrderBy(orderBy.Column.ToString()!, orderBy.SortOrder);
         }
 
         public virtual ISqlStringBuilder Where(IQueryFilter filter)

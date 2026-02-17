@@ -1,4 +1,4 @@
-﻿using Bam.Data;
+using Bam.Data;
 
 namespace Bam
 {
@@ -52,7 +52,7 @@ namespace Bam
         /// <summary>
         /// Gets or sets the data-related paths.
         /// </summary>
-        public DataPaths Data { get; set; }
+        public DataPaths Data { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the root path of the bam system.
@@ -86,7 +86,7 @@ namespace Bam
         /// <summary>
         /// Gets or sets the system path.
         /// </summary>
-        public string Sys { get; set; }
+        public string Sys { get; set; } = null!;
         /// <summary>
         /// Gets or sets the generated code path.
         /// </summary>
@@ -106,15 +106,15 @@ namespace Bam
         /// <summary>
         /// Gets or sets the NuGet packages path.
         /// </summary>
-        public string NugetPackages { get; set; }
+        public string NugetPackages { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the tests path.
         /// </summary>
-        public string Tests { get; set; }
+        public string Tests { get; set; } = null!;
         /// <summary>
         /// Gets or sets the builds path.
         /// </summary>
-        public string Builds { get; set; }
+        public string Builds { get; set; } = null!;
     }
 }

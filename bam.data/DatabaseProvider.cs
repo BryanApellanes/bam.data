@@ -1,4 +1,4 @@
-﻿using Bam.Configuration;
+using Bam.Configuration;
 using Bam.Logging;
 
 namespace Bam.Data
@@ -15,7 +15,7 @@ namespace Bam.Data
         public ILogger Logger
         {
             get; set;
-        }
+        } = null!;
 
         /// <summary>
         /// Sets all properties on the specified instances, where the property 
@@ -112,14 +112,14 @@ namespace Bam.Data
         /// <param name="objectType">The type to determine the database for.</param>
         /// <param name="info">Optional additional info for database resolution.</param>
         /// <returns>A database instance of type T.</returns>
-        public abstract T GetAppDatabaseFor(IApplicationNameProvider appNameProvider, Type objectType, string info = null);
+        public abstract T GetAppDatabaseFor(IApplicationNameProvider appNameProvider, Type objectType, string info = null!);
         /// <summary>
         /// Gets a system database for the specified type.
         /// </summary>
         /// <param name="objectType">The type to determine the database for.</param>
         /// <param name="info">Optional additional info for database resolution.</param>
         /// <returns>A database instance of type T.</returns>
-        public abstract T GetSysDatabaseFor(Type objectType, string info = null);
+        public abstract T GetSysDatabaseFor(Type objectType, string info = null!);
         /// <summary>
         /// Gets the file path for an application database for the specified type.
         /// </summary>
@@ -127,14 +127,14 @@ namespace Bam.Data
         /// <param name="type">The type to determine the database path for.</param>
         /// <param name="info">Optional additional info for path resolution.</param>
         /// <returns>The file path to the application database.</returns>
-        public abstract string GetAppDatabasePathFor(IApplicationNameProvider appNameProvider, Type type, string info = null);
+        public abstract string GetAppDatabasePathFor(IApplicationNameProvider appNameProvider, Type type, string info = null!);
         /// <summary>
         /// Gets the file path for a system database for the specified type.
         /// </summary>
         /// <param name="type">The type to determine the database path for.</param>
         /// <param name="info">Optional additional info for path resolution.</param>
         /// <returns>The file path to the system database.</returns>
-        public abstract string GetSysDatabasePathFor(Type type, string info = null);
+        public abstract string GetSysDatabasePathFor(Type type, string info = null!);
         private void TryEnsureSchemas(IDatabase db, params Type[] daoTypes)
         {
             daoTypes.Each(new { Database = db, Logger = Logger }, (daoContext, dao) =>
@@ -163,14 +163,14 @@ namespace Bam.Data
             return GetSysDatabaseFor(instance);
         }
 
-        IDatabase IDatabaseProvider.GetAppDatabaseFor(IApplicationNameProvider appNameProvider, Type objectType, string info)
+        IDatabase IDatabaseProvider.GetAppDatabaseFor(IApplicationNameProvider appNameProvider, Type objectType, string? info)
         {
-            return GetAppDatabaseFor(appNameProvider, objectType, info);
+            return GetAppDatabaseFor(appNameProvider, objectType, info!);
         }
 
-        IDatabase IDatabaseProvider.GetSysDatabaseFor(Type objectType, string info)
+        IDatabase IDatabaseProvider.GetSysDatabaseFor(Type objectType, string? info)
         {
-            return GetSysDatabaseFor(objectType, info);
+            return GetSysDatabaseFor(objectType, info!);
         }
     }
 }

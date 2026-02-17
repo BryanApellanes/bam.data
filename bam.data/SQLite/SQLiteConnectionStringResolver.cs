@@ -18,7 +18,7 @@ namespace Bam.Data
             
         }
 
-        static SQLiteConnectionStringResolver _instance;
+        static SQLiteConnectionStringResolver _instance = null!;
         public static SQLiteConnectionStringResolver Instance
         {
             get
@@ -49,8 +49,8 @@ namespace Bam.Data
         {
             get;
             set;
-        }
-        Func<DirectoryInfo> _directoryResolver;
+        } = null!;
+        Func<DirectoryInfo> _directoryResolver = null!;
         object _directoryResolverLock = new object();
         public Func<DirectoryInfo> DirectoryResolver
         {
@@ -83,9 +83,9 @@ namespace Bam.Data
                 ConnectionString = $"Data Source={dbFile};Version=3;"
             };
             FileInfo dbFileInfo = new FileInfo(dbFile);
-            if (!dbFileInfo.Directory.Exists)
+            if (!dbFileInfo.Directory!.Exists)
             {
-                dbFileInfo.Directory.Create();
+                dbFileInfo.Directory!.Create();
             }
             return s;
         }

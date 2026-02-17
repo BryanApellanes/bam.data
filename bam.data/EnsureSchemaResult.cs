@@ -1,4 +1,4 @@
-﻿namespace Bam.Data
+namespace Bam.Data
 {
     /// <summary>
     /// Represents the result of an EnsureSchema operation, including the database, schema name, and status.
@@ -8,12 +8,12 @@
         /// <summary>
         /// Gets or sets the database that the schema was ensured on.
         /// </summary>
-        public IDatabase Database { get; set; }
+        public IDatabase Database { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the name of the schema that was ensured.
         /// </summary>
-        public string SchemaName { get; set; }
+        public string SchemaName { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the status of the EnsureSchema operation.
@@ -22,7 +22,7 @@
 
         public override bool Equals(object? obj)
         {
-            EnsureSchemaResult compareTo = obj as EnsureSchemaResult;
+            EnsureSchemaResult? compareTo = obj as EnsureSchemaResult;
             if(compareTo != null)
             {
                 return Database.Equals(compareTo.Database) && SchemaName.Equals(compareTo.SchemaName);

@@ -1,4 +1,4 @@
-﻿using Bam.Configuration;
+using Bam.Configuration;
 using Bam.Data.Repositories;
 using Bam.Data.SQLite;
 using Bam.Logging;
@@ -28,7 +28,7 @@ namespace Bam.Data
             EmailTemplatesDirectory = "EmailTemplates";
             AssemblyDirectory = "Assemblies";
             ProcessMode = ProcessMode.Current;
-            Logger = Log.Default;            
+            Logger = Log.Default!;            
         }
 
         /// <summary>
@@ -36,10 +36,10 @@ namespace Bam.Data
         /// </summary>
         /// <param name="processMode">The process mode to use for directory resolution.</param>
         /// <param name="logger">The optional logger instance.</param>
-        public DataSourceProvider(ProcessMode processMode, ILogger logger = null):this()
+        public DataSourceProvider(ProcessMode processMode, ILogger logger = null!):this()
         {
             ProcessMode = processMode;
-            Logger = logger ?? Log.Default;
+            Logger = logger ?? Log.Default!;
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace Bam.Data
         public string EmailTemplatesDirectory { get; set; }
         public string AssemblyDirectory { get; set; }
 
-        static DataSourceProvider _default;
+        static DataSourceProvider _default = null!;
         static readonly object _defaultLock = new object();
         /// <summary>
         /// Gets the default instance.
@@ -117,7 +117,7 @@ namespace Bam.Data
             }
         }
 
-        static DataSourceProvider _fromConfig;
+        static DataSourceProvider _fromConfig = null!;
         static readonly object _fromConfigLock = new object();
         /// <summary>
         /// Gets the current instance configured for the current ProcessMode.
@@ -339,13 +339,13 @@ namespace Bam.Data
         /// <returns></returns>
         public override SQLiteDatabase GetSysDatabaseFor(object instance)
         {
-            string databaseName = instance.GetType().FullName;
-            string schemaName = instance.Property<string>("SchemaName", false);
+            string? databaseName = instance.GetType().FullName;
+            string? schemaName = instance.Property<string>("SchemaName", false);
             if (!string.IsNullOrEmpty(schemaName))
             {
                 databaseName = $"{databaseName}_{schemaName}";
             }
-            return new SQLiteDatabase(GetSysDatabaseDirectory().FullName, databaseName);
+            return new SQLiteDatabase(GetSysDatabaseDirectory().FullName, databaseName!);
         }
 
         /// <summary>
@@ -354,12 +354,12 @@ namespace Bam.Data
         /// <param name="type"></param>
         /// <param name="info"></param>
         /// <returns></returns>
-        public override string GetSysDatabasePathFor(Type type, string info = null)
+        public override string GetSysDatabasePathFor(Type type, string info = null!)
         {
             return GetSysDatabaseFor(type, info).DatabaseFile.FullName;
         }
         
-        public override SQLiteDatabase GetSysDatabaseFor(Type objectType, string info = null)
+        public override SQLiteDatabase GetSysDatabaseFor(Type objectType, string info = null!)
         {
             return GetDatabaseFor(objectType, () => GetSysDatabaseDirectory().FullName, info);
         }
@@ -369,7 +369,7 @@ namespace Bam.Data
             return GetDatabaseFor(instance.GetType(), () => GetAppDatabaseDirectory(appNameProvider).FullName);
         }
 
-        public override SQLiteDatabase GetAppDatabaseFor(IApplicationNameProvider appNameProvider, Type objectType, string info = null)
+        public override SQLiteDatabase GetAppDatabaseFor(IApplicationNameProvider appNameProvider, Type objectType, string info = null!)
         {
             return GetDatabaseFor(objectType, () => GetAppDatabaseDirectory(appNameProvider).FullName, info);
         }
@@ -381,18 +381,18 @@ namespace Bam.Data
         /// <param name="type"></param>
         /// <param name="info"></param>
         /// <returns></returns>
-        public override string GetAppDatabasePathFor(IApplicationNameProvider appNameProvider, Type type, string info = null)
+        public override string GetAppDatabasePathFor(IApplicationNameProvider appNameProvider, Type type, string info = null!)
         {
             return GetAppDatabaseFor(appNameProvider, type, info).DatabaseFile.FullName;
         }
 
-        protected SQLiteDatabase GetDatabaseFor(Type objectType, Func<string> databasePathProvider, string info = null)
+        protected SQLiteDatabase GetDatabaseFor(Type objectType, Func<string> databasePathProvider, string info = null!)
         {
             string connectionName = Dao.ConnectionName(objectType);
-            string fileName = string.IsNullOrEmpty(info) ? (string.IsNullOrEmpty(connectionName) ? objectType.FullName : connectionName) : $"{objectType.FullName}_{info}";
+            string? fileName = string.IsNullOrEmpty(info) ? (string.IsNullOrEmpty(connectionName) ? objectType.FullName : connectionName) : $"{objectType.FullName}_{info}";
             string directoryPath = databasePathProvider();
-            SQLiteDatabase db = new SQLiteDatabase(directoryPath, fileName);
-            Logger.Info("Returned SQLiteDatabase with path {0} for type {1}\r\nFullPath: {2}\r\nName: {3}", db.DatabaseFile.FullName, objectType.Name, directoryPath, fileName);
+            SQLiteDatabase db = new SQLiteDatabase(directoryPath, fileName!);
+            Logger.Info("Returned SQLiteDatabase with path {0} for type {1}\r\nFullPath: {2}\r\nName: {3}", db.DatabaseFile.FullName, objectType.Name, directoryPath, fileName!);
             return db;
         }
 

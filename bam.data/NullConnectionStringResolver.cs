@@ -26,7 +26,7 @@ namespace Bam.Data
 		/// <summary>
 		/// Gets or sets the database associated with this resolver.
 		/// </summary>
-		public Database Database { get; set; }
+		public Database Database { get; set; } = null!;
 
         #region IConnectionStringResolver Members
 

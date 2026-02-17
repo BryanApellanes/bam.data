@@ -12,7 +12,7 @@ namespace Bam.Data
     /// </summary>
     public class DefaultConnectionStringResolver: IConnectionStringResolver
     {
-        static DefaultConnectionStringResolver _instance;
+        static DefaultConnectionStringResolver _instance = null!;
         static object _instanceLock = new object();
         /// <summary>
         /// Gets the singleton instance of DefaultConnectionStringResolver.
@@ -43,7 +43,7 @@ namespace Bam.Data
         {
             get;
             set;
-        }
+        } = null!;
 
         #region IConnectionStringResolver Members
 

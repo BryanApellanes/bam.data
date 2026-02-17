@@ -5,7 +5,7 @@ namespace Bam.Data
     /// </summary>
     public class QueryValue
     {
-        public QueryValue(object value, QueryFilter filter = null)
+        public QueryValue(object value, QueryFilter filter = null!)
         {
             QueryFilter = filter ?? new QueryFilter();
             if (value == null)
@@ -21,7 +21,7 @@ namespace Bam.Data
 
         public QueryFilter QueryFilter { get; set; }
         public Type Type { get; set; }
-        public object Value { get; private set; }
+        public object Value { get; private set; } = null!;
 
         /// <summary>
         /// If the value is a ulong then the stored value is mapped to a long to account for some storage engines.
@@ -35,7 +35,7 @@ namespace Bam.Data
         
         public virtual object GetRawValue()
         {
-            return Value;
+            return Value = null!;
         }
 
         public virtual object GetValue()
@@ -49,7 +49,7 @@ namespace Bam.Data
         
         public virtual object GetValue(bool mapUlongToLong)
         {
-            return (Type == typeof(ulong) && mapUlongToLong) ? Dao.MapUlongToLong((ulong)Value) : Value;
+            return (Type == typeof(ulong) && mapUlongToLong) ? Dao.MapUlongToLong((ulong)Value) : Value = null!;
         }
 
         public bool IsNull()

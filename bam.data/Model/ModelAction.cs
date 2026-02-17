@@ -25,7 +25,7 @@ namespace Bam.Data.Model
         {
             get;
             set;
-        }
+        } = null!;
 
         public object Run(params object[] parameters)
         {
@@ -34,10 +34,10 @@ namespace Bam.Data.Model
 
         public T Run<T>(params object[] parameters)
         {
-            T val = default(T);
-            val = (T)Method.Invoke(Owner, parameters);
-            this.LastResult = val;
-            return val;
+            T? val = default(T);
+            val = (T)Method.Invoke(Owner, parameters)!;
+            this.LastResult = val!;
+            return val!;
         }
 
         public object Owner
@@ -50,7 +50,7 @@ namespace Bam.Data.Model
         {
             get;
             private set;
-        }
+        } = null!;
 
         public MethodInfo Method
         {
@@ -60,7 +60,7 @@ namespace Bam.Data.Model
 
         public override string ToString()
         {
-            string value = Description;
+            string value = Description = null!;
             if (string.IsNullOrEmpty(value))
             {
                 value = Name;
@@ -68,10 +68,10 @@ namespace Bam.Data.Model
 
             if (string.IsNullOrEmpty(value))
             {
-                value = base.ToString();
+                value = base.ToString()!;
             }
 
-            return value;
+            return value!;
         }
     }
 }

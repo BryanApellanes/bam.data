@@ -1,4 +1,4 @@
-﻿using Bam.Logging;
+using Bam.Logging;
 using System.Data.Common;
 using System.Diagnostics;
 
@@ -34,7 +34,7 @@ namespace Bam.Data
             _next = -1;
         }
 
-        protected List<DbConnection> Connections { get; set; }
+        protected List<DbConnection> Connections { get; set; } = null!;
         
         int _maxConnections;
         public override int MaxConnections
@@ -56,7 +56,7 @@ namespace Bam.Data
 
             int returnIndex = GetNext();
 
-            if (Connections[returnIndex] != null)
+            if (Connections![returnIndex] != null)
             {
                 Log.Debug($"Releasing connection at index {returnIndex}.");
                 DbConnection c = Connections[returnIndex];

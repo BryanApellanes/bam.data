@@ -1,4 +1,4 @@
-﻿using System.Data;
+using System.Data;
 using System.Data.Common;
 
 namespace Bam.Data
@@ -11,7 +11,7 @@ namespace Bam.Data
         /// <summary>
         /// Gets or sets the database this connection manager serves.
         /// </summary>
-        public virtual IDatabase Database { get; set; }
+        public virtual IDatabase Database { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the maximum number of concurrent connections.
@@ -26,7 +26,7 @@ namespace Bam.Data
         /// <summary>
         /// Gets or sets the event handler invoked when a connection's state changes.
         /// </summary>
-        public StateChangeEventHandler StateChangeEventHandler { get; set; }
+        public StateChangeEventHandler StateChangeEventHandler { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets a value indicating whether to block while releasing connections.
@@ -48,7 +48,7 @@ namespace Bam.Data
         /// <param name="dbConnection">The connection to release.</param>
         public abstract void ReleaseConnection(DbConnection dbConnection);
 
-        protected DbConnection CreateConnection(StateChangeEventHandler stateChangeEventHandler = null)
+        protected DbConnection CreateConnection(StateChangeEventHandler stateChangeEventHandler = null!)
         {
             stateChangeEventHandler = stateChangeEventHandler ?? StateChangeEventHandler;
             DbConnection connection = Database.CreateConnection();

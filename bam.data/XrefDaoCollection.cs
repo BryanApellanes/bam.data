@@ -32,7 +32,7 @@ namespace Bam.Data
             _book = new Book<L>();
             if (parent != null && !parent.IsNew)
             {
-                Database = parent?.Database;
+                Database = parent?.Database!;
 
                 if (load && Database != null)
                 {
@@ -56,7 +56,7 @@ namespace Bam.Data
         {
             get;
             set;
-        }
+        } = null!;
 
         /// <summary>
         /// Gets a value indicating whether this collection has been loaded from the database.
@@ -73,7 +73,7 @@ namespace Bam.Data
             Load();
         }
 
-        IDatabase _database;
+        IDatabase _database = null!;
         /// <summary>
         /// Gets or sets the database for this collection.
         /// </summary>
@@ -119,7 +119,7 @@ namespace Bam.Data
                         XrefsByListId = new Dictionary<ulong, X>();
 
                         IQuerySet q = Dao.GetQuerySet(db);
-                        q.Select<X>().Where(new AssignValue(ParentColumnName, Parent.DbId.Value, q.ColumnNameFormatter));
+                        q.Select<X>().Where(new AssignValue(ParentColumnName, Parent.DbId!.Value!, q.ColumnNameFormatter));
                         q.Execute(db);
 
                         // should have all the ids of L that should be retrieved
@@ -213,7 +213,7 @@ namespace Bam.Data
         /// does not delete the item from the database
         /// </summary>
         /// <param name="item"></param>
-        public void Remove(L item, Database db = null)
+        public void Remove(L item, Database db = null!)
         {
             if (_values.Contains(item))
             {
@@ -226,9 +226,9 @@ namespace Bam.Data
 
         private void DeleteXrefItem(L item, IDatabase db)
         {
-            if (XrefsByListId.ContainsKey(item.DbId.Value))
+            if (XrefsByListId.ContainsKey(item.DbId!.Value!))
             {
-                XrefsByListId[item.DbId.Value].Delete(db);
+                XrefsByListId[item.DbId.Value!].Delete(db);
             }
         }
 
@@ -238,7 +238,7 @@ namespace Bam.Data
         /// are not deleted.
         /// </summary>
         /// <param name="db"></param>
-        public void Clear(IDatabase db = null)
+        public void Clear(IDatabase? db = null!)
         {
             db = db ?? Database;
             foreach(L item in _values)
@@ -261,14 +261,14 @@ namespace Bam.Data
             return true;
         }
 
-        private void Initialize(DataTable table, IDatabase db = null)
+        private void Initialize(DataTable table, IDatabase db = null!)
         {
             db = db ?? Database;
-            ConstructorInfo _ctor = typeof(L).GetConstructor(new Type[] { typeof(Database), typeof(DataRow) });
+            ConstructorInfo? _ctor = typeof(L).GetConstructor(new Type[] { typeof(Database), typeof(DataRow) });
             _values = new List<L>();
             foreach (DataRow row in table.Rows)
             {
-                L dao = (L)_ctor.Invoke(new object[] { db, row });
+                L dao = (L)_ctor!.Invoke(new object[] { db, row });
                 _values.Add(dao);
             }
             _book = new Book<L>(_values);
@@ -302,8 +302,8 @@ namespace Bam.Data
             Commit(Database);
         }
 
-        public event ICommittableDelegate AfterCommit;
-        public void Commit(IDatabase db = null)
+        public event ICommittableDelegate AfterCommit = null!;
+        public void Commit(IDatabase? db = null!)
         {
             db ??= Database;
             SqlStringBuilder sql = db.ServiceProvider.Get<SqlStringBuilder>();
@@ -313,7 +313,7 @@ namespace Bam.Data
             AfterCommit?.Invoke(db, this);
         }
 
-        public void WriteCommit(ISqlStringBuilder sql, IDatabase db = null)
+        public void WriteCommit(ISqlStringBuilder sql, IDatabase? db = null!)
         {
             db = db ?? Database;
             List<L> children = new List<L>();
@@ -331,7 +331,7 @@ namespace Bam.Data
             };
         }
 
-        private X EnsureXref(L item, IDatabase db = null)
+        private X EnsureXref(L item, IDatabase db = null!)
         {
             db = db ?? Database;
             if (item.DbId != null && XrefsByListId.ContainsKey(item.DbId.Value))
@@ -345,9 +345,9 @@ namespace Bam.Data
                     item.Save(db);
                 }
 
-                X result = null;
+                X? result = null;
                 IQuerySet q = Dao.GetQuerySet(db);
-                q.Select<X>().Where(new QueryFilter(ListColumnName) == item.DbId.Value && new QueryFilter(ParentColumnName) == Parent.DbId.Value);
+                q.Select<X>().Where(new QueryFilter(ListColumnName) == item.DbId!.Value! && new QueryFilter(ParentColumnName) == Parent.DbId!.Value!);
 
                 q.Execute(db);
                 if (q.Results[0].DataTable.Rows.Count > 0)
@@ -357,7 +357,7 @@ namespace Bam.Data
                 else
                 {
                     result = new X();
-                    result.SetValue($"{Parent.GetType().Name}Id", Parent.DbId, false);
+                    result.SetValue($"{Parent.GetType().Name}Id", Parent.DbId!, false);
                     result.SetValue($"{typeof(L).Name}Id", item.DbId, false);
                     result.Save(db);
 
@@ -377,7 +377,7 @@ namespace Bam.Data
         /// well as all Xref entries if any.
         /// </summary>
         /// <param name="db"></param>
-        public void Delete(IDatabase db = null)
+        public void Delete(IDatabase? db = null!)
         {
             db ??= Database;
             SqlStringBuilder sql = db.ServiceProvider.Get<SqlStringBuilder>();
@@ -403,7 +403,7 @@ namespace Bam.Data
                 {
                     item.WriteDelete(sql);
                     sql.Go();
-                    XrefsByListId[item.DbId.Value].WriteDelete(sql);
+                    XrefsByListId[item.DbId!.Value!].WriteDelete(sql);
                 }
                 sql.Go();
             }
@@ -417,7 +417,7 @@ namespace Bam.Data
         {
             get;
             private set;
-        }
+        } = null!;
 
         public void SetDataTable(DataTable table)
         {

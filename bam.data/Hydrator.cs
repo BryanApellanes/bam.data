@@ -1,4 +1,4 @@
-﻿using Bam.Logging;
+using Bam.Logging;
 
 namespace Bam.Data
 {
@@ -14,7 +14,7 @@ namespace Bam.Data
 
         public Hydrator()
         {
-            Logger = Log.Default;
+            Logger = Log.Default!;
         }
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace Bam.Data
         /// <summary>
         /// Gets or sets the logger used for error reporting during hydration.
         /// </summary>
-        public ILogger Logger { get; set; }
+        public ILogger Logger { get; set; } = null!;
 
         /// <summary>
         /// Attempts to hydrate the child collections of the specified Dao instance, returning false on failure.
@@ -33,7 +33,7 @@ namespace Bam.Data
         /// <param name="dao">The Dao instance to hydrate.</param>
         /// <param name="database">Optional database to use for loading children.</param>
         /// <returns>True if hydration succeeded, false otherwise.</returns>
-        public bool TryHydrateChildren(IDao dao, IDatabase database = null)
+        public bool TryHydrateChildren(IDao dao, IDatabase? database = null!)
         {
             try
             {
@@ -42,7 +42,7 @@ namespace Bam.Data
             }
             catch (Exception ex)
             {
-                Logger.Error("Exception hydrating dao of type ({0}): {1}", ex, dao?.GetType()?.Name, ex.Message);
+                Logger.Error("Exception hydrating dao of type ({0}): {1}", ex, dao?.GetType()?.Name!, ex.Message);
                 return false;
             }
         }
@@ -52,7 +52,7 @@ namespace Bam.Data
         /// </summary>
         /// <param name="dao">The Dao instance to hydrate.</param>
         /// <param name="database">Optional database to use for loading children.</param>
-        public void HydrateChildren(IDao dao, IDatabase database = null)
+        public void HydrateChildren(IDao dao, IDatabase? database = null!)
         {
             dao.HydrateChildren(database);
         }

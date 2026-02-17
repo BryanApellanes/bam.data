@@ -1,4 +1,4 @@
-﻿namespace Bam.Data
+namespace Bam.Data
 {
     /// <summary>
     /// Represents the result of validating a Dao instance, including success status and any error details.
@@ -17,12 +17,12 @@
         /// <summary>
         /// Gets or sets the exception that occurred during validation, if any.
         /// </summary>
-        public Exception Exception { get; set; }
+        public Exception Exception { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets a message describing the validation result.
         /// </summary>
-        public string Message { get; set; }
+        public string Message { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets a value indicating whether the validation succeeded.

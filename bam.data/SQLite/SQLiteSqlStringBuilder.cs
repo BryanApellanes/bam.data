@@ -58,7 +58,7 @@ namespace Bam.Data
             // SQLite drops Foreign keys implicitly when dropping tables
         }
 
-		protected override void WriteForeignKeys(Assembly daoAssembly, Func<Type, bool> typePredicate = null)
+		protected override void WriteForeignKeys(Assembly daoAssembly, Func<Type, bool> typePredicate = null!)
 		{
 			// empty implementation 
 			// SQLite can't alter a table to add foreign keys

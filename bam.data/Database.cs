@@ -36,7 +36,7 @@ namespace Bam.Data
         /// <param name="serviceProvider">The dependency injection provider.</param>
         /// <param name="connectionString">The database connection string.</param>
         /// <param name="connectionName">Optional name identifying this connection.</param>
-        public Database(DependencyProvider serviceProvider, string connectionString, string connectionName = null)
+        public Database(DependencyProvider serviceProvider, string connectionString, string connectionName = null!)
             : this()
         {
             ServiceProvider = serviceProvider;
@@ -55,11 +55,11 @@ namespace Bam.Data
         /// <param name="connectionString">The database connection string.</param>
         /// <param name="connectionName">Optional name identifying this connection.</param>
         public Database(string connectionString, string? connectionName = null)
-            : this(new DependencyProvider(), connectionString, connectionName)
+            : this(new DependencyProvider(), connectionString, connectionName!)
         {
         }
 
-        static HashSet<DatabaseInfo> _infos;
+        static HashSet<DatabaseInfo> _infos = null!;
         static readonly object _infosLock = new object();
         /// <summary>
         /// Gets the set of DatabaseInfo instances tracking all known database connections.
@@ -143,14 +143,14 @@ namespace Bam.Data
 		/// <summary>
 		/// Gets or sets the parameter prefix used in SQL parameterized queries (e.g., "@").
 		/// </summary>
-		public string ParameterPrefix { get; set; }
+		public string ParameterPrefix { get; set; } = null!;
 		/// <summary>
 		/// Used to locate the connection string in the 
 		/// configuration file as well as uniquely identify
 		/// types that are associated with a specific 
 		/// schema.  
 		/// </summary>
-        public string ConnectionName { get; set; }
+        public string? ConnectionName { get; set; }
 
 		protected HashSet<string> _schemaNames;
 		/// <summary>
@@ -170,17 +170,17 @@ namespace Bam.Data
                 string databaseName = "";
                 if (cb.ContainsKey("Initial Catalog"))                
                 {
-                    databaseName = cb["Initial Catalog"] as string;
+                    databaseName = (cb["Initial Catalog"] as string)!;
                 }
 
                 if (cb.ContainsKey("Database"))
                 {
-                    databaseName = cb["Database"] as string;
+                    databaseName = (cb["Database"] as string)!;
                 }
 
                 if (cb.ContainsKey("Data Source"))
                 {
-                    databaseName = cb["Data Source"] as string;
+                    databaseName = (cb["Data Source"] as string)!;
                 }
 
                 if (string.IsNullOrEmpty(databaseName))
@@ -217,7 +217,7 @@ namespace Bam.Data
         /// <param name="dictionary">The dictionary to fill.</param>
         /// <param name="nameColumn">The column name containing the enum value names.</param>
         /// <returns>The filled dictionary.</returns>
-        public Dictionary<EnumType, DaoType> FillEnumDictionary<EnumType, DaoType>(Dictionary<EnumType, DaoType> dictionary, string nameColumn) where DaoType : IDao, new()
+        public Dictionary<EnumType, DaoType> FillEnumDictionary<EnumType, DaoType>(Dictionary<EnumType, DaoType> dictionary, string nameColumn) where DaoType : IDao, new() where EnumType : notnull
         {
             QuerySet query = ExecuteQuery<DaoType>();
 
@@ -236,7 +236,7 @@ namespace Bam.Data
                 {
                     DataRow = row
                 };
-                dictionary.AddMissing(enumVal, inst);
+                dictionary.TryAdd(enumVal, inst);
             }
 
             return dictionary;
@@ -263,7 +263,7 @@ namespace Bam.Data
 		/// <param name="where">The WHERE clause delegate.</param>
 		/// <param name="orderBy">Optional ORDER BY clause.</param>
 		/// <returns>A new query instance with the specified filter.</returns>
-		public virtual IQuery<C, T> GetQuery<C, T>(WhereDelegate<C> where, IOrderBy<C> orderBy = null)
+		public virtual IQuery<C, T> GetQuery<C, T>(WhereDelegate<C> where, IOrderBy<C> orderBy = null!)
 			where C : IQueryFilter, IFilterToken, new()
 			where T : IDao, new()
 		{
@@ -278,7 +278,7 @@ namespace Bam.Data
 		/// <param name="where">The filter function.</param>
 		/// <param name="orderBy">Optional ORDER BY clause.</param>
 		/// <returns>A new query instance with the specified filter.</returns>
-		public virtual IQuery<C, T> GetQuery<C, T>(Func<C, IQueryFilter<C>> where, IOrderBy<C> orderBy = null)
+		public virtual IQuery<C, T> GetQuery<C, T>(Func<C, IQueryFilter<C>> where, IOrderBy<C> orderBy = null!)
 			where C : IQueryFilter, IFilterToken, new()
 			where T : IDao, new()
 		{
@@ -454,11 +454,11 @@ namespace Bam.Data
         /// <summary>
         /// Event raised after a command is successfully executed.
         /// </summary>
-        public event EventHandler CommandExecuted;
+        public event EventHandler CommandExecuted = null!;
         /// <summary>
         /// Event raised when a command execution throws an exception.
         /// </summary>
-        public event EventHandler CommandException;
+        public event EventHandler CommandException = null!;
         /// <summary>
         /// Executes a SQL statement with full control over connection, exception handling, and connection release.
         /// </summary>
@@ -497,7 +497,7 @@ namespace Bam.Data
         /// <param name="sqlStatement">The SQL string builder.</param>
         /// <param name="onReaderExecuted">Optional callback invoked after the reader completes.</param>
         /// <returns>An enumerable of T instances.</returns>
-        public virtual IEnumerable<T> ExecuteReader<T>(ISqlStringBuilder sqlStatement, Action<DbDataReader> onReaderExecuted = null) where T : class, new()
+        public virtual IEnumerable<T> ExecuteReader<T>(ISqlStringBuilder sqlStatement, Action<DbDataReader>? onReaderExecuted = null!) where T : class, new()
         {
             return ExecuteReader<T>(sqlStatement.ToString(), GetParameters(sqlStatement), null, true, onReaderExecuted);
         }
@@ -510,7 +510,7 @@ namespace Bam.Data
         /// <param name="dbParameters">Dynamic object whose properties become parameters.</param>
         /// <param name="onReaderExecuted">Optional callback invoked after the reader completes.</param>
         /// <returns>An enumerable of T instances.</returns>
-        public virtual IEnumerable<T> ExecuteReader<T>(string sqlStatement, object dbParameters, Action<DbDataReader> onReaderExecuted = null) where T : class, new()
+        public virtual IEnumerable<T> ExecuteReader<T>(string sqlStatement, object dbParameters, Action<DbDataReader>? onReaderExecuted = null!) where T : class, new()
         {
             return ExecuteReader<T>(sqlStatement, dbParameters.ToDbParameters(this).ToArray(), null, true, onReaderExecuted);
         }
@@ -652,7 +652,7 @@ namespace Bam.Data
         /// <param name="dbParameters">The database parameters.</param>
         /// <param name="conn">Optional connection; a new one is created if null.</param>
         /// <returns>A DbDataReader for reading the results.</returns>
-        public virtual DbDataReader ExecuteReader(string sqlStatement, DbParameter[] dbParameters, DbConnection conn = null)
+        public virtual DbDataReader ExecuteReader(string sqlStatement, DbParameter[] dbParameters, DbConnection? conn = null!)
         {
             return ExecuteReader(sqlStatement, CommandType.Text, dbParameters, conn ?? GetOpenDbConnection());
         }
@@ -660,11 +660,11 @@ namespace Bam.Data
         /// <summary>
         /// Event raised after a reader is successfully executed.
         /// </summary>
-        public event EventHandler ReaderExecuted;
+        public event EventHandler ReaderExecuted = null!;
         /// <summary>
         /// Event raised when a reader execution throws an exception.
         /// </summary>
-        public event EventHandler ReaderException;
+        public event EventHandler ReaderException = null!;
         /// <summary>
         /// Executes a SQL statement and returns a DbDataReader with full control over command type and connection.
         /// </summary>
@@ -675,7 +675,7 @@ namespace Bam.Data
         /// <returns>A DbDataReader for reading the results.</returns>
         public virtual DbDataReader ExecuteReader(string sqlStatement, CommandType commandType, DbParameter[] dbParameters, DbConnection conn)
         {
-            DbDataReader reader = null;
+            DbDataReader? reader = null;
             try
             {
                 DbCommand cmd = PrepareCommand(sqlStatement, commandType, dbParameters, conn);
@@ -686,7 +686,7 @@ namespace Bam.Data
             {
                 FireEvent(ReaderException, new DatabaseExecutionEventArgs { Database = this, Exception = ex, Message = ex.Message });
             }
-            return reader;
+            return reader!;
         }
 
         // -- start datatable readers
@@ -742,7 +742,7 @@ namespace Bam.Data
         /// <param name="dbParameters">The database parameters.</param>
         /// <param name="conn">Optional connection; a new one is created if null.</param>
         /// <returns>A DataTable containing the results.</returns>
-        public virtual DataTable GetDataTableFromReader(string sqlStatement, DbParameter[] dbParameters, DbConnection conn = null)
+        public virtual DataTable GetDataTableFromReader(string sqlStatement, DbParameter[] dbParameters, DbConnection conn = null!)
         {
             return GetDataTableFromReader(sqlStatement, CommandType.Text, dbParameters, conn ?? GetOpenDbConnection(), false);
         }
@@ -846,7 +846,7 @@ namespace Bam.Data
             return GetDataRowsFromReader(reader);
         }
 
-        protected virtual IEnumerable<DataRow> GetDataRowsFromReader(DbDataReader reader, DataTable table = null)
+        protected virtual IEnumerable<DataRow> GetDataRowsFromReader(DbDataReader reader, DataTable table = null!)
         {
             if (reader.HasRows)
             {
@@ -908,7 +908,7 @@ namespace Bam.Data
             {                
                 return (T)row[0];
             }
-            return default(T);
+            return default(T)!;
         }
 
         /// <summary>
@@ -944,7 +944,7 @@ namespace Bam.Data
         /// <param name="dynamicDbParameters"></param>
         /// <param name="typeName"></param>
         /// <returns></returns>
-        public IEnumerable<dynamic> Query(string sqlQuery, object dynamicDbParameters, string typeName = null)
+        public IEnumerable<dynamic> Query(string sqlQuery, object dynamicDbParameters, string typeName = null!)
         {
             DbParameter[] dbParameters = dynamicDbParameters.ToDbParameters(this).ToArray();            
             return Query(sqlQuery, dbParameters, typeName);
@@ -957,7 +957,7 @@ namespace Bam.Data
         /// <param name="dictDbParameters">Dictionary of parameter names and values.</param>
         /// <param name="typeName">Optional type name for the dynamic result.</param>
         /// <returns>An enumerable of dynamic objects.</returns>
-        public IEnumerable<dynamic> Query(string sqlQuery, Dictionary<string, object> dictDbParameters, string typeName = null)
+        public IEnumerable<dynamic> Query(string sqlQuery, Dictionary<string, object> dictDbParameters, string typeName = null!)
         {
             DbParameter[] dbParameters = dictDbParameters.ToDbParameters(this).ToArray();
             return Query(sqlQuery, dbParameters, typeName);
@@ -1199,8 +1199,8 @@ namespace Bam.Data
         /// <returns>A new DbConnection instance.</returns>
         public virtual DbConnection CreateConnection()
         {
-            DbConnection conn = ServiceProvider.Get<DbProviderFactory>().CreateConnection();
-            conn.ConnectionString = ConnectionString;
+            DbConnection? conn = ServiceProvider.Get<DbProviderFactory>().CreateConnection();
+            conn!.ConnectionString = ConnectionString;
             return conn;
         }
 
@@ -1220,7 +1220,7 @@ namespace Bam.Data
         /// <returns>A new DbCommand instance.</returns>
         public virtual DbCommand CreateCommand()
         {
-            return ServiceProvider.Get<DbProviderFactory>().CreateCommand();
+            return ServiceProvider.Get<DbProviderFactory>().CreateCommand()!;
         }
 
         /// <summary>
@@ -1250,7 +1250,7 @@ namespace Bam.Data
         /// <returns>A new DbConnectionStringBuilder instance.</returns>
         public virtual DbConnectionStringBuilder CreateConnectionStringBuilder()
         {
-            return ServiceProvider.Get<DbProviderFactory>().CreateConnectionStringBuilder();
+            return ServiceProvider.Get<DbProviderFactory>().CreateConnectionStringBuilder()!;
         }
 
         /// <summary>
@@ -1290,7 +1290,7 @@ namespace Bam.Data
         /// <returns>A DataSet containing the results.</returns>
         public virtual DataSet GetDataSetFromSql(string sqlStatement, CommandType commandType, bool releaseConnection, DbConnection conn, params DbParameter[] dbParamaters)
         {
-            return GetDataSetFromSql(sqlStatement, commandType, releaseConnection, conn, null, dbParamaters);
+            return GetDataSetFromSql(sqlStatement, commandType, releaseConnection, conn, null!, dbParamaters);
         }
 
 		/// <summary>
@@ -1340,7 +1340,7 @@ namespace Bam.Data
             return set;
         }
 
-		protected internal virtual AssignValue GetAssignment(string keyColumn, object value, Func<string, string> columnNameformatter = null)
+		protected internal virtual AssignValue GetAssignment(string keyColumn, object value, Func<string, string> columnNameformatter = null!)
 		{
 			return new AssignValue(keyColumn, value, columnNameformatter);
 		}
@@ -1358,10 +1358,10 @@ namespace Bam.Data
             return cmd;
         }
 
-        protected internal virtual DbCommand BuildCommand(string sqlStatement, CommandType commandType, DbParameter[] dbParameters, DbProviderFactory providerFactory, DbConnection conn, DbTransaction tx  =null)
+        protected internal virtual DbCommand BuildCommand(string sqlStatement, CommandType commandType, DbParameter[] dbParameters, DbProviderFactory providerFactory, DbConnection conn, DbTransaction tx  =null!)
         {
-            DbCommand command = providerFactory.CreateCommand();
-            command.Connection = conn;
+            DbCommand? command = providerFactory.CreateCommand();
+            command!.Connection = conn;
             if (tx != null)
             {
                 command.Transaction = tx;
@@ -1375,16 +1375,16 @@ namespace Bam.Data
 
         protected void FillTable(DataTable table, DbCommand command)
         {
-            DbDataAdapter adapter = ServiceProvider.Get<DbProviderFactory>().CreateDataAdapter();
-            adapter.SelectCommand = command;
+            DbDataAdapter? adapter = ServiceProvider.Get<DbProviderFactory>().CreateDataAdapter();
+            adapter!.SelectCommand = command;
             adapter.Fill(table);
         }
 
         protected void FillDataSet(DataSet dataSet, DbCommand command)
         {
             DbProviderFactory factory = ServiceProvider.Get<DbProviderFactory>();
-            DbDataAdapter adapter = factory.CreateDataAdapter();
-            adapter.SelectCommand = command;
+            DbDataAdapter? adapter = factory.CreateDataAdapter();
+            adapter!.SelectCommand = command;
             adapter.Fill(dataSet);
         }
 
@@ -1402,13 +1402,13 @@ namespace Bam.Data
 		/// </summary>
 		/// <param name="obj">The object to compare.</param>
 		/// <returns>True if the connection strings match.</returns>
-		public override bool Equals(object obj)
+		public override bool Equals(object? obj)
 		{
-			if (obj.GetType() == this.GetType() && 
+			if (obj!.GetType() == this.GetType() && 
 				!string.IsNullOrEmpty(ConnectionString))
 			{
-				Database db = obj as Database;
-				return db.ConnectionString.Equals(this.ConnectionString);
+				Database? db = obj as Database;
+				return db!.ConnectionString!.Equals(this.ConnectionString);
 			}
 			else
 			{
@@ -1469,9 +1469,9 @@ namespace Bam.Data
         /// <param name="assembly">The assembly containing Dao types.</param>
         /// <param name="logger">Optional logger for error reporting.</param>
         /// <returns>The schema initialization status.</returns>
-        public EnsureSchemaStatus TryEnsureSchema(Assembly assembly, ILogger logger = null)
+        public EnsureSchemaStatus TryEnsureSchema(Assembly assembly, ILogger logger = null!)
         {
-            Type daoType = assembly.GetTypes().FirstOrDefault(d => d.IsSubclassOf(typeof(Dao)));
+            Type? daoType = assembly.GetTypes().FirstOrDefault(d => d.IsSubclassOf(typeof(Dao)));
             if (daoType == null)
             {
                 return EnsureSchemaStatus.Invalid;
@@ -1488,7 +1488,7 @@ namespace Bam.Data
         /// <typeparam name="T">The Dao type whose schema to ensure.</typeparam>
         /// <param name="logger">Optional logger for error reporting.</param>
         /// <returns>The schema initialization status.</returns>
-        public EnsureSchemaStatus TryEnsureSchema<T>(ILogger logger = null)
+        public EnsureSchemaStatus TryEnsureSchema<T>(ILogger logger = null!)
         {
             return TryEnsureSchema(typeof(T), logger);
         }
@@ -1499,7 +1499,7 @@ namespace Bam.Data
 		/// <param name="type">The Dao type whose schema to ensure.</param>
 		/// <param name="logger">Optional logger for error reporting.</param>
 		/// <returns>The schema initialization status.</returns>
-		public EnsureSchemaStatus TryEnsureSchema(Type type, ILogger logger = null)
+		public EnsureSchemaStatus TryEnsureSchema(Type type, ILogger logger = null!)
 		{
             return TryEnsureSchema(type, out Exception e, logger);
         }
@@ -1511,7 +1511,7 @@ namespace Bam.Data
 		/// <param name="ex">Output parameter receiving any exception that occurred.</param>
 		/// <param name="logger">Optional logger for error reporting.</param>
 		/// <returns>The schema initialization status.</returns>
-		public EnsureSchemaStatus TryEnsureSchema(Type type, out Exception ex, ILogger logger = null)
+		public EnsureSchemaStatus TryEnsureSchema(Type type, out Exception ex, ILogger logger = null!)
 		{
 			return TryEnsureSchema(type, false, out ex, logger);
 		}
@@ -1524,9 +1524,9 @@ namespace Bam.Data
 		/// <param name="ex">Output parameter receiving any exception that occurred.</param>
 		/// <param name="logger">Optional logger for error reporting.</param>
 		/// <returns>The schema initialization status.</returns>
-		public virtual EnsureSchemaStatus TryEnsureSchema(Type type, bool force, out Exception ex, ILogger logger = null)
+		public virtual EnsureSchemaStatus TryEnsureSchema(Type type, bool force, out Exception ex, ILogger logger = null!)
 		{
-            ex = null;
+            ex = null!;
             EnsureSchemaStatus result;
             try
             {
@@ -1548,13 +1548,13 @@ namespace Bam.Data
             {
                 ex = e;
                 result = EnsureSchemaStatus.Error;
-                logger = logger ?? Log.Default;
-                logger.AddEntry("Non fatal error occurred trying to write schema for type {0}: {1}", LogEventType.Warning, ex, type.Name, ex.Message);
+                logger = (logger ?? Log.Default)!;
+                logger!.AddEntry("Non fatal error occurred trying to write schema for type {0}: {1}", LogEventType.Warning, ex, type.Name, ex.Message);
             }
             return result;
 		}
 
-		Func<ColumnAttribute, string> _columnNameProvider;
+		Func<ColumnAttribute, string> _columnNameProvider = null!;
 		/// <summary>
 		/// Gets or sets the function used to format column names in SQL statements.
 		/// </summary>
@@ -1595,7 +1595,7 @@ namespace Bam.Data
 			foreach (FieldInfo field in fields)
 			{
 				T entry = new T();
-				entry.SetValue(valueColumn, field.GetRawConstantValue());
+				entry.SetValue(valueColumn, field.GetRawConstantValue()!);
 				entry.SetValue(nameColumn, field.Name);
 				entry.Save();
 			}

@@ -1,4 +1,4 @@
-﻿using System.Data.Common;
+using System.Data.Common;
 
 namespace Bam.Data
 {
@@ -11,26 +11,26 @@ namespace Bam.Data
         /// <summary>
         /// Gets or sets the database on which the command was executed.
         /// </summary>
-        public Database Database { get; set; }
+        public Database Database { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the data reader returned by the command, if applicable.
         /// </summary>
-        public DbDataReader DataReader { get; set; }
+        public DbDataReader DataReader { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the database command that was executed.
         /// </summary>
-        public DbCommand Command { get; set; }
+        public DbCommand Command { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets an informational message about the execution.
         /// </summary>
-        public string Message { get; set; }
+        public string Message { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the exception that occurred during execution, if any.
         /// </summary>
-        public Exception Exception { get; set; }
+        public Exception Exception { get; set; } = null!;
     }
 }

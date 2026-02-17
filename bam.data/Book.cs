@@ -102,7 +102,7 @@ namespace Bam.Data
         {
             get
             {
-                List<T> page = allPages.ElementAtOrDefault(zeroBasedPageNumber);
+                List<T>? page = allPages.ElementAtOrDefault(zeroBasedPageNumber);
                 if (page == null)
                 {
                     return new List<T>();

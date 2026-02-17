@@ -1,4 +1,4 @@
-﻿using System.Data.Common;
+using System.Data.Common;
 
 namespace Bam.Data
 {
@@ -44,9 +44,9 @@ namespace Bam.Data
         {
             return ToString().GetHashCode();
         }
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
-            SqlInfo compareTo = obj as SqlInfo;
+            SqlInfo? compareTo = obj as SqlInfo;
             if(compareTo != null)
             {
                 return compareTo.ToString().Equals(ToString());

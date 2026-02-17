@@ -66,7 +66,7 @@ namespace Bam.Data
 		/// <param name="connectionName"></param>
 		/// <param name="database"></param>
 		/// <returns></returns>
-        public static IDatabase For(string connectionName, IDatabase database = null)
+        public static IDatabase For(string connectionName, IDatabase database = null!)
         {
             if (database != null)
             {
@@ -91,10 +91,10 @@ namespace Bam.Data
         {
             IDatabase original = db;
             DaoTransaction tx = new DaoTransaction(original);
-            Db.For(db.ConnectionName, tx.Database);
+            Db.For(db.ConnectionName!, tx.Database);
             tx.Disposed += (o, a) =>
             {
-                Db.For(db.ConnectionName, original);
+                Db.For(db.ConnectionName!, original);
             };
 
             return tx;
@@ -107,7 +107,7 @@ namespace Bam.Data
         /// <typeparam name="T"></typeparam>
         /// <returns>true on success, false if an error was thrown, possibly due to the 
         /// schema already having been written.</returns>
-        public static bool TryEnsureSchema<T>(Database db = null) where T : Dao
+        public static bool TryEnsureSchema<T>(Database db = null!) where T : Dao
         {
             return TryEnsureSchema(typeof(T), db);
         }
@@ -119,7 +119,7 @@ namespace Bam.Data
         /// <param name="type"></param>
         /// <returns>true on success, false if an error was thrown, possibly due to the 
         /// schema already having been written.</returns>
-        public static bool TryEnsureSchema(Type type, Database db = null)
+        public static bool TryEnsureSchema(Type type, Database db = null!)
         {
             try
             {
@@ -131,7 +131,7 @@ namespace Bam.Data
             }
         }
 
-        public static bool TryEnsureSchema(string connectionName, Database db = null)
+        public static bool TryEnsureSchema(string connectionName, Database db = null!)
         {
             Exception ignore;
             return TryEnsureSchema(connectionName, db, out ignore);
@@ -139,7 +139,7 @@ namespace Bam.Data
 
         public static bool TryEnsureSchema(string connectionName, out Exception ex)
         {
-            return TryEnsureSchema(connectionName, null, out ex);
+            return TryEnsureSchema(connectionName, null!, out ex);
         }
 
         /// <summary>
@@ -149,7 +149,7 @@ namespace Bam.Data
         /// <param name="connectionName">The name of the connection in the config file</param>
         public static bool TryEnsureSchema(string connectionName, Database db, out Exception ex)
         {
-            ex = null;
+            ex = null!;
             try
             {
                 EnsureSchema(connectionName, db);
@@ -167,7 +167,7 @@ namespace Bam.Data
         /// associated sibling tables
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        public static void EnsureSchema<T>(Database db = null) where T : Dao
+        public static void EnsureSchema<T>(Database db = null!) where T : Dao
         {
             EnsureSchema(typeof(T), db);
         }
@@ -177,7 +177,7 @@ namespace Bam.Data
         /// associated sibling tables
         /// </summary>
         /// <param name="connectionName"></param>
-        public static void EnsureSchema(string connectionName, Database db = null)
+        public static void EnsureSchema(string connectionName, Database db = null!)
         {
             if (string.IsNullOrEmpty(connectionName))
             {
@@ -204,7 +204,7 @@ namespace Bam.Data
         private static bool TryGetTypes(Assembly assembly, out Type[] types)
         {
             bool result = true;
-            types = null;
+            types = null!;
             try
             {
                 types = assembly.GetTypes();
@@ -212,7 +212,7 @@ namespace Bam.Data
             catch (Exception ex)
             {
                 result = false;
-                Log.AddEntry("An exception occurred getting types from assembly ({0}): {1}", ex, assembly.FullName, ex.Message);
+                Log.AddEntry("An exception occurred getting types from assembly ({0}): {1}", ex, assembly.FullName!, ex.Message);
             }
 
             return result;
@@ -223,7 +223,7 @@ namespace Bam.Data
         /// Creates the tables for the specified type
         /// </summary>
         /// <param name="type"></param>
-        public static EnsureSchemaStatus EnsureSchema(Type type, IDatabase database = null)
+        public static EnsureSchemaStatus EnsureSchema(Type type, IDatabase database = null!)
         {
             string name = Dao.ConnectionName(type);
             IDatabase db = database ?? Db.For(type);

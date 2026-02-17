@@ -20,7 +20,7 @@ namespace Bam.Data
         public bool TryCreateRegistrarCaller(string assemblyQualifiedName, out IRegistrarCaller result)
         {
             bool success = false;
-            result = null;
+            result = null!;
             try
             {
                 result = CreateRegistrarCaller(assemblyQualifiedName);
@@ -42,14 +42,14 @@ namespace Bam.Data
         /// <returns>The created IRegistrarCaller, or null if the type was not found.</returns>
         public IRegistrarCaller CreateRegistrarCaller(string assemblyQualifiedName)
         {
-            Type returnType = Type.GetType(assemblyQualifiedName);
-            IRegistrarCaller result = null;
+            Type? returnType = Type.GetType(assemblyQualifiedName);
+            IRegistrarCaller? result = null;
             if (returnType != null)
             {
                 result = returnType.Construct<IRegistrarCaller>();
             }
 
-            return result;
+            return result!;
         }
     }
 }

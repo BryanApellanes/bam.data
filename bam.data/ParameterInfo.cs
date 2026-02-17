@@ -1,4 +1,4 @@
-﻿namespace Bam.Data
+namespace Bam.Data
 {
     /// <summary>
     /// Holds parameter metadata used when building SQL parameterized queries.
@@ -11,7 +11,7 @@
         public string ColumnName
         {
             get; set;
-        }
+        } = null!;
 
         /// <summary>
         /// Gets or sets the function used to format column names.
@@ -19,7 +19,7 @@
         public Func<string, string> ColumnNameFormatter
         {
             get; set;
-        }
+        } = null!;
 
         /// <summary>
         /// Gets or sets the parameter number used for parameter naming.
@@ -35,7 +35,7 @@
         public string Operator
         {
             get; set;
-        }
+        } = null!;
 
         /// <summary>
         /// Gets or sets the parameter prefix (e.g., "@").
@@ -43,12 +43,12 @@
         public string ParameterPrefix
         {
             get; set;
-        }
+        } = null!;
 
         /// <summary>
         /// Gets or sets the parameter value.
         /// </summary>
-        public object Value
+        public object? Value
         {
             get; set;
         }

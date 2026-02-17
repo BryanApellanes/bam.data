@@ -34,7 +34,7 @@ namespace Bam.Data
             });
         }
 
-        static Dictionary<Type, ConfiguredDatabaseFactory> _factories;
+        static Dictionary<Type, ConfiguredDatabaseFactory> _factories = null!;
         static object _factoriesSync = new object();
         /// <summary>
         /// Gets the dictionary of all discovered ConfiguredDatabaseFactory implementations keyed by type.
@@ -79,7 +79,7 @@ namespace Bam.Data
         {
             get;
             set;
-        }
+        } = null!;
 
         /// <summary>
         /// Gets or sets the registrar caller used to register Dao types.
@@ -88,7 +88,7 @@ namespace Bam.Data
         {
             get;
             set;
-        }
+        } = null!;
 
         /// <summary>
         /// Gets or sets the schema initializer used to create database schemas.
@@ -97,6 +97,6 @@ namespace Bam.Data
         {
             get;
             set;
-        }
+        } = null!;
     }
 }

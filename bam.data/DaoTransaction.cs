@@ -13,17 +13,17 @@ namespace Bam.Data
         /// <summary>
         /// Occurs after the transaction has been committed.
         /// </summary>
-        public event EventHandler Committed;
+        public event EventHandler Committed = null!;
 
         /// <summary>
         /// Occurs after the transaction has been rolled back.
         /// </summary>
-        public event EventHandler RolledBack;
+        public event EventHandler RolledBack = null!;
 
         /// <summary>
         /// Occurs when the transaction is disposed.
         /// </summary>
-        public event EventHandler Disposed;
+        public event EventHandler Disposed = null!;
 
         List<IDao> _toDelete = new List<IDao>();
         List<IDao> _toUndo = new List<IDao>();
@@ -35,7 +35,7 @@ namespace Bam.Data
         /// <param name="database">The database to use for the transaction.</param>
         public DaoTransaction(IDatabase database)
         {
-            this._db = new Database(database.ServiceProvider.Clone(), database.ConnectionString, database.ConnectionName);
+            this._db = new Database(database.ServiceProvider.Clone(), database.ConnectionString!, database.ConnectionName!);
             Dao.BeforeCommitAny += DaoBeforeCommitAny;
             Dao.BeforeDeleteAny += DaoBeforeDeleteAny;
         }

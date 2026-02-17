@@ -26,7 +26,7 @@ namespace Bam.Data
         /// <summary>
         /// Gets or sets the SQL operator string for this filter token.
         /// </summary>
-        public string Operator { get; set; }
+        public string Operator { get; set; } = null!;
         
         public override string ToString()
         {

@@ -110,7 +110,7 @@ namespace Bam.Data
 
         public IQuerySetResults Results => new QuerySetResults(_results, Database);
 
-        public IDatabase Database { get; set; }
+        public IDatabase Database { get; set; } = null!;
 
         public override void Execute(IDatabase db)
         {
@@ -122,7 +122,7 @@ namespace Bam.Data
         {
             get;
             set;
-        }
+        } = null!;
         
         /// <summary>
         /// This is what's responsible for setting the ID 

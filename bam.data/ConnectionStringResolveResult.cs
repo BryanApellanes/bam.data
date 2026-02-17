@@ -16,7 +16,7 @@ namespace Bam.Data
         /// </summary>
         /// <param name="settings">The resolved connection string settings, or null if resolution failed.</param>
         /// <param name="ex">The exception that occurred during resolution, or null if successful.</param>
-        public ConnectionStringResolveResult(ConnectionStringSettings settings, Exception ex = null)
+        public ConnectionStringResolveResult(ConnectionStringSettings settings, Exception ex = null!)
         {
             this.Settings = settings;
             this.Exception = ex;

@@ -1,4 +1,4 @@
-﻿namespace Bam.Data
+namespace Bam.Data
 {
     /// <summary>
     /// A typed query filter that supports operator overloading for building SQL WHERE clauses with type-safe column references.
@@ -45,8 +45,8 @@
 
         internal QueryValue ToQueryValue(ulong value)
         {
-            QueryFilter keyColumnFilter = this.Property<QueryFilter>("KeyColumn");
-            if ((keyColumnFilter?.ColumnName?.Equals(ColumnName)).Value)
+            QueryFilter? keyColumnFilter = this.Property<QueryFilter>("KeyColumn");
+            if ((keyColumnFilter?.ColumnName?.Equals(ColumnName))!.Value)
             {
                 return new DaoId(value, this) { IdentifierName = keyColumnFilter.ColumnName };
             }
@@ -521,25 +521,25 @@
 
         public static QueryFilter<C> operator <(QueryFilter<C> c, int? value)
         {
-            c.Add(new Comparison(c.ColumnName, "<", value));
+            c.Add(new Comparison(c.ColumnName, "<", value!));
             return c;
         }
 
         public static QueryFilter<C> operator >(QueryFilter<C> c, int? value)
         {
-            c.Add(new Comparison(c.ColumnName, ">", value));
+            c.Add(new Comparison(c.ColumnName, ">", value!));
             return c;
         }
 
         public static QueryFilter<C> operator <=(QueryFilter<C> c, int? value)
         {
-            c.Add(new Comparison(c.ColumnName, "<=", value));
+            c.Add(new Comparison(c.ColumnName, "<=", value!));
             return c;
         }
 
         public static QueryFilter<C> operator >=(QueryFilter<C> c, int? value)
         {
-            c.Add(new Comparison(c.ColumnName, ">=", value));
+            c.Add(new Comparison(c.ColumnName, ">=", value!));
             return c;
         }
 
@@ -571,25 +571,25 @@
 
         public static QueryFilter<C> operator <(QueryFilter<C> c, uint? value)
         {
-            c.Add(new Comparison(c.ColumnName, "<", value));
+            c.Add(new Comparison(c.ColumnName, "<", value!));
             return c;
         }
 
         public static QueryFilter<C> operator >(QueryFilter<C> c, uint? value)
         {
-            c.Add(new Comparison(c.ColumnName, ">", value));
+            c.Add(new Comparison(c.ColumnName, ">", value!));
             return c;
         }
 
         public static QueryFilter<C> operator <=(QueryFilter<C> c, uint? value)
         {
-            c.Add(new Comparison(c.ColumnName, "<=", value));
+            c.Add(new Comparison(c.ColumnName, "<=", value!));
             return c;
         }
 
         public static QueryFilter<C> operator >=(QueryFilter<C> c, uint? value)
         {
-            c.Add(new Comparison(c.ColumnName, ">=", value));
+            c.Add(new Comparison(c.ColumnName, ">=", value!));
             return c;
         }
 
@@ -621,25 +621,25 @@
 
         public static QueryFilter<C> operator <(QueryFilter<C> c, ulong? value)
         {
-            c.Add(new Comparison(c.ColumnName, "<", c.ToQueryValue(value.Value).GetValue()));
+            c.Add(new Comparison(c.ColumnName, "<", c.ToQueryValue(value!.Value).GetValue()));
             return c;
         }
 
         public static QueryFilter<C> operator >(QueryFilter<C> c, ulong? value)
         {
-            c.Add(new Comparison(c.ColumnName, ">", c.ToQueryValue(value.Value).GetValue()));
+            c.Add(new Comparison(c.ColumnName, ">", c.ToQueryValue(value!.Value).GetValue()));
             return c;
         }
 
         public static QueryFilter<C> operator <=(QueryFilter<C> c, ulong? value)
         {
-            c.Add(new Comparison(c.ColumnName, "<=", c.ToQueryValue(value.Value).GetValue()));
+            c.Add(new Comparison(c.ColumnName, "<=", c.ToQueryValue(value!.Value).GetValue()));
             return c;
         }
 
         public static QueryFilter<C> operator >=(QueryFilter<C> c, ulong? value)
         {
-            c.Add(new Comparison(c.ColumnName, ">=", c.ToQueryValue(value.Value).GetValue()));
+            c.Add(new Comparison(c.ColumnName, ">=", c.ToQueryValue(value!.Value).GetValue()));
             return c;
         }
 
@@ -671,25 +671,25 @@
 
         public static QueryFilter<C> operator <(QueryFilter<C> c, decimal? value)
         {
-            c.Add(new Comparison(c.ColumnName, "<", value));
+            c.Add(new Comparison(c.ColumnName, "<", value!));
             return c;
         }
 
         public static QueryFilter<C> operator >(QueryFilter<C> c, decimal? value)
         {
-            c.Add(new Comparison(c.ColumnName, ">", value));
+            c.Add(new Comparison(c.ColumnName, ">", value!));
             return c;
         }
 
         public static QueryFilter<C> operator <=(QueryFilter<C> c, decimal? value)
         {
-            c.Add(new Comparison(c.ColumnName, "<=", value));
+            c.Add(new Comparison(c.ColumnName, "<=", value!));
             return c;
         }
 
         public static QueryFilter<C> operator >=(QueryFilter<C> c, decimal? value)
         {
-            c.Add(new Comparison(c.ColumnName, ">=", value));
+            c.Add(new Comparison(c.ColumnName, ">=", value!));
             return c;
         }
 
@@ -807,25 +807,25 @@
 
         public static QueryFilter<C> operator <(QueryFilter<C> c, DateTime? value)
         {
-            c.Add(new Comparison(c.ColumnName, "<", value));
+            c.Add(new Comparison(c.ColumnName, "<", value!));
             return c;
         }
 
         public static QueryFilter<C> operator >(QueryFilter<C> c, DateTime? value)
         {
-            c.Add(new Comparison(c.ColumnName, ">", value));
+            c.Add(new Comparison(c.ColumnName, ">", value!));
             return c;
         }
 
         public static QueryFilter<C> operator <=(QueryFilter<C> c, DateTime? value)
         {
-            c.Add(new Comparison(c.ColumnName, "<=", value));
+            c.Add(new Comparison(c.ColumnName, "<=", value!));
             return c;
         }
 
         public static QueryFilter<C> operator >=(QueryFilter<C> c, DateTime? value)
         {
-            c.Add(new Comparison(c.ColumnName, ">=", value));
+            c.Add(new Comparison(c.ColumnName, ">=", value!));
             return c;
         }
 
@@ -852,7 +852,7 @@
             return newBuilder;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj != null)
             {
@@ -867,7 +867,7 @@
             }
             else
             {
-                return base.Equals(obj);
+                return base.Equals(obj!);
             }
         }
 

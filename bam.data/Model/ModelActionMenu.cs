@@ -8,7 +8,7 @@ namespace Bam.Data.Model
 {
     public class ModelActionMenu
     {
-        public ModelActionMenu(object provider, Type methodMarker = null)
+        public ModelActionMenu(object provider, Type methodMarker = null!)
         {
             this.Provider = provider;
             this.MethodMarkerType = methodMarker;
@@ -25,8 +25,8 @@ namespace Bam.Data.Model
             for (int i = 0; i < l; i++)
             {
                 MethodInfo current = methods[i];
-                ModelAction toBeAdded = null;
-                object attribute = null;
+                ModelAction? toBeAdded = null;
+                object? attribute = null;
                 if ((MethodMarkerType != null && current.HasCustomAttributeOfType(MethodMarkerType, out attribute)) ||
                     MethodMarkerType == null
                     )
@@ -69,7 +69,7 @@ namespace Bam.Data.Model
         {
             get;
             private set;
-        }
+        } = null!;
 
         /// <summary>
         /// The Attribute type that is marking the 

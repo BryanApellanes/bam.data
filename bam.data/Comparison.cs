@@ -53,7 +53,7 @@ namespace Bam.Data
         /// <summary>
         /// Gets or sets the value to compare against.
         /// </summary>
-        public object Value { get; set; }
+        public object? Value { get; set; }
 
         /// <summary>
         /// Gets or sets the parameter number used to generate unique parameter names.

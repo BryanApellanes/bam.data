@@ -1,4 +1,4 @@
-﻿using System.Data.Common;
+using System.Data.Common;
 using System.Data;
 
 namespace Bam.Data
@@ -13,27 +13,27 @@ namespace Bam.Data
         where T : IDao, new()
     {
         public Query() { }
-        public Query(WhereDelegate<C> where, IOrderBy<C> orderBy = null, IDatabase db = null)
+        public Query(WhereDelegate<C> where, IOrderBy<C> orderBy = null!, IDatabase db = null!)
         {
             this.FilterDelegate = where;
             this.OrderBy = orderBy;
             this.Database = db;
         }
 
-        public Query(Func<C, IQueryFilter<C>> where, IOrderBy<C> orderBy = null, IDatabase db = null)
+        public Query(Func<C, IQueryFilter<C>> where, IOrderBy<C> orderBy = null!, IDatabase db = null!)
         {
             this.FilterDelegate = where;
             this.OrderBy = orderBy;
             this.Database = db;
         }
 
-        public Query(Delegate where, Database db = null)
+        public Query(Delegate where, Database db = null!)
         {
             this.FilterDelegate = where;
             this.Database = db;
         }
 
-        Func<ColumnAttribute, string> _columnNameProvider;
+        Func<ColumnAttribute, string> _columnNameProvider = null!;
         public Func<ColumnAttribute, string> ColumnNameProvider
         {
             get
@@ -58,26 +58,35 @@ namespace Bam.Data
         {
             get;
             set;
-        }
+        } = null!;
 
         protected internal IOrderBy<C> OrderBy
         {
             get;
             set;
-        }
+        } = null!;
 
         public IDatabase Database
         {
             get;
             set;
-        }
+        } = null!;
 
-        public DataTable Where(WhereDelegate<C> where, IDatabase db = null)
+        public DataTable Where(WhereDelegate<C> where, IDatabase? db = null!)
         {
-            return Where(where, null, db);
+            return Where(where, null!, db!);
         }
 
-        public DataTable Where(Func<C, IQueryFilter<C>> where, IOrderBy<C> orderBy = null, IDatabase db = null)
+        public DataTable Where(Func<C, IQueryFilter<C>> where, IOrderBy<C>? orderBy = null!, IDatabase? db = null)
+        {
+            Establish(where, orderBy!, db!);
+            ISqlStringBuilder sql = ToSqlStringBuilder(db!);
+            db = EstablishOrderAndDb(orderBy!, db!, sql);
+
+            return GetDataTable(db, sql);
+        }
+
+        private DataTable Where(WhereDelegate<C> where, IOrderBy<C> orderBy = null!, IDatabase db = null!)
         {
             Establish(where, orderBy, db);
             ISqlStringBuilder sql = ToSqlStringBuilder(db);
@@ -86,16 +95,7 @@ namespace Bam.Data
             return GetDataTable(db, sql);
         }
 
-        private DataTable Where(WhereDelegate<C> where, IOrderBy<C> orderBy = null, IDatabase db = null)
-        {
-            Establish(where, orderBy, db);
-            ISqlStringBuilder sql = ToSqlStringBuilder(db);
-            db = EstablishOrderAndDb(orderBy, db, sql);
-
-            return GetDataTable(db, sql);
-        }
-
-        public DataTable Where(Qi.QiQuery query, IDatabase db = null)
+        public DataTable Where(Qi.QiQuery query, IDatabase db = null!)
         {
             SqlStringBuilder sql = new SqlStringBuilder();
             if (query.limit > 0)
@@ -135,12 +135,12 @@ namespace Bam.Data
 
             db = db ?? Db.For<T>();
             C columns = new C();
-            IQueryFilter queryFilter = (IQueryFilter)FilterDelegate.DynamicInvoke(columns);
+            IQueryFilter? queryFilter = (IQueryFilter?)FilterDelegate.DynamicInvoke(columns);
             // TODO: add FilterInspector operations here
             //  add FilterInspector to Database definition
             //  this can be useful to advise where indexes
             //  might be necessary or helpful
-            return GetSqlStringBuilder(db).Where(queryFilter);
+            return GetSqlStringBuilder(db).Where(queryFilter!);
         }
 
         private IDatabase EstablishOrderAndDb(IOrderBy<C> orderBy, IDatabase db, ISqlStringBuilder sql)
@@ -159,7 +159,7 @@ namespace Bam.Data
             return db;
         }
 
-        private void Establish(Delegate where, IOrderBy<C> orderBy = null, IDatabase db = null)
+        private void Establish(Delegate where, IOrderBy<C> orderBy = null!, IDatabase db = null!)
         {
             db = db ?? Db.For<T>();
             this.FilterDelegate = where;

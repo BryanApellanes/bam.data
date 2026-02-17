@@ -15,6 +15,6 @@ namespace Bam.Data.Model
             this.Description = description;
         }
 
-        public string Description { get; set; }
+        public string Description { get; set; } = null!;
     }
 }

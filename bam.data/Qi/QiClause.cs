@@ -18,8 +18,8 @@ namespace Bam.Data.Qi
         }
         public bool hasValue { get; set; }
         public int num { get; set; }
-        public string operator_ { get; set; }
-        public string parameterName { get; set; }
+        public string operator_ { get; set; } = null!;
+        public string parameterName { get; set; } = null!;
         public object val { get; set; }
         public string property { get; set; }
 
@@ -157,7 +157,7 @@ namespace Bam.Data.Qi
             return this.num + 1;
         }
 
-        public object Value
+        public object? Value
         {
             get
             {
@@ -165,7 +165,7 @@ namespace Bam.Data.Qi
             }
             set
             {
-                this.val = value == null ? "null": value.ToString();
+                this.val = value == null ? "null": value.ToString()!;
             }
         }
 

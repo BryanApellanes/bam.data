@@ -1,4 +1,4 @@
-﻿using Bam.Data.SQLite;
+using Bam.Data.SQLite;
 using Bam.Logging;
 
 namespace Bam.Data
@@ -8,10 +8,10 @@ namespace Bam.Data
     /// </summary>
     public class SQLiteDatabaseProvider : IDatabaseProvider
     {
-        public SQLiteDatabaseProvider(string root, ILogger logger = null)
+        public SQLiteDatabaseProvider(string root, ILogger logger = null!)
         {
             Root = root;
-            Logger = logger ?? Log.Default;
+            Logger = logger ?? Log.Default!;
         }
         
         public ILogger Logger { get; set; }
@@ -27,7 +27,7 @@ namespace Bam.Data
             throw new NotImplementedException();
         }
 
-        public IDatabase GetAppDatabaseFor(IApplicationNameProvider appNameProvider, Type objectType, string info = null)
+        public IDatabase GetAppDatabaseFor(IApplicationNameProvider appNameProvider, Type objectType, string? info = null!)
         {
             throw new NotImplementedException();
         }
@@ -42,7 +42,7 @@ namespace Bam.Data
             throw new NotImplementedException();
         }
 
-        public IDatabase GetSysDatabaseFor(Type objectType, string info = null)
+        public IDatabase GetSysDatabaseFor(Type objectType, string? info = null!)
         {
             throw new NotImplementedException();
         }

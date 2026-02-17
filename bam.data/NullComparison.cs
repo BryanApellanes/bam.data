@@ -15,7 +15,7 @@ namespace Bam.Data
         /// <param name="columnName">The column name to compare.</param>
         /// <param name="oper">The SQL operator, typically "IS" or "IS NOT".</param>
         public NullComparison(string columnName, string oper)
-            : base(columnName, oper, null)
+            : base(columnName, oper, null!)
         { }
 
         public override string ToString()

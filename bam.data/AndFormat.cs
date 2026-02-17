@@ -23,7 +23,7 @@ namespace Bam.Data
             Filter = filter;
         }
 
-        private IQueryFilter Filter;
+        private IQueryFilter Filter = null!;
 
         public override string Parse()
         {

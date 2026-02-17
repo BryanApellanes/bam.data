@@ -1,4 +1,4 @@
-﻿using Bam.Logging;
+using Bam.Logging;
 using System.Collections.Concurrent;
 using System.Data.Common;
 using System.Diagnostics;
@@ -58,7 +58,7 @@ namespace Bam.Data
             {
                 connection.Close();
                 connection.Dispose();
-                connection = null;
+                connection = null!;
             }
             catch (Exception ex)
             {
@@ -83,19 +83,19 @@ namespace Bam.Data
 
         private void GiveThreadAChanceToCompleteBeforeReleasingConnection(int threadId)
         {
-            if (_connections.TryRemove(threadId, out DbConnection dbConnection))
+            if (_connections.TryRemove(threadId, out DbConnection? dbConnection))
             {
                 Task.Run(() =>
                 {
-                    ProcessThread thread = Exec.GetThread(threadId);
+                    ProcessThread? thread = Exec.GetThread(threadId);
                     if (thread != null)
                     {
                         int slept = Exec.SleepUntil(() => thread.ThreadState == System.Diagnostics.ThreadState.Terminated || thread.ThreadState == System.Diagnostics.ThreadState.Unknown, LifetimeMilliseconds * 2);
-                        Exec.After(LifetimeMilliseconds - slept, () => ReleaseConnection(dbConnection));
+                        Exec.After(LifetimeMilliseconds - slept, () => ReleaseConnection(dbConnection!));
                     }
                     else
                     {
-                        Exec.After(LifetimeMilliseconds, () => ReleaseConnection(dbConnection));
+                        Exec.After(LifetimeMilliseconds, () => ReleaseConnection(dbConnection!));
                     }
                 });
             }

@@ -13,12 +13,12 @@ namespace Bam.Data.Qi
     /// </summary>
     public class QiQuery: IQueryFilter
     {
-        public string columns { get; set; }
-        public string cxName { get; set; }
-        public string parsed { get; set; }
-        public string table { get; set; }
-        public QiClause[] clauses { get; set; }
-        public object[] values { get; set; }
+        public string columns { get; set; } = null!;
+        public string cxName { get; set; } = null!;
+        public string parsed { get; set; } = null!;
+        public string table { get; set; } = null!;
+        public QiClause[] clauses { get; set; } = null!;
+        public object[] values { get; set; } = null!;
 
         public int limit { get; set; }
 

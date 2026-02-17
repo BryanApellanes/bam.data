@@ -15,7 +15,7 @@ namespace Bam.Data
         /// <summary>
         /// Gets or sets the database that produced this result.
         /// </summary>
-        public IDatabase Database { get; set; }
+        public IDatabase Database { get; set; } = null!;
 
         /// <summary>
         /// Gets the DataTable containing the result data.
@@ -24,7 +24,7 @@ namespace Bam.Data
         {
             get;
             protected set;
-        }
+        } = null!;
 
         /// <summary>
         /// Gets the first DataRow from the result DataTable.

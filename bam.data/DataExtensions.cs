@@ -30,12 +30,12 @@ namespace Bam.Data
             return ToJsonSafe<ColumnAttribute>(obj, maxRecursion);
         }
 
-        public static object ToJsonSafe(this object obj, Func<PropertyInfo, bool> propertyFilter = null)
+        public static object ToJsonSafe(this object obj, Func<PropertyInfo, bool> propertyFilter = null!)
         {
             return ToJsonSafe(obj, 5, propertyFilter);
         }
 
-        public static object ToJsonSafe(this object obj, int maxRecursion, Func<PropertyInfo, bool> propertyFilter = null)
+        public static object ToJsonSafe(this object obj, int maxRecursion, Func<PropertyInfo, bool> propertyFilter = null!)
         {
             propertyFilter = propertyFilter ?? ((pi) => IncludePropertyOfType(pi.PropertyType));
 
@@ -90,7 +90,7 @@ namespace Bam.Data
             if (recursionThusFar >= maxRecursion)
             {
                 Log.Warn("{0}: Max recursion reached ({1}) for instance of type ({2})", nameof(ToJsonSafe), maxRecursion, obj.GetType().Name);
-                return null;
+                return null!;
             }
 
             try
@@ -100,7 +100,7 @@ namespace Bam.Data
                 IEnumerable<PropertyInfo> properties = type.GetProperties().Where(propertyFilter);
                 foreach (PropertyInfo prop in properties)
                 {
-                    object val = prop.GetValue(obj);
+                    object? val = prop.GetValue(obj);
                     if (val != null)
                     {
                         if (prop.PropertyType.IsPrimitiveNullableOrString() || 
@@ -150,7 +150,7 @@ namespace Bam.Data
                 Log.Error("Exception converting object to json safe: {0}", ex, ex.Message);
             }
 
-            return null;
+            return null!;
         }
         
         public static object[] ToJsonSafe(this IEnumerable e)
@@ -164,16 +164,16 @@ namespace Bam.Data
             return returnValues.ToArray();
         }
 
-        public static IEnumerable<dynamic> Query(this string sqlQuery, Database db, object dynamicDbParameters, string typeName = null)
+        public static IEnumerable<dynamic> Query(this string sqlQuery, Database db, object dynamicDbParameters, string typeName = null!)
         {
             return db.Query(sqlQuery, dynamicDbParameters);
         }
 
-        public static IEnumerable<dynamic> Query(this string sqlQuery, Database db, Dictionary<string, object> dictDbParameters, string typeName = null)
+        public static IEnumerable<dynamic> Query(this string sqlQuery, Database db, Dictionary<string, object> dictDbParameters, string typeName = null!)
         {
             return db.Query(sqlQuery, dictDbParameters);
         }
-        public static IEnumerable<dynamic> Query(this string sqlQuery, Database db, DbParameter[] dbParameters, string typeName = null)
+        public static IEnumerable<dynamic> Query(this string sqlQuery, Database db, DbParameter[] dbParameters, string typeName = null!)
         {
             return db.Query(sqlQuery, dbParameters, typeName);
         }
@@ -240,7 +240,7 @@ namespace Bam.Data
 			return result;
 		}
 		
-        public static DataRow ToDataRow(this Type type, string tableName = null)
+        public static DataRow ToDataRow(this Type type, string tableName = null!)
         {
             tableName = tableName ?? type.Name;
             PropertyInfo[] properties = type.GetProperties();
@@ -259,7 +259,7 @@ namespace Bam.Data
         }
 
 
-        public static DataRow ToDataRow(this object instance, string tableName = null, IDataTypeTranslator translator = null)
+        public static DataRow ToDataRow(this object instance, string tableName = null!, IDataTypeTranslator translator = null!)
 		{
 			Type instanceType = instance.GetType();
             if(instanceType.HasCustomAttributeOfType(out TableAttribute tableAttribute))
@@ -280,7 +280,7 @@ namespace Bam.Data
                 {
                     Type columnType = translator == null ? typeof(object) : translator.TypeFromDbDataType(column.DbDataType);
                     table.Columns.Add(column.Name, columnType);
-                    rowValues.Add(property.GetValue(instance, null));
+                    rowValues.Add(property.GetValue(instance, null)!);
                 }
             }
 
@@ -329,23 +329,23 @@ namespace Bam.Data
             return sqlString.ToString();
         }
 
-        public static string Sha1(this DbParameter[] dbParameters, Encoding encoding = null)
+        public static string Sha1(this DbParameter[] dbParameters, Encoding encoding = null!)
         {
             return Hash(dbParameters, HashAlgorithms.SHA1, encoding);
         }
 
-        public static string Md5(this DbParameter[] dbParameters, Encoding encoding = null)
+        public static string Md5(this DbParameter[] dbParameters, Encoding encoding = null!)
         {
             return Hash(dbParameters, HashAlgorithms.MD5, encoding);
         }
 
-        public static string Hash(this DbParameter[] dbParameters, HashAlgorithms algorithm, Encoding encoding = null)
+        public static string Hash(this DbParameter[] dbParameters, HashAlgorithms algorithm, Encoding encoding = null!)
         {
             string infoString = ToInfoString(dbParameters, encoding);
             return infoString.HashHexString(algorithm, encoding);
         }
 
-        public static string ToInfoString(this DbParameter[] dbParameters, Encoding encoding = null)
+        public static string ToInfoString(this DbParameter[] dbParameters, Encoding encoding = null!)
         {
             List<DbParameter> sorted = new List<DbParameter>(dbParameters);
             sorted.Sort((left, right) => left.ParameterName.CompareTo(right.ParameterName));
@@ -358,23 +358,23 @@ namespace Bam.Data
             return infoString;
         }
 
-        public static string ToInfoString(this DbParameter dbParameter, Encoding encoding = null)
+        public static string ToInfoString(this DbParameter dbParameter, Encoding encoding = null!)
         {
-            return $"--{dbParameter.ParameterName}={dbParameter.Value.ToString()}";
+            return $"--{dbParameter.ParameterName}={dbParameter.Value!.ToString()}";
         }
-        public static string Sha1(this DbParameter dbParameter, Encoding encoding = null)
+        public static string Sha1(this DbParameter dbParameter, Encoding encoding = null!)
         {
             return Hash(dbParameter, HashAlgorithms.SHA1, encoding);
         }
 
-        public static string Md5(this DbParameter dbParameter, Encoding encoding = null)
+        public static string Md5(this DbParameter dbParameter, Encoding encoding = null!)
         {
             return Hash(dbParameter, HashAlgorithms.MD5, encoding);
         }
 
-        public static string Hash(this DbParameter dbParameter, HashAlgorithms algorithm, Encoding encoding = null)
+        public static string Hash(this DbParameter dbParameter, HashAlgorithms algorithm, Encoding encoding = null!)
         {
-            return $"{dbParameter.ParameterName}={dbParameter.Value.ToString()}".HashHexString(algorithm, encoding);
+            return $"{dbParameter.ParameterName}={dbParameter.Value!.ToString()}".HashHexString(algorithm, encoding);
         }
 
         public static IEnumerable<DbParameter> ToDbParameters(this object dynamicDbParameters, Database db)
@@ -383,7 +383,7 @@ namespace Bam.Data
             Type type = dynamicDbParameters.GetType();
             foreach (PropertyInfo pi in type.GetProperties())
             {
-                yield return db.CreateParameter(pi.Name, pi.GetValue(dynamicDbParameters));
+                yield return db.CreateParameter(pi.Name, pi.GetValue(dynamicDbParameters)!);
             }
         }
 
@@ -394,12 +394,12 @@ namespace Bam.Data
             Dictionary<string, object> result = new Dictionary<string, object>();
             instance.GetType().GetProperties().Each(pi =>
             {
-                result.Add(pi.Name, pi.GetValue(instance));
+                result.Add(pi.Name, pi.GetValue(instance)!);
             });
             return result;
         }
 
-        public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this object instance, Func<PropertyInfo, KeyValuePair<TKey, TValue>> valueAdder)
+        public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this object instance, Func<PropertyInfo, KeyValuePair<TKey, TValue>> valueAdder) where TKey : notnull
         {
             Args.ThrowIfNull(instance, nameof(instance));
 

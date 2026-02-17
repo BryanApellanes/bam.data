@@ -1,4 +1,4 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using System.Text;
 using Bam.Logging;
 using System.Reflection;
@@ -10,22 +10,22 @@ namespace Bam.Data
     /// </summary>
     public class DaoExpressionFilter: ExpressionVisitor, ILoggable
     {
-        ILogger _logger;
+        ILogger _logger = null!;
         readonly DaoExpressionVisitorEventSource _eventEmitter;
         readonly StringBuilder _traceLog;
         readonly QueryFilter _filter;
         int _counter = 0;
-        static List<ExpressionType> _comparisonTypes;
+        static List<ExpressionType> _comparisonTypes = null!;
 
         /// <summary>
         /// Initializes a new DaoExpressionFilter with an optional logger.
         /// </summary>
         /// <param name="logger">The logger for tracing expression visitor operations.</param>
-        public DaoExpressionFilter(ILogger logger = null)
+        public DaoExpressionFilter(ILogger logger = null!)
         {
             _traceLog = new StringBuilder();
             _filter = new QueryFilter();
-            _logger = logger ?? Log.Default;
+            _logger = logger ?? Log.Default!;
             _eventEmitter = new DaoExpressionVisitorEventSource();
             _eventEmitter.Subscribe(_logger);
             _comparisonTypes = new List<ExpressionType>
@@ -111,7 +111,7 @@ namespace Bam.Data
             ThrowIfNotComparison(b);
             Expression left = this.Visit(b.Left);
             Expression right = this.Visit(b.Right);
-            Expression conversion = this.Visit(b.Conversion);
+            Expression? conversion = this.Visit(b.Conversion);
             if (left != b.Left || right != b.Right || conversion != b.Conversion)
             {
                 if (b.NodeType == ExpressionType.Coalesce && b.Conversion != null)
@@ -121,9 +121,9 @@ namespace Bam.Data
             }
             else
             {
-                MemberExpression memberLeft = b.Left as MemberExpression;
+                MemberExpression? memberLeft = b.Left as MemberExpression;
 
-                _filter.AddRange(GetFilterForExpression(new QueryFilter(GetColumnName(memberLeft.Member)), b.NodeType, GetValue(b.Right)));
+                _filter.AddRange(GetFilterForExpression(new QueryFilter(GetColumnName(memberLeft!.Member)), b.NodeType, GetValue(b.Right)));
             }
             FireVisited("VisitBinary");
             return b;
@@ -187,8 +187,8 @@ namespace Bam.Data
             switch (expression.NodeType)
             {
                 case ExpressionType.MemberAccess:
-                    MemberExpression member = expression as MemberExpression;
-                    UnaryExpression objectMember = Expression.Convert(member, typeof(object));
+                    MemberExpression? member = expression as MemberExpression;
+                    UnaryExpression objectMember = Expression.Convert(member!, typeof(object));
 
                     Expression<Func<object>> getterLambda = Expression.Lambda<Func<object>>(objectMember);
 
@@ -196,9 +196,9 @@ namespace Bam.Data
 
                     return getter();
                 case ExpressionType.Constant:
-                    return ((ConstantExpression)expression).Value;
+                    return ((ConstantExpression)expression).Value!;
             }
-            return null;            
+            return null!;            
         }
         
         private void ThrowIfNotComparison(Expression expression)
@@ -212,14 +212,14 @@ namespace Bam.Data
         internal class DaoExpressionVisitorEventSource : Loggable
         {
             public DaoExpressionVisitorEventSource() : base() { }
-            public string Filter { get; set; }
-            public string CurrentMethod { get; set; }
+            public string Filter { get; set; } = null!;
+            public string CurrentMethod { get; set; } = null!;
 
             [Verbosity(VerbosityLevel.Information, SenderMessageFormat = "Visiting::{CurrentMethod}: \r\n{Filter}")]
-            public event EventHandler Visiting;
+            public event EventHandler Visiting = null!;
 
             [Verbosity(VerbosityLevel.Information, SenderMessageFormat = "Visited::{CurrentMethod}: \r\n{Filter}")]
-            public event EventHandler Visited;
+            public event EventHandler Visited = null!;
 
             public void FireVisiting(string filter, string currentMethod)
             {

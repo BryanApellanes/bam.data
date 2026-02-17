@@ -43,22 +43,22 @@ namespace Bam.Data
         {
             this.ServiceProvider = new DependencyProvider();
             this.Assembly = assembly;
-            Type daoType = (from type in assembly.GetTypes()
+            Type? daoType = (from type in assembly.GetTypes()
                             where type.IsSubclassOf(typeof(Dao))
                             select type).FirstOrDefault();
 
             Args.ThrowIfNull(daoType, "daoType");
 
-            this.ContextName = Dao.ConnectionName(daoType);
-            Dao.RegisterDaoTypes(daoType, this.ServiceProvider);
+            this.ContextName = Dao.ConnectionName(daoType!);
+            Dao.RegisterDaoTypes(daoType!, this.ServiceProvider);
         }
 
         /// <summary>
         /// Gets or sets the database associated with this registration.
         /// </summary>
-        public Database Database { get; set; }
+        public Database Database { get; set; } = null!;
 
-        static IDictionary<string, DaoProxyRegistration> _registrations;
+        static IDictionary<string, DaoProxyRegistration> _registrations = null!;
         protected internal static IDictionary<string, DaoProxyRegistration> Registrations
         {
             get
@@ -189,11 +189,11 @@ namespace Bam.Data
         /// <returns>The DaoProxyRegistration for the assembly.</returns>
         public static DaoProxyRegistration Register(Assembly assembly)
         {
-            Type daoType = (from type in assembly.GetTypes()
+            Type? daoType = (from type in assembly.GetTypes()
                             where type.IsSubclassOf(typeof(Dao))
                             select type).FirstOrDefault();
 
-            string connectionName = Dao.ConnectionName(daoType);
+            string connectionName = Dao.ConnectionName(daoType!);
             if (!Registrations.ContainsKey(connectionName))
             {
                 lock (_registerLock)
@@ -267,7 +267,7 @@ namespace Bam.Data
         /// </summary>
         public DependencyProvider ServiceProvider { get; set; }
 
-        StringBuilder _proxiesScript;
+        StringBuilder _proxiesScript = null!;
         object _proxiesScriptLock = new object();
         /// <summary>
         /// Gets the generated JavaScript proxy script for this registration.
@@ -280,7 +280,7 @@ namespace Bam.Data
             }
         }
 
-        StringBuilder _minProxiesScript;
+        StringBuilder _minProxiesScript = null!;
         object _minProxiesScriptLock = new object();
         /// <summary>
         /// Gets the minified JavaScript proxy script for this registration.
@@ -303,7 +303,7 @@ namespace Bam.Data
                 );
             }
         }
-        StringBuilder _ctorsScript;
+        StringBuilder _ctorsScript = null!;
         object _ctorsScriptLock = new object();
         /// <summary>
         /// Gets the generated JavaScript constructor script for this registration.
@@ -316,7 +316,7 @@ namespace Bam.Data
             }
         }
 
-        StringBuilder _minCtorsScript;
+        StringBuilder _minCtorsScript = null!;
         object _minCtorsScriptLock = new object();
         /// <summary>
         /// Gets the minified JavaScript constructor script for this registration.
@@ -353,10 +353,10 @@ namespace Bam.Data
             foreach (string className in classes)
             {
                 Type modelType = incubator[className];
-                MethodInfo modelTypeMethod = modelType.GetMethod("GetDaoType");
+                MethodInfo? modelTypeMethod = modelType.GetMethod("GetDaoType");
                 if (modelTypeMethod != null)
                 {
-                    modelType = (Type)modelTypeMethod.Invoke(null, null);
+                    modelType = (Type)modelTypeMethod.Invoke(null, null)!;
                 }
 
                 if (modelType.HasCustomAttributeOfType<TableAttribute>())

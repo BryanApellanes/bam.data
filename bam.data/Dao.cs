@@ -65,7 +65,7 @@ namespace Bam.Data
         }
 
 
-        Dictionary<string, ILoadable> _childCollections;
+        Dictionary<string, ILoadable> _childCollections = null!;
         /// <summary>
         /// Actions, keyed by type, to take after construction.
         /// </summary>
@@ -168,7 +168,7 @@ namespace Bam.Data
             Initializer(this);
         }
 
-        Action<IDao> _initializer;
+        Action<IDao> _initializer = null!;
         /// <summary>
         /// Gets or sets the initialization action for this Dao instance. Falls back to GlobalInitializer if not set.
         /// </summary>
@@ -183,7 +183,7 @@ namespace Bam.Data
         /// </summary>
         public static DBNull Null => DBNull.Value;
         
-        static Action<IDao> _globalInitializer;
+        static Action<IDao> _globalInitializer = null!;
         /// <summary>
         /// Gets or sets the global initialization action applied to all Dao instances when no instance-level initializer is set.
         /// </summary>
@@ -211,7 +211,7 @@ namespace Bam.Data
         /// </summary>
         /// <param name="obj">The object to compare.</param>
         /// <returns>True if the objects are the same type with the same database ID.</returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is Dao dao)
             {
@@ -226,60 +226,60 @@ namespace Bam.Data
         /// <summary>
         /// The name of the property to use in CompareTo operations.
         /// </summary>
-        public string DefaultSortProperty { get; set; }
+        public string DefaultSortProperty { get; set; } = null!;
 
         /// <summary>
         /// Compares this Dao to another object using the DefaultSortProperty or the Name/IdValue property.
         /// </summary>
         /// <param name="obj">The object to compare to.</param>
         /// <returns>A comparison result integer.</returns>
-        public virtual int CompareTo(object obj)
+        public virtual int CompareTo(object? obj)
         {
             Type thisType = GetType();
-            Type objType = obj.GetType();
+            Type objType = obj!.GetType();
             if(thisType != objType)
             {
                 return thisType.Name.CompareTo(objType.Name);
             }
-            PropertyInfo compareProp = thisType.GetProperty(DefaultSortProperty ?? "Name");
+            PropertyInfo? compareProp = thisType.GetProperty(DefaultSortProperty ?? "Name");
             if(compareProp == null)
             {
                 compareProp = thisType.GetProperty("IdValue");
             }
-            IComparable val1 = (IComparable)compareProp.GetValue(this);
-            IComparable val2 = (IComparable)compareProp.GetValue(obj);
-            return val1.CompareTo(val2);
+            IComparable? val1 = (IComparable)compareProp!.GetValue(this)!;
+            IComparable? val2 = (IComparable)compareProp!.GetValue(obj)!;
+            return val1!.CompareTo(val2);
         }
 
-        PropertyInfo _uuidProp;
+        PropertyInfo _uuidProp = null!;
         bool? _hasUuid;
         protected bool HasUuidProperty(out PropertyInfo uuidProp)
         {
             if (_hasUuid == null)
             {
-                _uuidProp = GetType().GetProperty("Uuid");
+                _uuidProp = GetType().GetProperty("Uuid")!;
                 _hasUuid = _uuidProp != null;
             }
 
-            uuidProp = _uuidProp;
+            uuidProp = _uuidProp!;
             return _hasUuid.Value;
         }
 
-        PropertyInfo _cuidProp;
+        PropertyInfo _cuidProp = null!;
         bool? _hasCuid;
         protected bool HasCuidProperty(out PropertyInfo cuidProp)
         {
             if (_hasCuid == null)
             {
-                _cuidProp = GetType().GetProperty("Cuid");
+                _cuidProp = GetType().GetProperty("Cuid")!;
                 _hasCuid = _cuidProp != null;
             }
 
-            cuidProp = _cuidProp;
+            cuidProp = _cuidProp!;
             return _hasCuid.Value;
         }
 
-        protected IDatabase _database;
+        protected IDatabase _database = null!;
         readonly object _databaseSync = new object();
         /// <summary>
         /// Gets or sets the database associated with this Dao instance. Lazily resolves from Db.For if not set.
@@ -293,7 +293,7 @@ namespace Bam.Data
             set => _database = value;
         }
 
-        List<string> _columns;
+        List<string> _columns = null!;
         readonly object _columnsLock = new object();
         /// <summary>
         /// Gets the column names from this Dao's backing DataRow table.
@@ -360,7 +360,7 @@ namespace Bam.Data
             return Database.GetDataTypeTranslator().TranslateDataType(columnName);
         }
 
-        Dictionary<string, string> _columnDataTypes;
+        Dictionary<string, string> _columnDataTypes = null!;
         /// <summary>
         /// Gets the database data type string for the specified column name.
         /// </summary>
@@ -387,7 +387,7 @@ namespace Bam.Data
         /// <returns>The database data type string, or "VARCHAR" if not found.</returns>
         public static string GetDbDataType(Type type, string columnName)
         {
-            PropertyInfo prop = type.GetProperty(columnName);
+            PropertyInfo? prop = type.GetProperty(columnName);
             if (prop == null)
             {
                 prop = type.GetProperties().FirstOrDefault(pi =>
@@ -410,7 +410,7 @@ namespace Bam.Data
         /// <param name="columnName">Name of the column.</param>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        public T Column<T>(string columnName, object value = null)
+        public T Column<T>(string columnName, object? value = null)
         {
             return Column<T>(columnName, value);
         }
@@ -423,10 +423,10 @@ namespace Bam.Data
         /// <param name="columnName">Name of the column.</param>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        public T ColumnValue<T>(string columnName, object value = null)
+        public T ColumnValue<T>(string columnName, object? value = null)
         {
             object val = ColumnValue(columnName, value);
-            return val == null ? default(T) : (T)val;
+            return val == null ? default(T)! : (T)val!;
         }
 
         /// <summary>
@@ -435,7 +435,7 @@ namespace Bam.Data
         /// <param name="columnName">The name of the column.</param>
         /// <param name="value">The optional value to set.</param>
         /// <returns>The current value of the column, or null if not set.</returns>
-        public object ColumnValue(string columnName, object value = null)
+        public object ColumnValue(string columnName, object? value = null)
         {
             DataTable table = DataRow.Table;
             if (!table.Columns.Contains(columnName) && value != null)
@@ -451,7 +451,7 @@ namespace Bam.Data
             
             if(currentValue == null || currentValue == DBNull.Value)
             {
-                return null;
+                return null!;
             }
             return currentValue;
         }
@@ -480,11 +480,11 @@ namespace Bam.Data
         /// <summary>
         /// Event fired before a commit is written for this instance.
         /// </summary>
-        public event DaoDelegate BeforeWriteCommit;
+        public event DaoDelegate BeforeWriteCommit = null!;
         /// <summary>
         /// Event fired before a commit is written for any Dao instance.
         /// </summary>
-        public static event DaoDelegate BeforeWriteCommitAny;
+        public static event DaoDelegate BeforeWriteCommitAny = null!;
         protected internal void OnBeforeWriteCommit(IDatabase db)
         {
             BeforeWriteCommit?.Invoke(db, this);
@@ -494,11 +494,11 @@ namespace Bam.Data
         /// <summary>
         /// Event fired after a commit is written for this instance.
         /// </summary>
-        public event DaoDelegate AfterWriteCommit;
+        public event DaoDelegate AfterWriteCommit = null!;
         /// <summary>
         /// Event fired after a commit is written for any Dao instance.
         /// </summary>
-        public static event DaoDelegate AfterWriteCommitAny;
+        public static event DaoDelegate AfterWriteCommitAny = null!;
         protected internal void OnAfterWriteCommit(IDatabase db)
         {
             AfterWriteCommit?.Invoke(db, this);
@@ -508,11 +508,11 @@ namespace Bam.Data
         /// <summary>
         /// Event fired before this instance is committed.
         /// </summary>
-        public event DaoDelegate BeforeCommit;
+        public event DaoDelegate BeforeCommit = null!;
         /// <summary>
         /// Event fired before any Dao instance is committed.
         /// </summary>
-        public static event DaoDelegate BeforeCommitAny;
+        public static event DaoDelegate BeforeCommitAny = null!;
         protected internal void OnBeforeCommit(IDatabase db)
         {
             BeforeCommit?.Invoke(db, this);
@@ -526,12 +526,12 @@ namespace Bam.Data
         /// Dao instance may not be fully-hydrated at the
         /// time of the firing of this event.
         /// </summary>
-        public event ICommittableDelegate AfterCommit;
+        public event ICommittableDelegate AfterCommit = null!;
 
         /// <summary>
         /// The event that fires after any Dao instance is committed.
         /// </summary>
-        public static event DaoDelegate AfterCommitAny;
+        public static event DaoDelegate AfterCommitAny = null!;
         protected internal void OnAfterCommit(IDatabase db)
         {
             AfterCommit?.Invoke(db, this);
@@ -541,11 +541,11 @@ namespace Bam.Data
         /// <summary>
         /// Event fired before a delete is written for this instance.
         /// </summary>
-        public event DaoDelegate BeforeWriteDelete;
+        public event DaoDelegate BeforeWriteDelete = null!;
         /// <summary>
         /// Event fired before a delete is written for any Dao instance.
         /// </summary>
-        public static event DaoDelegate BeforeWriteDeleteAny;
+        public static event DaoDelegate BeforeWriteDeleteAny = null!;
         protected void OnBeforeWriteDelete(IDatabase db)
         {
             BeforeWriteDelete?.Invoke(db, this);
@@ -555,11 +555,11 @@ namespace Bam.Data
         /// <summary>
         /// Event fired after a delete is written for this instance.
         /// </summary>
-        public event DaoDelegate AfterWriteDelete;
+        public event DaoDelegate AfterWriteDelete = null!;
         /// <summary>
         /// Event fired after a delete is written for any Dao instance.
         /// </summary>
-        public static event DaoDelegate AfterWriteDeleteAny;
+        public static event DaoDelegate AfterWriteDeleteAny = null!;
         protected void OnAfterWriteDelete(IDatabase db)
         {
             AfterWriteDelete?.Invoke(db, this);
@@ -569,11 +569,11 @@ namespace Bam.Data
         /// <summary>
         /// Event fired before this instance is deleted.
         /// </summary>
-        public event DaoDelegate BeforeDelete;
+        public event DaoDelegate BeforeDelete = null!;
         /// <summary>
         /// Event fired before any Dao instance is deleted.
         /// </summary>
-        public static event DaoDelegate BeforeDeleteAny;
+        public static event DaoDelegate BeforeDeleteAny = null!;
         protected void OnBeforeDelete(IDatabase db)
         {
             BeforeDelete?.Invoke(db, this);
@@ -583,11 +583,11 @@ namespace Bam.Data
         /// <summary>
         /// Event fired after this instance is deleted.
         /// </summary>
-        public event DaoDelegate AfterDelete;
+        public event DaoDelegate AfterDelete = null!;
         /// <summary>
         /// Event fired after any Dao instance is deleted.
         /// </summary>
-        public static event DaoDelegate AfterDeleteAny;
+        public static event DaoDelegate AfterDeleteAny = null!;
         protected void OnAfterDelete(IDatabase db)
         {
             AfterDelete?.Invoke(db, this);
@@ -600,20 +600,20 @@ namespace Bam.Data
         /// Hydrates this Dao's child collections from the specified database.
         /// </summary>
         /// <param name="database">The database to hydrate from.</param>
-        public virtual void Hydrate(IDatabase database = null)
+        public virtual void Hydrate(IDatabase? database = null!)
         {
-            database.Hydrate(this);
+            database!.Hydrate(this);
         }
 
         /// <summary>
         /// Loads all child collections for this Dao instance from the specified database.
         /// </summary>
         /// <param name="database">The database to load child collections from.</param>
-        public virtual void HydrateChildren(IDatabase database = null)
+        public virtual void HydrateChildren(IDatabase? database = null!)
         {
             foreach (string key in ChildCollections.Keys)
             {
-                ChildCollections?[key].Load(database);
+                ChildCollections?[key].Load(database!);
             }
         }
 
@@ -635,7 +635,7 @@ namespace Bam.Data
             return Validator(this);
         }
 
-        Func<Dao, DaoValidationResult> _validator;
+        Func<Dao, DaoValidationResult> _validator = null!;
         /// <summary>
         /// Gets or sets the validation function for this Dao instance. Falls back to GlobalValidator if not set.
         /// </summary>
@@ -653,7 +653,7 @@ namespace Bam.Data
             set => _validator = value;
         }
 
-        static Func<Dao, DaoValidationResult> _globalValidator;
+        static Func<Dao, DaoValidationResult> _globalValidator = null!;
         /// <summary>
         /// Gets or sets the global validation function applied to all Dao instances when no instance-level validator is set.
         /// </summary>
@@ -687,8 +687,8 @@ namespace Bam.Data
                 if (!(ca is KeyColumnAttribute) && !ca.AllowNull)
                 {
                     string propTypeName = prop.PropertyType.Name;
-                    MethodInfo getter = type.GetMethod("Get{0}Value".Format(propTypeName));
-                    object val = getter.Invoke(this, new object[] { ca.Name });
+                    MethodInfo? getter = type.GetMethod("Get{0}Value".Format(propTypeName));
+                    object? val = getter!.Invoke(this, new object[] { ca.Name });
                     if (val == null || (val is string s && string.IsNullOrEmpty(s)))
                     {
                         msgs.Add("{0} can't be null".Format(prop.Name));
@@ -714,11 +714,11 @@ namespace Bam.Data
         /// </summary>
         /// <param name="db"></param>
         /// <returns></returns>
-        public Task SaveAsync(IDatabase db = null)
+        public Task SaveAsync(IDatabase? db = null!)
         {
             return Task.Run(() =>
             {
-                Save(db);
+                Save(db!);
             });
         }
 
@@ -763,9 +763,9 @@ namespace Bam.Data
         /// Commits this Dao instance and its children to the specified database.
         /// </summary>
         /// <param name="db">The database to commit to.</param>
-        public void Commit(IDatabase db)
+        public void Commit(IDatabase? db)
         {
-            Commit(db, true);
+            Commit(db!, true);
         }
 
         /// <summary>
@@ -801,7 +801,7 @@ namespace Bam.Data
         /// Forces an update of this Dao instance in the specified database, regardless of its IsNew state.
         /// </summary>
         /// <param name="db">The database to update in; uses default if null.</param>
-        public void Update(IDatabase db = null)
+        public void Update(IDatabase? db = null!)
         {
             db = db ?? Database;
             ThrowIfInvalid();
@@ -818,7 +818,7 @@ namespace Bam.Data
         /// Forces an insert of this Dao instance into the specified database, regardless of its IsNew state.
         /// </summary>
         /// <param name="db">The database to insert into; uses default if null.</param>
-        public void Insert(IDatabase db = null)
+        public void Insert(IDatabase? db = null!)
         {
             db = db ?? Database;
             ThrowIfInvalid();
@@ -831,7 +831,7 @@ namespace Bam.Data
             }
         }
 
-        protected internal void WriteChildCommits(ISqlStringBuilder sql, IDatabase db = null)
+        protected internal void WriteChildCommits(ISqlStringBuilder sql, IDatabase db = null!)
         {
             db = db ?? Database;
             foreach (string key in this.ChildCollections.Keys)
@@ -871,7 +871,7 @@ namespace Bam.Data
         /// Deletes this Dao instance and optionally its children from the specified database.
         /// </summary>
         /// <param name="database">The database to delete from; uses default if null.</param>
-        public virtual void Delete(IDatabase database = null)
+        public virtual void Delete(IDatabase? database = null!)
         {
             ISqlStringBuilder sql = GetSqlStringBuilder(out IDatabase db);
             if (database != null)
@@ -989,9 +989,9 @@ namespace Bam.Data
         /// </summary>
         /// <param name="sqlStringBuilder">The SqlStringBuilder to write into.</param>
         /// <param name="db">The database context.</param>
-        public virtual void WriteCommit(ISqlStringBuilder sqlStringBuilder, IDatabase db)
+        public virtual void WriteCommit(ISqlStringBuilder sqlStringBuilder, IDatabase? db)
         {
-            OnBeforeWriteCommit(db);
+            OnBeforeWriteCommit(db!);
             if (HasNewValues)
             {
                 sqlStringBuilder.Executed += (_sql, _db) => OnAfterCommit(_db);
@@ -1004,7 +1004,7 @@ namespace Bam.Data
                     WriteUpdate(sqlStringBuilder);
                 }
             }
-            OnAfterWriteCommit(db);
+            OnAfterWriteCommit(db!);
         }
 
         /// <summary>
@@ -1039,7 +1039,7 @@ namespace Bam.Data
         /// since it was loaded.  This method will write to the database.
         /// </summary>
         /// <param name="db"></param>
-        public virtual void Undo(IDatabase db = null)
+        public virtual void Undo(IDatabase? db = null!)
         {
             Type thisType = this.GetType();
             if (db == null)
@@ -1065,7 +1065,7 @@ namespace Bam.Data
         /// Re-insert the current instance after it has been deleted.
         /// </summary>
         /// <param name="db"></param>
-        public virtual void Undelete(IDatabase db = null)
+        public virtual void Undelete(IDatabase? db = null!)
         {
             Type thisType = this.GetType();
             if (db == null)
@@ -1127,7 +1127,7 @@ namespace Bam.Data
         {
             get;
             set;
-        }
+        } = null!;
 
         /// <summary>
         /// Returns the connection name for this Dao instance.
@@ -1191,14 +1191,14 @@ namespace Bam.Data
             }
             else
             {
-                PropertyInfo prop = type.GetProperty("ConnectionName");
-                if (prop != null && prop.GetGetMethod().IsStatic && prop.PropertyType == typeof(string))
+                PropertyInfo? prop = type.GetProperty("ConnectionName");
+                if (prop != null && prop!.GetGetMethod()!.IsStatic && prop.PropertyType == typeof(string))
                 {
-                    value = (string)prop.GetValue(null, null);
+                    value = (string)prop.GetValue(null, null)!;
                 }
             }
 
-            return value;
+            return value!;
         }
 
         /// <summary>
@@ -1263,7 +1263,7 @@ namespace Bam.Data
         /// <param name="newConnectionName"></param>
         public static void ProxyConnection(string originalConnectionName, string newConnectionName)
         {
-            _proxiedConnectionNames.AddMissing(originalConnectionName, newConnectionName);
+            _proxiedConnectionNames.TryAdd(originalConnectionName, newConnectionName);
             _proxiedConnectionNames[originalConnectionName] = newConnectionName;
         }
 
@@ -1345,7 +1345,7 @@ namespace Bam.Data
         /// </summary>
         /// <param name="exceptionHandler">Optional handler for exceptions.</param>
         /// <returns>The database ID, or null if retrieval failed.</returns>
-        public virtual ulong? TryGetId(Action<Exception> exceptionHandler = null)
+        public virtual ulong? TryGetId(Action<Exception>? exceptionHandler = null!)
         {
             try
             {
@@ -1400,7 +1400,7 @@ namespace Bam.Data
                 {
                     Type type = GetType();
                     Assembly assembly = type.Assembly;
-                    Log.AddEntry("Exception getting IdValue for Dao instance of type ({0}.{1}) in Assembly ({2}) with hash (sha256) ({3})", ex, type.Namespace, type.Name, assembly.FullName, assembly.GetFileInfo().Sha256());
+                    Log.AddEntry("Exception getting IdValue for Dao instance of type ({0}.{1}) in Assembly ({2}) with hash (sha256) ({3})", ex, type.Namespace!, type.Name, assembly.FullName!, assembly.GetFileInfo().Sha256());
                 }
             }
 
@@ -1421,14 +1421,14 @@ namespace Bam.Data
         /// Gets the name of the key column.
         /// </summary>
         [Exclude]
-        public string KeyColumnName { get; protected set; }
+        public string KeyColumnName { get; protected set; } = null!;
 
         protected void SetKeyColumnName()
         {
             KeyColumnName = GetKeyColumnName(this.GetType());
         }
 
-        object _primaryKey;
+        object _primaryKey = null!;
         /// <summary>
         /// Gets the primary key.  If the current instance is backed
         /// by a DataRow because it was hydrated from a database query,
@@ -1509,7 +1509,7 @@ namespace Bam.Data
             private set => _isNew = value;
         }
 
-        DependencyProvider _incubator;
+        DependencyProvider _incubator = null!;
         /// <summary>
         /// Gets or sets the dependency injection service provider for this Dao instance.
         /// </summary>
@@ -1525,7 +1525,7 @@ namespace Bam.Data
                         _incubator = Database.ServiceProvider;
                     }
                 }
-                return _incubator;
+                return _incubator!;
             }
             protected internal set => _incubator = value;
         }
@@ -1534,7 +1534,7 @@ namespace Bam.Data
         /// Gets or sets the backing DataRow for this Dao instance.
         /// </summary>
         [Exclude]
-        public DataRow DataRow { get; set; }
+        public DataRow DataRow { get; set; } = null!;
 
         /// <summary>
         /// Returns true if properties of the
@@ -1547,14 +1547,14 @@ namespace Bam.Data
         {
             get;
             set;
-        }
+        } = null!;
 
         protected internal DataRow ToDataRow()
         {
-            return ToDataRow(this, _database?.GetDataTypeTranslator());
+            return ToDataRow(this, _database?.GetDataTypeTranslator()!);
         }
 
-        protected internal static DataRow ToDataRow(Dao instance, IDataTypeTranslator dataTypeTranslator = null)
+        protected internal static DataRow ToDataRow(Dao instance, IDataTypeTranslator dataTypeTranslator = null!)
         {
             if (instance.DataRow != null)
             {
@@ -1575,12 +1575,12 @@ namespace Bam.Data
                 return PrimaryKey;
             }
 
-            return null;
+            return null!;
         }
 
         protected internal object GetCurrentValue(string columnName)
         {
-            object result = null;
+            object? result = null;
             if (columnName.Equals(KeyColumnName))
             {
                 result = DbId;
@@ -1608,7 +1608,7 @@ namespace Bam.Data
             object val = GetCurrentValue(columnName);
             if (val != null && val != DBNull.Value)
             {
-                return Convert.ToString(val); 
+                return Convert.ToString(val)!; 
             }
 
             return string.Empty;
@@ -1814,7 +1814,7 @@ namespace Bam.Data
         {
             if (HasUuidProperty(out PropertyInfo uuid))
             {
-                string currentUuid = (string)uuid.GetValue(this);
+                string? currentUuid = (string?)uuid.GetValue(this);
                 if (string.IsNullOrEmpty(currentUuid))
                 {
                     string uuidVal = Guid.NewGuid().ToString();

@@ -9,7 +9,7 @@ namespace Bam.Data
         public SQLiteSchemaInitializer() : base() { }
 
         public SQLiteSchemaInitializer(string schemaContextAssemblyQaulifiedName)
-            : base(schemaContextAssemblyQaulifiedName, typeof(SQLiteRegistrarCaller).AssemblyQualifiedName)
+            : base(schemaContextAssemblyQaulifiedName, typeof(SQLiteRegistrarCaller).AssemblyQualifiedName!)
         { }
 
         public SQLiteSchemaInitializer(Type schemaContextType)

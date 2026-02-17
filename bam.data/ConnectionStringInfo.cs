@@ -24,7 +24,7 @@ namespace Bam.Data
         {
             get;
             set;
-        }
+        } = null!;
 
         /// <summary>
         /// Gets or sets the database provider name (e.g., "System.Data.SqlClient").
@@ -33,7 +33,7 @@ namespace Bam.Data
         {
             get;
             set;
-        }
+        } = null!;
 
         Dictionary<string, string> _settings;
         public string this[string key]

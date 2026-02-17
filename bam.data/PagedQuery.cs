@@ -21,7 +21,7 @@ namespace Bam.Data
 		/// <param name="orderByColumn">The column to order results by.</param>
 		/// <param name="query">The base query to page over.</param>
 		/// <param name="db">Optional database; defaults to the database for type T.</param>
-		public PagedQuery(C orderByColumn, Query<C, T> query, IDatabase db = null)
+		public PagedQuery(C orderByColumn, Query<C, T> query, IDatabase db = null!)
 		{
 			this.Database = db;
 			this.OrderByColumn = orderByColumn;
@@ -62,7 +62,7 @@ namespace Bam.Data
 		/// Gets or sets the underlying query.
 		/// </summary>
 		public Query<C, T> Query { get; set; }
-		IDatabase _database;
+		IDatabase _database = null!;
 		/// <summary>
 		/// Gets or sets the database to execute queries against.
 		/// </summary>
@@ -98,12 +98,12 @@ namespace Bam.Data
 				List<long> ids = IdBook.PageNumber(CurrentPage);
 				QuerySet sql = Database.GetService<QuerySet>();
 				sql.Top<T>(PageSize);
-				QueryFilter queryFilter = (QueryFilter)Query.FilterDelegate.DynamicInvoke(OrderByColumn);
-				sql.Where(queryFilter && new QueryFilter("Id").In(ids.Select(i => (object)i).ToArray())).OrderBy(OrderByColumn.ToString(), SortOrder);
+				QueryFilter? queryFilter = (QueryFilter?)Query.FilterDelegate.DynamicInvoke(OrderByColumn);
+				sql.Where(queryFilter! && new QueryFilter("Id").In(ids.Select(i => (object)i).ToArray())!).OrderBy(OrderByColumn.ToString()!, SortOrder);
 				CurrentResults = new DaoCollection<C, T>(Database, sql.ExecuteGetDataTable(Database));
 			}
 			SetLastEntry();
-			results = CurrentResults;
+			results = CurrentResults = null!;
 			return CurrentResults.Count > 0;
 		}
 		private void SetLastEntry()
@@ -114,7 +114,7 @@ namespace Bam.Data
 			}
 			else
 			{
-				LastEntry = default(T);
+				LastEntry = default(T)!;
 			}
 		}
 
@@ -125,19 +125,19 @@ namespace Bam.Data
 		{
 			get;
 			private set;
-		}
+		} = null!;
 
 		/// <summary>
 		/// Gets or sets all matching IDs for the query.
 		/// </summary>
-		public long[] Ids { get; set; }
+		public long[] Ids { get; set; } = null!;
 
 		/// <summary>
 		/// Gets or sets the last entry from the current page.
 		/// </summary>
-		public T LastEntry { get; set; }
+		public T LastEntry { get; set; } = default!;
 
-		protected Book<long> IdBook { get; set; }
+		protected Book<long> IdBook { get; set; } = null!;
 
 		bool _metaLoaded;
 		protected internal void LoadMeta()
@@ -150,7 +150,7 @@ namespace Bam.Data
 				List<long> ids = new List<long>();
 				foreach(DataRow row in table.Rows)
 				{
-					ids.Add(Database.GetLongValue(id, row).Value);
+					ids.Add(Database.GetLongValue(id, row)!.Value);
 				}
 				Ids = ids.ToArray();
 				IdBook = new Book<long>(Ids, PageSize);
@@ -171,8 +171,8 @@ namespace Bam.Data
 		private void SetQuery(ISqlStringBuilder sql)
 		{
 			Args.ThrowIfNull(OrderByColumn, "OrderByColumn");
-			IQueryFilter queryFilter = (IQueryFilter)Query.FilterDelegate.DynamicInvoke(OrderByColumn);
-			sql = sql.Where(queryFilter).OrderBy(OrderByColumn.ToString(), SortOrder);
+			IQueryFilter? queryFilter = (IQueryFilter?)Query.FilterDelegate.DynamicInvoke(OrderByColumn);
+			sql = sql.Where(queryFilter!).OrderBy(OrderByColumn.ToString()!, SortOrder);
 		}
 	}
 	

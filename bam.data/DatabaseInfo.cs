@@ -20,15 +20,15 @@ namespace Bam.Data
         /// <summary>
         /// Gets the full type name of the database implementation.
         /// </summary>
-        public string DatabaseType => Database.GetType().FullName;
+        public string DatabaseType => Database.GetType().FullName!;
         /// <summary>
         /// Gets the database connection string.
         /// </summary>
-        public string ConnectionString => Database.ConnectionString;
+        public string ConnectionString => Database.ConnectionString!;
         /// <summary>
         /// Gets the database connection name.
         /// </summary>
-        public string ConnectionName => Database.ConnectionName;
+        public string ConnectionName => Database.ConnectionName!;
 
         public override string ToString()
         {
@@ -40,9 +40,9 @@ namespace Bam.Data
             return $"{DatabaseType}{ConnectionString}{ConnectionName}".GetHashCode();
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
-            DatabaseInfo dbInfo = obj as DatabaseInfo;
+            DatabaseInfo? dbInfo = obj as DatabaseInfo;
             if (dbInfo == null)
             {
                 return false;

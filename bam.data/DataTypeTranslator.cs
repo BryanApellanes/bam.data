@@ -1,4 +1,4 @@
-﻿namespace Bam.Data
+namespace Bam.Data
 {
     /// <summary>
     /// A class for converting between different type representations.
@@ -6,7 +6,7 @@
     public class DataTypeTranslator : IDataTypeTranslator
     {
         private static readonly object _dataTypeTranslatorLock = new object();
-        private static IDataTypeTranslator _dafault;
+        private static IDataTypeTranslator _dafault = null!;
         /// <summary>
         /// Gets or sets the default IDataTypeTranslator instance.
         /// </summary>

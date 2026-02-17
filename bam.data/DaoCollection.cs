@@ -19,11 +19,11 @@ namespace Bam.Data
     {
         Book<T> _book;
         List<T> _values;
-        DataTable _table;
+        DataTable _table = null!;
 
-        IDao _parent;
+        IDao _parent = null!;
 
-        ConstructorInfo _ctor;
+        ConstructorInfo _ctor = null!;
 
         /// <summary>
         /// Implicitly converts a DataTable to a DaoCollection.
@@ -49,7 +49,7 @@ namespace Bam.Data
         /// <param name="table">The DataTable containing the row data.</param>
         /// <param name="parent">The optional parent Dao instance.</param>
         /// <param name="referencingColumn">The foreign key column name referencing the parent.</param>
-        public DaoCollection(DataTable table, IDao parent = null, string referencingColumn = null)
+        public DaoCollection(DataTable table, IDao parent = null!, string referencingColumn = null!)
             : this()
         {
             this._parent = parent;
@@ -66,7 +66,7 @@ namespace Bam.Data
 		/// <param name="table">The DataTable containing the row data.</param>
 		/// <param name="parent">The optional parent Dao instance.</param>
 		/// <param name="referencingColumn">The foreign key column name referencing the parent.</param>
-		public DaoCollection(IDatabase database, DataTable table, IDao parent = null, string referencingColumn = null)
+		public DaoCollection(IDatabase database, DataTable table, IDao parent = null!, string referencingColumn = null!)
 			: this()
 		{
 			this._parent = parent;
@@ -84,7 +84,7 @@ namespace Bam.Data
         /// <param name="query">The query to use for loading data.</param>
         /// <param name="parent">The optional parent Dao instance.</param>
         /// <param name="referencingColumn">The foreign key column name referencing the parent.</param>
-        public DaoCollection(IQuery<C, T> query, IDao parent = null, string referencingColumn = null): this()
+        public DaoCollection(IQuery<C, T> query, IDao parent = null!, string referencingColumn = null!): this()
         {
             this._parent = parent;
 			this.Query = query;
@@ -98,7 +98,7 @@ namespace Bam.Data
         /// <param name="db">The database to load from.</param>
         /// <param name="query">The query to use for loading data.</param>
         /// <param name="load">If true, loads the collection immediately.</param>
-        public DaoCollection(IDatabase db, IQuery<C, T> query, bool load = false): this(query, null, null)
+        public DaoCollection(IDatabase db, IQuery<C, T> query, bool load = false): this(query, null!, null!)
         {
             if (load)
             {
@@ -111,7 +111,7 @@ namespace Bam.Data
         /// </summary>
         /// <param name="query">The query to use for loading data.</param>
         /// <param name="load">If true, loads the collection immediately.</param>
-        public DaoCollection(IQuery<C, T> query, bool load = false): this(query, null, null)
+        public DaoCollection(IQuery<C, T> query, bool load = false): this(query, null!, null!)
         {
             if (load)
             {
@@ -135,7 +135,7 @@ namespace Bam.Data
         {
             get;
             set;
-        }
+        } = null!;
 
         /// <summary>
         /// Gets or sets the query used to load this collection.
@@ -144,7 +144,7 @@ namespace Bam.Data
         {
             get;
             set;
-        }
+        } = null!;
 
         /// <summary>
         /// Gets the first DataRow in this collection, or a default row if no data is present.
@@ -155,7 +155,7 @@ namespace Bam.Data
             set { }
         }
 
-        IDatabase _database;
+        IDatabase _database = null!;
         /// <summary>
         /// Gets or sets the database associated with this collection. Defaults to the parent's database or the default database for type T.
         /// </summary>
@@ -259,7 +259,7 @@ namespace Bam.Data
         
         private void Initialize(DataTable table)
         {
-            _ctor = typeof(T).GetConstructor(new Type[] { typeof(Database),  typeof(DataRow) });
+            _ctor = typeof(T).GetConstructor(new Type[] { typeof(Database),  typeof(DataRow) })!;
             _values = new List<T>();
             foreach (DataRow row in table.Rows)
             {
@@ -328,7 +328,7 @@ namespace Bam.Data
         /// values from the specified database.
         /// </summary>
         /// <param name="db"></param>
-        public virtual void Clear(IDatabase db = null)
+        public virtual void Clear(IDatabase? db = null!)
         {
             Delete(db);
             _values = new List<T>();
@@ -374,7 +374,7 @@ namespace Bam.Data
                     if (fk.ReferencedTable.Equals(Dao.TableName(_parent)) && fk.Name.Equals(ReferencingColumn))
                     {
                         Type propertyType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
-                        property.SetValue(instance, System.Convert.ChangeType(_parent.DbId.Value, propertyType), null);
+                        property.SetValue(instance, System.Convert.ChangeType(_parent.DbId!.Value, propertyType), null);
                     }
                 }
             }
@@ -426,13 +426,13 @@ namespace Bam.Data
         /// <summary>
         /// Event fired after a commit operation completes.
         /// </summary>
-        public event ICommittableDelegate AfterCommit;
+        public event ICommittableDelegate AfterCommit = null!;
 
         /// <summary>
         /// Commits all items in this collection to the specified database.
         /// </summary>
         /// <param name="db">The database to commit to.</param>
-        public void Commit(IDatabase db)
+        public void Commit(IDatabase? db)
         {
 			db = db ?? Database;
             SqlStringBuilder sql = db.ServiceProvider.Get<SqlStringBuilder>();
@@ -448,7 +448,7 @@ namespace Bam.Data
         /// </summary>
         /// <param name="sql">The SqlStringBuilder to write commit statements into.</param>
         /// <param name="db">The optional database context.</param>
-        public void WriteCommit(ISqlStringBuilder sql, IDatabase db = null)
+        public void WriteCommit(ISqlStringBuilder sql, IDatabase? db = null!)
         {
 			db = db ?? Database;
             List<T> children = new List<T>();
@@ -472,7 +472,7 @@ namespace Bam.Data
         /// Deletes all items in this collection from the specified database.
         /// </summary>
         /// <param name="db">The database to delete from; defaults to the collection's database.</param>
-        public void Delete(IDatabase db = null)
+        public void Delete(IDatabase? db = null!)
         {
 			db = db ?? Database;
             SqlStringBuilder sql = db.ServiceProvider.Get<SqlStringBuilder>();
@@ -505,7 +505,7 @@ namespace Bam.Data
                     }
 
                     sql.Delete(Dao.TableName(typeof(T)))
-                        .Where(new AssignValue(ReferencingColumn, Parent.DbId))
+                        .Where(new AssignValue(ReferencingColumn, Parent!.DbId))
                         .Go();
                 }
                 
@@ -567,7 +567,7 @@ namespace Bam.Data
                 throw new MultipleEntriesFoundException();
             }
 
-            T result = this.FirstOrDefault();
+            T? result = this.FirstOrDefault();
             if (result == null)
             {
                 result = AddChild();

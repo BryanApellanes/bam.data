@@ -34,13 +34,13 @@ namespace Bam.Data
 		/// <summary>
 		/// Gets or sets the last connection name that was requested.
 		/// </summary>
-		public string LastConnectionName { get; set; }
+		public string LastConnectionName { get; set; } = null!;
 
 		/// <summary>
 		/// Occurs when a database is not found for the requested connection name.
 		/// </summary>
 		[Verbosity(VerbosityLevel.Information, SenderMessageFormat="No database was added for the connection named {LastConnectionName}")]
-		public event EventHandler DatabaseNotFound;
+		public event EventHandler DatabaseNotFound = null!;
 
 		#region IDatabaseInitializer Members
 
@@ -61,7 +61,7 @@ namespace Bam.Data
 				FireEvent(DatabaseNotFound, EventArgs.Empty);
 			}
 
-			return new DatabaseInitializationResult(null, new DatabaseInitializationFailedException(connectionName));
+			return new DatabaseInitializationResult(null!, new DatabaseInitializationFailedException(connectionName));
 		}
 
 		/// <summary>
@@ -70,7 +70,7 @@ namespace Bam.Data
 		/// <param name="types">The types to ignore.</param>
 		public void Ignore(params Type[] types)
 		{
-			throw new NotImplementedException("{0} doesn't implement Ignore".Format(typeof(StaticDatabaseInitializer).FullName));
+			throw new NotImplementedException("{0} doesn't implement Ignore".Format(typeof(StaticDatabaseInitializer).FullName!));
 		}
 
 		/// <summary>
@@ -79,7 +79,7 @@ namespace Bam.Data
 		/// <param name="connectionNames">The connection names to ignore.</param>
 		public void Ignore(params string[] connectionNames)
 		{
-			throw new NotImplementedException("{0} doesn't implement Ignore".Format(typeof(StaticDatabaseInitializer).FullName));
+			throw new NotImplementedException("{0} doesn't implement Ignore".Format(typeof(StaticDatabaseInitializer).FullName!));
 		}
 
 		#endregion

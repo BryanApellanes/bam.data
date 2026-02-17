@@ -21,7 +21,7 @@ namespace Bam.Data
 
         public static string SQLiteFactoryAssemblyQualifiedName()
         {
-            return typeof(SQLiteFactory).AssemblyQualifiedName;
+            return typeof(SQLiteFactory).AssemblyQualifiedName!;
         }
 
         /// <summary>

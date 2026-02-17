@@ -1,4 +1,4 @@
-﻿namespace Bam.Data
+namespace Bam.Data
 {
     /// <summary>
     /// Wraps a SQL query and its parameters for serialization and later execution.
@@ -24,7 +24,7 @@
         /// Gets or sets the SQL statement text.
         /// </summary>
         public string Sql { get; set; }
-        Dictionary<string, object> _parameters;
+        Dictionary<string, object> _parameters = null!;
         /// <summary>
         /// Gets or sets the serializable parameter dictionary.
         /// </summary>
@@ -38,7 +38,7 @@
                     _parameters = new Dictionary<string, object>();
                     Database.GetParameters(SqlStringBuilder).Each(new { Parameters }, (ctx, p) =>
                     {
-                        ctx.Parameters.Add(p.ParameterName, p.Value.ToString());
+                        ctx.Parameters.Add(p.ParameterName, p!.Value!.ToString()!);
                     });
                 }
                 return _parameters;
@@ -52,7 +52,7 @@
         /// <typeparam name="T">The type to map each row to.</typeparam>
         /// <param name="db">The database to execute against.</param>
         /// <returns>An enumerable of T instances.</returns>
-        public IEnumerable<T> Execute<T>(Database db = null) where T : class, new()
+        public IEnumerable<T> Execute<T>(Database db = null!) where T : class, new()
         {
             Database = db;
             return db.ExecuteReader<T>(Sql, Parameters.ToDbParameters(Database));

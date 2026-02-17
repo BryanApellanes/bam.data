@@ -54,7 +54,7 @@ namespace Bam.Data
         /// <returns>The resolved connection string settings, or null if no resolver succeeded.</returns>
         public static ConnectionStringSettings Resolve(string connectionName)
         {
-            ConnectionStringSettings settings = null;
+            ConnectionStringSettings? settings = null;
             foreach (IConnectionStringResolver resolver in _resolvers)
             {
                 settings = resolver.Resolve(connectionName);
@@ -63,7 +63,7 @@ namespace Bam.Data
                     break;
                 }
             }
-            return settings;
+            return settings!;
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace Bam.Data
             }
             catch (Exception ex)
             {
-                return new ConnectionStringResolveResult(null, ex);
+                return new ConnectionStringResolveResult(null!, ex);
             }
         }
     }

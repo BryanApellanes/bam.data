@@ -46,7 +46,7 @@ namespace Bam.Data
                 throw new NotImplementedException();
             }
 
-            public object Value
+            public object? Value
             {
                 get;
                 set;
@@ -172,7 +172,7 @@ namespace Bam.Data
                 numbers = new int[Values.Length];
                 for (int i = 0; i < Values.Length; i++)
                 {
-                    numbers[i] = value.Value;
+                    numbers[i] = value!.Value;
                     value = numbers[i] + 1;
                 }
                 return value;
