@@ -13,30 +13,30 @@ namespace Bam.Data
         {
             _databaseTypes = new Dictionary<RelationalDatabaseTypes, Func<Database>>()
             {
-                {RelationalDatabaseTypes.SQLite, () => new SQLiteDatabase(ConnectionName)},
+                {RelationalDatabaseTypes.SQLite, () => new SQLiteDatabase(ConnectionName!)},
                 {
                     RelationalDatabaseTypes.MsSql,
-                    () => new MsSqlDatabase(ServerName, DatabaseName, ConnectionName,
-                        Credentials.CopyAs<MsSqlCredentials>())
+                    () => new MsSqlDatabase(ServerName!, DatabaseName!, ConnectionName!,
+                        Credentials.CopyAs<MsSqlCredentials>()!)
                 },
                 {
                     RelationalDatabaseTypes.Postgres,
-                    () => new NpgsqlDatabase(ServerName, DatabaseName, ConnectionName,
-                        Credentials.CopyAs<NpgsqlCredentials>())
+                    () => new NpgsqlDatabase(ServerName!, DatabaseName!, ConnectionName!,
+                        Credentials.CopyAs<NpgsqlCredentials>()!)
                 },
                 {
                     RelationalDatabaseTypes.MySql,
-                    () => new MySqlDatabase(ServerName, DatabaseName, ConnectionName,
-                        Credentials.CopyAs<MySqlCredentials>())
+                    () => new MySqlDatabase(ServerName!, DatabaseName!, ConnectionName!,
+                        Credentials.CopyAs<MySqlCredentials>()!)
                 }
             };
         }
 
-        public string ConnectionName { get; set; }
-        public string DatabaseName { get; set; }
-        public string ServerName { get; set; }
+        public string ConnectionName { get; set; } = null!;
+        public string DatabaseName { get; set; } = null!;
+        public string ServerName { get; set; } = null!;
 
-        public DatabaseCredentials Credentials { get; set; }
+        public DatabaseCredentials Credentials { get; set; } = null!;
 
         public RelationalDatabaseTypes DatabaseType { get; set; }
 
@@ -70,16 +70,16 @@ namespace Bam.Data
             return result;
         }
 
-        public static DatabaseConfig[] LoadConfigs(string filePath = null)
+        public static DatabaseConfig[] LoadConfigs(string filePath = null!)
         {
             filePath = filePath ?? $"{nameof(DatabaseConfig).Pluralize()}.yaml";
             return new FileInfo(filePath).FromYamlFile<DatabaseConfig[]>();
         }
 
-        public static Database GetFirstDatabase(string filePath = null)
+        public static Database GetFirstDatabase(string filePath = null!)
         {
-            DatabaseConfig config = LoadConfigs(filePath).FirstOrDefault();
-            return config?.GetDatabase();
+            DatabaseConfig config = LoadConfigs(filePath).FirstOrDefault()!;
+            return config?.GetDatabase()!;
         }
     }
 }

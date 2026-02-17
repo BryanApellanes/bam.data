@@ -6,7 +6,7 @@ namespace Bam.Data.FirebirdSql
 {
     public class FirebirdSqlCredentials
     {
-        public string UserId { get; set; }
-        public string Password { get; set; }
+        public string UserId { get; set; } = null!;
+        public string Password { get; set; } = null!;
     }
 }

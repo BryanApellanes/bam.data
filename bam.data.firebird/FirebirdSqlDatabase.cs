@@ -17,11 +17,11 @@ namespace Bam.Data.FirebirdSql
             ConnectionStringResolver = DefaultConnectionStringResolver.Instance;
             Register();
         }
-        public FirebirdSqlDatabase(string serverName, string databaseName, FirebirdSqlCredentials credentials = null)
+        public FirebirdSqlDatabase(string serverName, string databaseName, FirebirdSqlCredentials credentials = null!)
             : this(serverName, databaseName, databaseName, credentials)
         { }
 
-        public FirebirdSqlDatabase(string serverName, string databaseName, string connectionName, FirebirdSqlCredentials credentials = null)
+        public FirebirdSqlDatabase(string serverName, string databaseName, string connectionName, FirebirdSqlCredentials credentials = null!)
         {
             ColumnNameProvider = (c) => "\"{0}\"".Format(c.Name);
             ConnectionStringResolver = new FirebirdSqlConnectionStringResolver(serverName, databaseName, credentials);
@@ -29,7 +29,7 @@ namespace Bam.Data.FirebirdSql
             Register();
         }
 
-        public FirebirdSqlDatabase(string connectionString, string connectionName = null)
+        public FirebirdSqlDatabase(string connectionString, string connectionName = null!)
             : base(connectionString, connectionName)
         {
         }
@@ -42,27 +42,27 @@ namespace Bam.Data.FirebirdSql
             Infos.Add(new DatabaseInfo(this));
         }
 
-        public IConnectionStringResolver ConnectionStringResolver
+        public IConnectionStringResolver? ConnectionStringResolver
         {
             get;
             set;
         }
 
-        string _connectionString;
-        public override string ConnectionString
+        string _connectionString = null!;
+        public override string? ConnectionString
         {
             get
             {
                 if (string.IsNullOrEmpty(_connectionString))
                 {
-                    _connectionString = ConnectionStringResolver?.Resolve(ConnectionName)?.ConnectionString;
+                    _connectionString = ConnectionStringResolver?.Resolve(ConnectionName)?.ConnectionString!;
                 }
 
-                return _connectionString;
+                return _connectionString!;
             }
             set
             {
-                _connectionString = value;
+                _connectionString = value!;
             }
         }
 

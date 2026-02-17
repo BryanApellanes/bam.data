@@ -10,11 +10,11 @@ namespace Bam.Data.FirebirdSql
 {
     public class FirebirdSqlConnectionStringResolver : IConnectionStringResolver
     {
-        public FirebirdSqlConnectionStringResolver(string databaseName, FirebirdSqlCredentials credentials = null) : this("localhost", databaseName, credentials)
+        public FirebirdSqlConnectionStringResolver(string databaseName, FirebirdSqlCredentials credentials = null!) : this("localhost", databaseName, credentials)
         {
         }
 
-        public FirebirdSqlConnectionStringResolver(string serverName, string databaseName, FirebirdSqlCredentials credentials = null)
+        public FirebirdSqlConnectionStringResolver(string serverName, string databaseName, FirebirdSqlCredentials credentials = null!)
         {
             ServerName = serverName;
             DatabaseName = databaseName;

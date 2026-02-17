@@ -10,7 +10,7 @@ namespace Bam.Data.MySql
 {
 	public class MySqlConnectionStringResolver: IConnectionStringResolver
 	{
-		public MySqlConnectionStringResolver(string serverName, string databaseName, MySqlCredentials credentials = null)
+		public MySqlConnectionStringResolver(string serverName, string databaseName, MySqlCredentials credentials = null!)
 		{
 			ServerName = serverName;
 			DatabaseName = databaseName;

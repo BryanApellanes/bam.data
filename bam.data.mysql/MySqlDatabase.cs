@@ -17,12 +17,12 @@ namespace Bam.Data.MySql
             ConnectionStringResolver = DefaultConnectionStringResolver.Instance;
             Register();
         }
-        public MySqlDatabase(string serverName, string databaseName, MySqlCredentials credentials = null, bool ssl = true) 
+        public MySqlDatabase(string serverName, string databaseName, MySqlCredentials credentials = null!, bool ssl = true)
             : this(serverName, databaseName, databaseName, credentials, ssl)
         {
         }
 
-        public MySqlDatabase(string serverName, string databaseName, string connectionName, MySqlCredentials credentials = null, bool ssl = true)
+        public MySqlDatabase(string serverName, string databaseName, string connectionName, MySqlCredentials credentials = null!, bool ssl = true)
         {
             ColumnNameProvider = (c) => c.Name;
             ConnectionStringResolver = new MySqlConnectionStringResolver(serverName, databaseName, credentials) { Ssl = ssl };            
@@ -30,7 +30,7 @@ namespace Bam.Data.MySql
             Register();
         }
 
-        public MySqlDatabase(string connectionString, string connectionName = null) 
+        public MySqlDatabase(string connectionString, string connectionName = null!)
             : base(connectionString, connectionName)
         {
             Register();
@@ -44,25 +44,25 @@ namespace Bam.Data.MySql
             Infos.Add(new DatabaseInfo(this));
         }
 
-        public IConnectionStringResolver ConnectionStringResolver
+        public IConnectionStringResolver? ConnectionStringResolver
         {
             get;
             set;
         }
 
-        string _connectionString;
-        public override string ConnectionString
+        string _connectionString = null!;
+        public override string? ConnectionString
         {
             get
             {
                 if (string.IsNullOrEmpty(_connectionString))
                 {
-                    _connectionString = ConnectionStringResolver?.Resolve(ConnectionName)?.ConnectionString;
+                    _connectionString = ConnectionStringResolver?.Resolve(ConnectionName)?.ConnectionString!;
                 }
 
-                return _connectionString;
+                return _connectionString!;
             }
-            set => _connectionString = value;
+            set => _connectionString = value!;
         }
 
         public override long? GetLongValue(string columnName, DataRow row)

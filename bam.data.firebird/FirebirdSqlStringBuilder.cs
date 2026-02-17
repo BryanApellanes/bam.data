@@ -123,13 +123,13 @@ namespace Bam.Data
 
         protected override void WriteDropForeignKeys(Type daoType)
         {
-            TableAttribute table = null;
+            TableAttribute table = null!;
             if (daoType.HasCustomAttributeOfType<TableAttribute>(out table))
             {
                 PropertyInfo[] properties = daoType.GetProperties();
                 foreach (PropertyInfo prop in properties)
                 {
-                    ForeignKeyAttribute fk = null;
+                    ForeignKeyAttribute fk = null!;
                     if (prop.HasCustomAttributeOfType<ForeignKeyAttribute>(out fk))
                     {
                         Builder.AppendFormat("ALTER TABLE {0} DROP CONSTRAINT {1}", TableNameFormatter(table.TableName), fk.ForeignKeyName);
