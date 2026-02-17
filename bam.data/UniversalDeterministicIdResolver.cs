@@ -25,6 +25,9 @@ namespace Bam.Data
         /// <returns>The deterministic identifier.</returns>
         public ulong GetId(object data)
         {
+            // CLAUDE TODO: implement this as a combination of key value pairs of properties with
+            // CompositeKeyAttribute and the namespace qualified name of the type followed by a comma
+            // and the sha256 of the assembly that contains it.
             throw new System.NotImplementedException();
         }
     }

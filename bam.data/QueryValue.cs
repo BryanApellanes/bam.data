@@ -35,7 +35,7 @@ namespace Bam.Data
         
         public virtual object GetRawValue()
         {
-            return Value = null!;
+            return Value;
         }
 
         public virtual object GetValue()
@@ -49,7 +49,7 @@ namespace Bam.Data
         
         public virtual object GetValue(bool mapUlongToLong)
         {
-            return (Type == typeof(ulong) && mapUlongToLong) ? Dao.MapUlongToLong((ulong)Value) : Value = null!;
+            return (Type == typeof(ulong) && mapUlongToLong) ? Dao.MapUlongToLong((ulong)Value) : Value;
         }
 
         public bool IsNull()

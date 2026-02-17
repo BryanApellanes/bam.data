@@ -146,7 +146,7 @@ namespace Bam.Data.Tests.Dao
 		public static TestItem? OneWhere(WhereDelegate<TestItemColumns> where, IDatabase? database = null)
 		{
 			var result = Top(1, where, database);
-			return result.Count == 1 ? result[0] : null;
+			return result.Count > 0 ? result[0] : null;
 		}
 
 		[Bam.Exclude]
