@@ -24,7 +24,7 @@ namespace Bam.Data
             AddForeignKeyColumnFormat = "ALTER TABLE {0} ADD CONSTRAINT {1} FOREIGN KEY ({2}) REFERENCES {3} ({4})";
         }
 
-		public OracleParameter IdParameter { get; set; }
+		public OracleParameter IdParameter { get; set; } = null!;
 
         public static void Register(DependencyProvider incubator)
         {
@@ -34,7 +34,7 @@ namespace Bam.Data
             incubator.Set<OracleSqlStringBuilder>(builder);
         }
 
-        public override void WriteCreateTable(string tableName, string columnDefinitions, dynamic[] fks = null)
+        public override void WriteCreateTable(string tableName, string columnDefinitions, dynamic[]? fks = null)
         {
             tableName = GetFormattedTableName(tableName);
             Builder.AppendFormat(CreateTableFormat,
@@ -60,7 +60,7 @@ namespace Bam.Data
 			string datasetName = Dao.ConnectionName(daoType);
 			foreach (Type type in daoType.Assembly.GetTypes())
 			{
-				TableAttribute tableAttr = null;
+				TableAttribute? tableAttr = null;
 				if (type.HasCustomAttributeOfType<TableAttribute>(out tableAttr))
 				{
 					if (Dao.ConnectionName(type).Equals(datasetName))
@@ -85,7 +85,7 @@ namespace Bam.Data
 			}
 		}
 
-		protected override void WriteForeignKeys(Assembly daoAssembly, Func<Type, bool> typePredicate = null)
+		protected override void WriteForeignKeys(Assembly daoAssembly, Func<Type, bool>? typePredicate = null)
 		{
 			Args.ThrowIfNull(daoAssembly, "daoAssembly");
 			typePredicate = typePredicate == null ? t => t.HasCustomAttributeOfType<TableAttribute>() : typePredicate;
@@ -120,13 +120,13 @@ namespace Bam.Data
         }
         protected override void WriteDropForeignKeys(Type daoType)
 		{
-			TableAttribute table = null;
+			TableAttribute? table = null;
 			if (daoType.HasCustomAttributeOfType<TableAttribute>(out table))
 			{
 				PropertyInfo[] properties = daoType.GetProperties();
 				foreach (PropertyInfo prop in properties)
 				{
-					ForeignKeyAttribute fk = null;
+					ForeignKeyAttribute? fk = null;
 					if (prop.HasCustomAttributeOfType<ForeignKeyAttribute>(out fk))
 					{
 						Builder.AppendFormat("ALTER TABLE {0} DROP CONSTRAINT {1}", GetFormattedTableName(table.TableName), GetFirstThirtyCharacters(fk.ForeignKeyName));
@@ -185,7 +185,7 @@ namespace Bam.Data
 			this.parameters.AddRange(where.Parameters);
 			return this;
 		}
-		public override DataSet GetDataSet(IDatabase db, bool releaseConnection = true, DbConnection conn = null, DbTransaction tx = null)
+		public override DataSet GetDataSet(IDatabase db, bool releaseConnection = true, DbConnection? conn = null, DbTransaction? tx = null)
 		{
 			OracleDatasetProvider oracleGetDatasetProvider = new OracleDatasetProvider(this);
 			return oracleGetDatasetProvider.GetDataSet(db, releaseConnection, conn, tx);

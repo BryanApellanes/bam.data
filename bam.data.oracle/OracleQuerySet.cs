@@ -46,7 +46,7 @@ namespace Bam.Data
 		{
 			get;
 			set;
-		}
+		} = null!;
 
         public override SqlStringBuilder SelectTop(int topCount, string tableName, params string[] columnNames)
         {
@@ -138,15 +138,15 @@ namespace Bam.Data
 		{
 			this.Executed += (o, e) =>
 			{
-				IHasDataTable dt = ResultDataTables.FirstOrDefault();
+				IHasDataTable? dt = ResultDataTables.FirstOrDefault();
 				if(ResultDataTables.Count > 0)
 				{
 					ResultDataTables.Each((result, i) =>
 					{
-						InsertResult insertResult = result as InsertResult;
+						InsertResult? insertResult = result as InsertResult;
 						if (insertResult != null)
 						{
-							ulong id = ulong.Parse(IdParameter.Value.ToString());
+							ulong id = ulong.Parse(IdParameter.Value.ToString()!);
 							((Dao)insertResult.Value).SetDbId(id);
 						}
 						else

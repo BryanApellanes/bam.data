@@ -10,7 +10,7 @@ namespace Bam.Data.Npgsql
 {
 	public class NpgsqlConnectionStringResolver: IConnectionStringResolver
 	{
-		public NpgsqlConnectionStringResolver(string serverName, string databaseName, NpgsqlCredentials credentials = null)
+		public NpgsqlConnectionStringResolver(string serverName, string databaseName, NpgsqlCredentials? credentials = null)
 		{
 			ServerName = serverName;
 			DatabaseName = databaseName;

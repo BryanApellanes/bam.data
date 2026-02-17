@@ -51,7 +51,7 @@ public class FirebirdCrudShould : IntegrationTestMenuContainer
                 Created = DateTime.Now
             };
             item.Save(database);
-            return item.Id;
+            return item.Id!;
         })
         .TheTest
         .ShouldPass(because =>
@@ -79,7 +79,7 @@ public class FirebirdCrudShould : IntegrationTestMenuContainer
             item.Save(database);
             item.Name = "Updated";
             item.Save(database);
-            return TestItem.GetById(item.Id!.Value, database);
+            return TestItem.GetById(item.Id!.Value, database)!;
         })
         .TheTest
         .ShouldPass(because =>
@@ -103,7 +103,7 @@ public class FirebirdCrudShould : IntegrationTestMenuContainer
             item.Save(database);
             ulong savedId = item.Id!.Value;
             item.Delete(database);
-            return TestItem.GetById(savedId, database);
+            return TestItem.GetById(savedId, database)!;
         })
         .TheTest
         .ShouldPass(because =>
@@ -203,7 +203,7 @@ public class FirebirdCrudShould : IntegrationTestMenuContainer
                 Created = testDate
             };
             item.Save(database);
-            return TestItem.GetById(item.Id!.Value, database);
+            return TestItem.GetById(item.Id!.Value, database)!;
         })
         .TheTest
         .ShouldPass(because =>

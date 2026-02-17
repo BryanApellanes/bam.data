@@ -31,7 +31,7 @@ namespace Bam.Data.Oracle
 		public SqlStringBuilder SqlStringBuilder { get; set; }
 		public IPLSqlStringBuilder PLSqlStringBuilder { get; set; }
 
-		public DataSet GetDataSet(IDatabase db, bool releaseConnection = true, DbConnection conn = null, DbTransaction tx = null)
+		public DataSet GetDataSet(IDatabase db, bool releaseConnection = true, DbConnection? conn = null, DbTransaction? tx = null)
 		{
 			if (conn == null)
 			{
@@ -47,7 +47,7 @@ namespace Bam.Data.Oracle
 				PLSqlStringBuilder.IdParameter = oracleParameter;
 			}
 
-			DataSet ds = db.GetDataSetFromSql(SqlStringBuilder, CommandType.Text, releaseConnection, conn, tx, parameters.ToArray());
+			DataSet ds = db.GetDataSetFromSql(SqlStringBuilder, CommandType.Text, releaseConnection, conn!, tx!, parameters.ToArray());
 			//SqlStringBuilder.OnExecuted(db);
 			return ds;
 		}

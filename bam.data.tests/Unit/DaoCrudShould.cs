@@ -60,7 +60,7 @@ public class DaoCrudShould : UnitTestMenuContainer
             };
             item.Save(database);
 
-            return item.Id;
+            return item.Id!;
         })
         .TheTest
         .ShouldPass(because =>
@@ -97,7 +97,7 @@ public class DaoCrudShould : UnitTestMenuContainer
             item.Save(database);
 
             TestItem? reloaded = TestItem.GetById(item.Id!.Value, database);
-            return reloaded;
+            return reloaded!;
         })
         .TheTest
         .ShouldPass(because =>
@@ -127,7 +127,7 @@ public class DaoCrudShould : UnitTestMenuContainer
             item.Delete(database);
 
             TestItem? afterDelete = TestItem.GetById(savedId, database);
-            return afterDelete;
+            return afterDelete!;
         })
         .TheTest
         .ShouldPass(because =>
@@ -384,7 +384,7 @@ public class DaoCrudShould : UnitTestMenuContainer
             };
             item.Save(database);
 
-            return TestItem.GetById(item.Id!.Value, database);
+            return TestItem.GetById(item.Id!.Value, database)!;
         })
         .TheTest
         .ShouldPass(because =>

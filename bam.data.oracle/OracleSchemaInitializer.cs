@@ -9,7 +9,7 @@ namespace Bam.Data
         public OracleSchemaInitializer() : base() { }
 
         public OracleSchemaInitializer(string schemaContextAssemblyQaulifiedName)
-            : base(schemaContextAssemblyQaulifiedName, typeof(OracleRegistrarCaller).AssemblyQualifiedName)
+            : base(schemaContextAssemblyQaulifiedName, typeof(OracleRegistrarCaller).AssemblyQualifiedName!)
         { }
 
         public OracleSchemaInitializer(Type schemaContextType)

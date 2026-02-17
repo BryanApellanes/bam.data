@@ -13,16 +13,16 @@ namespace Bam.Data.Postgres
         {
         }
 
-        public PostgresDatabase(string serverName, string databaseName, NpgsqlCredentials credentials = null)
+        public PostgresDatabase(string serverName, string databaseName, NpgsqlCredentials? credentials = null)
             : base(serverName, databaseName, databaseName, credentials)
         { }
 
-        public PostgresDatabase(string serverName, string databaseName, string connectionName, NpgsqlCredentials credentials = null)
+        public PostgresDatabase(string serverName, string databaseName, string connectionName, NpgsqlCredentials? credentials = null)
             : base(serverName, databaseName, connectionName, credentials)
         {
         }
 
-        public PostgresDatabase(string connectionString, string connectionName = null)
+        public PostgresDatabase(string connectionString, string? connectionName = null)
             : base(connectionString, connectionName)
         {
         }

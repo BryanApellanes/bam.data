@@ -56,49 +56,49 @@ namespace Bam.Data.Tests.Dao
 		public ulong? Id
 		{
 			get => GetULongValue("Id");
-			set => SetValue("Id", value);
+			set => SetValue("Id", value!);
 		}
 
 		[Bam.Data.Column(Name = "Name", DbDataType = "VarChar", MaxLength = "255", AllowNull = true)]
 		public string? Name
 		{
 			get => GetStringValue("Name");
-			set => SetValue("Name", value);
+			set => SetValue("Name", value!);
 		}
 
 		[Bam.Data.Column(Name = "Description", DbDataType = "VarChar", MaxLength = "4000", AllowNull = true)]
 		public string? Description
 		{
 			get => GetStringValue("Description");
-			set => SetValue("Description", value);
+			set => SetValue("Description", value!);
 		}
 
 		[Bam.Data.Column(Name = "Quantity", DbDataType = "Int", MaxLength = "10", AllowNull = true)]
 		public int? Quantity
 		{
 			get => GetIntValue("Quantity");
-			set => SetValue("Quantity", value);
+			set => SetValue("Quantity", value!);
 		}
 
 		[Bam.Data.Column(Name = "Price", DbDataType = "Decimal", MaxLength = "18", AllowNull = true)]
 		public decimal? Price
 		{
 			get => GetDecimalValue("Price");
-			set => SetValue("Price", value);
+			set => SetValue("Price", value!);
 		}
 
 		[Bam.Data.Column(Name = "IsActive", DbDataType = "Bit", MaxLength = "1", AllowNull = true)]
 		public bool? IsActive
 		{
 			get => GetBooleanValue("IsActive");
-			set => SetValue("IsActive", value);
+			set => SetValue("IsActive", value!);
 		}
 
 		[Bam.Data.Column(Name = "Created", DbDataType = "DateTime", MaxLength = "8", AllowNull = true)]
 		public DateTime? Created
 		{
 			get => GetDateTimeValue("Created");
-			set => SetValue("Created", value);
+			set => SetValue("Created", value!);
 		}
 
 		[Bam.Exclude]
@@ -131,7 +131,7 @@ namespace Bam.Data.Tests.Dao
 		public static TestItemCollection Where(Func<TestItemColumns, QueryFilter<TestItemColumns>> where, OrderBy<TestItemColumns>? orderBy = null, IDatabase? database = null)
 		{
 			database = database ?? Db.For<TestItem>();
-			return new TestItemCollection(database.GetQuery<TestItemColumns, TestItem>(where, orderBy), true);
+			return new TestItemCollection(database.GetQuery<TestItemColumns, TestItem>(where, orderBy!), true);
 		}
 
 		[Bam.Exclude]

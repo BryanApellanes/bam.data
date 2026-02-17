@@ -17,11 +17,11 @@ namespace Bam.Data.Npgsql
             ConnectionStringResolver = DefaultConnectionStringResolver.Instance;
             Register();
         }
-        public NpgsqlDatabase(string serverName, string databaseName, NpgsqlCredentials credentials = null)
+        public NpgsqlDatabase(string serverName, string databaseName, NpgsqlCredentials? credentials = null)
             : this(serverName, databaseName, databaseName, credentials)
         { }
 
-        public NpgsqlDatabase(string serverName, string databaseName, string connectionName, NpgsqlCredentials credentials = null)
+        public NpgsqlDatabase(string serverName, string databaseName, string connectionName, NpgsqlCredentials? credentials = null)
         {
             ColumnNameProvider = (c) => $"\"{c.Name}\"";
             ConnectionStringResolver = new NpgsqlConnectionStringResolver(serverName, databaseName.ToLowerInvariant(), credentials);
@@ -29,13 +29,13 @@ namespace Bam.Data.Npgsql
             Register();
         }
 
-        public NpgsqlDatabase(string connectionString, string connectionName = null)
+        public NpgsqlDatabase(string connectionString, string? connectionName = null)
             : base(connectionString, connectionName)
         {
             Register();
         }
 
-        public IConnectionStringResolver ConnectionStringResolver
+        public IConnectionStringResolver? ConnectionStringResolver
         {
             get;
             set;
@@ -62,10 +62,10 @@ namespace Bam.Data.Npgsql
             ExecuteSql($"CREATE DATABASE {databaseName}");
         }
         
-        public string PostgresSchema { get; set; }
-        
-        string _connectionString;
-        public override string ConnectionString
+        public string PostgresSchema { get; set; } = null!;
+
+        string? _connectionString;
+        public override string? ConnectionString
         {
             get
             {

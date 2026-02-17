@@ -19,7 +19,7 @@ namespace Bam.Data.Tests.Dao
 
         public bool IsKey()
         {
-            return (bool)ColumnName?.Equals(KeyColumn.ColumnName);
+            return ColumnName?.Equals(KeyColumn.ColumnName) ?? false;
         }
 
         private bool? _isForeignKey;
@@ -29,7 +29,7 @@ namespace Bam.Data.Tests.Dao
             {
                 if (_isForeignKey == null)
                 {
-                    PropertyInfo prop = DaoType
+                    PropertyInfo? prop = DaoType
                         .GetProperties()
                         .FirstOrDefault(pi => ((MemberInfo)pi)
                             .HasCustomAttributeOfType<ForeignKeyAttribute>(out ForeignKeyAttribute foreignKeyAttribute)
@@ -54,7 +54,7 @@ namespace Bam.Data.Tests.Dao
 
         public Type DaoType => typeof(TestItem);
 
-        public string Operator { get; set; }
+        public string Operator { get; set; } = null!;
 
         public override string ToString()
         {

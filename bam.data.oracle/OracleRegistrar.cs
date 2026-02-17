@@ -17,7 +17,7 @@ namespace Bam.Data
 
         public static string OracleAssemblyQualifiedName()
         {
-            return OracleClientFactory.Instance.GetType().AssemblyQualifiedName;
+            return OracleClientFactory.Instance.GetType().AssemblyQualifiedName!;
         }
 
         /// <summary>

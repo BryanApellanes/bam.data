@@ -12,8 +12,14 @@ namespace Bam.Data
     /// </summary>
     public class OracleConnectionStringResolver: IConnectionStringResolver
     {
-		public OracleConnectionStringResolver() { }
-        public OracleConnectionStringResolver(string serverName, OracleCredentials creds = null)
+		public OracleConnectionStringResolver()
+		{
+			ServerName = null!;
+			Port = null!;
+			Credentials = null!;
+			InstanceName = null!;
+		}
+        public OracleConnectionStringResolver(string serverName, OracleCredentials? creds = null)
         {
 			this.ServerName = serverName;
 			this.Credentials = creds ?? new OracleCredentials();

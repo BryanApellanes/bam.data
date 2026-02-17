@@ -17,7 +17,7 @@ namespace Bam.Data
         public override DbParameter BuildParameter(IParameterInfo c)
         {
             string parameterName = string.Format(":{0}{1}", c.ColumnName, c.Number);
-			object value = c.Value;
+			object? value = c.Value;
             if (c.Value is bool b)
             {
                 char val = b ? '1' : '0';

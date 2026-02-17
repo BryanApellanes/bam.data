@@ -28,7 +28,7 @@ namespace Bam.Data.Oracle
         /// <param name="connectionName"></param>
         /// <param name="creds"></param>
         /// <param name="instanceName">The Oracle instance/service name (default "ORCL"). For Oracle XE images, use "XE".</param>
-        public OracleDatabase(string serverName, string connectionName, OracleCredentials creds = null, string instanceName = null)
+        public OracleDatabase(string serverName, string connectionName, OracleCredentials? creds = null, string? instanceName = null)
             : base()
         {
             ConnectionStringResolver = new OracleConnectionStringResolver(serverName, creds);
@@ -44,7 +44,7 @@ namespace Bam.Data.Oracle
         /// Instantiate a new OracleDatabase instance using the specified serverName and
         /// credentials
         /// </summary>
-        public OracleDatabase(string serverName, OracleCredentials creds = null, string instanceName = null)
+        public OracleDatabase(string serverName, OracleCredentials? creds = null, string? instanceName = null)
             : this(serverName, "Oracle", creds, instanceName)
         { }
 
@@ -59,12 +59,12 @@ namespace Bam.Data.Oracle
             : this(serverName, new OracleCredentials { UserId = userId, Password = password })
         { }
 
-        public OracleDatabase(string connectionString, string connectionName = null)
+        public OracleDatabase(string connectionString, string? connectionName = null)
             : base(connectionString, connectionName)
         {
         }
 
-        public IConnectionStringResolver ConnectionStringResolver
+        public IConnectionStringResolver? ConnectionStringResolver
         {
             get;
             set;
@@ -75,21 +75,21 @@ namespace Bam.Data.Oracle
         /// automatically invalidates the cached connection string so it re-resolves
         /// with the new value.
         /// </summary>
-        public string InstanceName
+        public string? InstanceName
         {
             get => (ConnectionStringResolver as OracleConnectionStringResolver)?.InstanceName;
             set
             {
                 if (ConnectionStringResolver is OracleConnectionStringResolver resolver)
                 {
-                    resolver.InstanceName = value;
+                    resolver.InstanceName = value!;
                     _connectionString = null;
                 }
             }
         }
 
-        string _connectionString;
-        public override string ConnectionString
+        string? _connectionString;
+        public override string? ConnectionString
         {
             get
             {
@@ -139,9 +139,9 @@ namespace Bam.Data.Oracle
             return null;
         }
 
-        protected override DbCommand BuildCommand(string sqlStatement, CommandType commandType, DbParameter[] dbParameters, DbProviderFactory providerFactory, DbConnection conn, DbTransaction tx = null)
+        protected override DbCommand BuildCommand(string sqlStatement, CommandType commandType, DbParameter[] dbParameters, DbProviderFactory providerFactory, DbConnection conn, DbTransaction? tx = null)
         {
-            OracleCommand command = (OracleCommand)base.BuildCommand(sqlStatement, commandType, dbParameters, providerFactory, conn, tx);
+            OracleCommand command = (OracleCommand)base.BuildCommand(sqlStatement, commandType, dbParameters, providerFactory, conn, tx!);
             command.BindByName = true;
             return command;
         }
@@ -207,16 +207,16 @@ namespace Bam.Data.Oracle
             return q;
         }
 
-        public override IQuery<C, T> GetQuery<C, T>(Func<C, IQueryFilter<C>> where, IOrderBy<C> orderBy = null)
+        public override IQuery<C, T> GetQuery<C, T>(Func<C, IQueryFilter<C>> where, IOrderBy<C>? orderBy = null)
         {
-            IQuery<C, T> q = base.GetQuery<C, T>(where, orderBy);
+            IQuery<C, T> q = base.GetQuery<C, T>(where, orderBy!);
             q.ColumnNameProvider = ColumnNameProvider;
             return q;
         }
 
-        public override IQuery<C, T> GetQuery<C, T>(WhereDelegate<C> where, IOrderBy<C> orderBy = null)
+        public override IQuery<C, T> GetQuery<C, T>(WhereDelegate<C> where, IOrderBy<C>? orderBy = null)
         {
-            IQuery<C, T> q = base.GetQuery<C, T>(where, orderBy);
+            IQuery<C, T> q = base.GetQuery<C, T>(where, orderBy!);
             q.ColumnNameProvider = ColumnNameProvider;
             return q;
         }
@@ -229,17 +229,17 @@ namespace Bam.Data.Oracle
             }
         }
 
-        protected override AssignValue GetAssignment(string keyColumn, object value, Func<string, string> columnNameformatter = null)
+        protected override AssignValue GetAssignment(string keyColumn, object value, Func<string, string>? columnNameformatter = null)
         {
-            AssignValue result = base.GetAssignment(keyColumn, value, columnNameformatter);
+            AssignValue result = base.GetAssignment(keyColumn, value, columnNameformatter!);
             result.ParameterPrefix = ":";
             return result;
         }
 
         protected override void ReaderPropertySetter(object instance, string propertyName, object propertyValue)
         {
-            PropertyInfo prop = instance.GetType().GetProperties().FirstOrDefault(p => p.Name.Equals(propertyName, StringComparison.InvariantCultureIgnoreCase));
-            ReflectionExtensions.SetProperty(instance, prop, propertyValue);
+            PropertyInfo? prop = instance.GetType().GetProperties().FirstOrDefault(p => p.Name.Equals(propertyName, StringComparison.InvariantCultureIgnoreCase));
+            ReflectionExtensions.SetProperty(instance, prop!, propertyValue);
         }
 
         private void Register()
