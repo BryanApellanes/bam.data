@@ -3,9 +3,7 @@
     /// <summary>
     /// A format part that outputs raw SQL text with associated parameters, bypassing structured formatting.
     /// </summary>
-#pragma warning disable CS0436 // FormatPart type defined in both bam.data and bam.base
     public class RawFormat : FormatPart
-#pragma warning restore CS0436
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RawFormat"/> class with raw SQL and a dictionary of parameters.
