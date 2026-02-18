@@ -46,7 +46,14 @@ namespace Bam.Data
                 columnNames = new string[] { "*" };
             }
             string cols = columnNames.ToDelimited(s => string.Format("{0}", s));
-            StringBuilder.AppendFormat("SELECT FIRST {0} {1} FROM {2} ", topCount, cols, TableNameFormatter(tableName));
+            if (topCount > 0)
+            {
+                StringBuilder.AppendFormat("SELECT FIRST {0} {1} FROM {2} ", topCount, cols, TableNameFormatter(tableName));
+            }
+            else
+            {
+                StringBuilder.AppendFormat("SELECT {0} FROM {1} ", cols, TableNameFormatter(tableName));
+            }
             return this;
         }
     }

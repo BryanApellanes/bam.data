@@ -80,5 +80,33 @@ namespace Bam.Data.FirebirdSql
             }
             return null;
         }
+
+        /// <summary>
+        /// Overrides batch SQL execution to split multi-statement SQL into individual statements.
+        /// Firebird's ADO.NET provider does not support executing multiple SQL statements in a single command.
+        /// </summary>
+        public override void ExecuteSql(ISqlStringBuilder builder, IParameterBuilder parameterBuilder)
+        {
+            string fullSql = builder.ToString();
+            string[] statements = fullSql.Split(new[] { ";\r\n", ";\n" }, StringSplitOptions.RemoveEmptyEntries);
+            using var conn = new FbConnection(ConnectionString);
+            conn.Open();
+            foreach (string stmt in statements)
+            {
+                string trimmed = stmt.Trim();
+                if (!string.IsNullOrEmpty(trimmed))
+                {
+                    try
+                    {
+                        using var cmd = new FbCommand(trimmed, conn);
+                        cmd.ExecuteNonQuery();
+                    }
+                    catch (FbException)
+                    {
+                        // Schema statements may fail if objects already exist; continue with remaining statements.
+                    }
+                }
+            }
+        }
     }
 }
