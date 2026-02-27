@@ -7,6 +7,7 @@
         string SchemaName { get; set; }
         string TemplatePath { get; set; }
         string TypeAssembly { get; set; }
+        bool UseAsync { get; set; }
         bool UseInheritanceSchema { get; set; }
         string WriteSourceTo { get; set; }
         bool WarningsAsErrors { get; set; }
