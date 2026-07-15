@@ -569,6 +569,31 @@ namespace Bam.Data
 			return this;
 		}
 
+        /// <summary>
+        /// Orders results by vector distance from the specified value, nearest first. Providers that
+        /// support vector similarity (e.g. PostgreSQL with pgvector) override this; the base
+        /// implementation does not support it.
+        /// </summary>
+        /// <param name="columnName">The vector column to measure distance against.</param>
+        /// <param name="value">The query vector.</param>
+        /// <param name="distance">The distance semantics to order by.</param>
+        /// <exception cref="NotSupportedException">Always thrown by this base implementation.</exception>
+        public virtual ISqlStringBuilder OrderByNearest(string columnName, Vector value, VectorDistance distance)
+        {
+            throw new NotSupportedException($"{this.GetType().Name} does not support vector similarity ordering.");
+        }
+
+        /// <summary>
+        /// Caps the number of rows returned by appending a LIMIT clause. Valid for LIMIT-dialect
+        /// databases (SQLite, PostgreSQL, MySQL); providers whose dialect differs override or throw.
+        /// </summary>
+        /// <param name="count">The maximum number of rows to return.</param>
+        public virtual ISqlStringBuilder Limit(int count)
+        {
+            _stringBuilder.AppendFormat(" LIMIT {0}", count);
+            return this;
+        }
+
 		protected string GetSortOrder(SortOrder order)
 		{
 			switch (order)

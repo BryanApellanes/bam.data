@@ -75,7 +75,12 @@ namespace Bam.Data
             {
                 return DataTypes.DateTime;
             }
-            
+
+            if (type == typeof(Vector))
+            {
+                return DataTypes.Vector;
+            }
+
             return DataTypes.Default;
         }
         
@@ -118,6 +123,8 @@ namespace Bam.Data
                     return typeof(byte[]);
                 case DataTypes.DateTime:
                     return typeof(DateTime);
+                case DataTypes.Vector:
+                    return typeof(Vector);
                 default:
                     return typeof(object);
             }
@@ -174,6 +181,8 @@ namespace Bam.Data
                     return DataTypes.ByteArray;
                 case "varchar":
                     return DataTypes.String;
+                case "vector":
+                    return DataTypes.Vector;
                 case "year":
                     return DataTypes.String;
                 default:

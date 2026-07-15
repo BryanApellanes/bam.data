@@ -11,6 +11,10 @@ namespace Bam.Data
     {
         public override DbParameter BuildParameter(string name, object value)
         {
+            if (value is Vector vector)
+            {
+                value = vector.ToString();
+            }
             return new NpgsqlParameter(EnsurePrefix(name, ":"), value);
         }
 
@@ -25,6 +29,10 @@ namespace Bam.Data
             else if (value is ulong || value is uint)
             {
                 value = Convert.ToDecimal(value);
+            }
+            else if (value is Vector vector)
+            {
+                value = vector.ToString();
             }
 
             return new NpgsqlParameter(parameterName, value);
