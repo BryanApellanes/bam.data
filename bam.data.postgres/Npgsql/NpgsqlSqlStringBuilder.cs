@@ -230,6 +230,21 @@ namespace Bam.Data
         {
             return base.Select(tableName, columnNames);
         }
+
+        /// <summary>
+        /// Projects vector columns as <c>::text</c> so results are readable without the pgvector
+        /// Npgsql plugin; <see cref="Dao"/> hydration parses the literal back into a Vector.
+        /// </summary>
+        /// <param name="column">The column to project.</param>
+        protected override string GetSelectColumnExpression(ColumnAttribute column)
+        {
+            if ("vector".Equals(column.DbDataType, StringComparison.OrdinalIgnoreCase))
+            {
+                string formattedName = ColumnNameFormatter(column.Name);
+                return $"{formattedName}::text AS {formattedName}";
+            }
+            return base.GetSelectColumnExpression(column);
+        }
         
         protected override void WriteCreateTable(Type daoType)
         {

@@ -20,7 +20,7 @@ namespace Bam.Data
 
         public override string ToString()
         {
-            return $"{ColumnName} {this.Operator} NULL";
+            return $"{ColumnNameFormatter(ColumnName)} {this.Operator} NULL";
         }
     }
 }

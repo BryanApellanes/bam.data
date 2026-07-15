@@ -300,12 +300,23 @@ namespace Bam.Data
 
         public virtual ISqlStringBuilder Select<T>() where T: IDao, new()
         {
-            return Select(Dao.TableName(typeof(T)), SelectStar ? "*": ColumnAttribute.GetColumns(typeof(T)).ToDelimited(c => ColumnNameFormatter(c.Name)));
+            return Select(Dao.TableName(typeof(T)), SelectStar ? "*": ColumnAttribute.GetColumns(typeof(T)).ToDelimited(c => GetSelectColumnExpression(c)));
         }
 
         public virtual ISqlStringBuilder Select(Type daoType)
         {
-            return Select(Dao.TableName(daoType), SelectStar ? "*" : ColumnAttribute.GetColumns(daoType).ToDelimited(c => ColumnNameFormatter(c.Name)));
+            return Select(Dao.TableName(daoType), SelectStar ? "*" : ColumnAttribute.GetColumns(daoType).ToDelimited(c => GetSelectColumnExpression(c)));
+        }
+
+        /// <summary>
+        /// Gets the select-list expression for the specified column. The base implementation
+        /// is the formatted column name; providers override to adapt columns whose native
+        /// representation the driver cannot read directly (e.g. casting pgvector columns to text).
+        /// </summary>
+        /// <param name="column">The column to project.</param>
+        protected virtual string GetSelectColumnExpression(ColumnAttribute column)
+        {
+            return ColumnNameFormatter(column.Name);
         }
 
         public virtual ISqlStringBuilder Select(Type daoType, params string[] columns)
@@ -358,7 +369,7 @@ namespace Bam.Data
         /// <returns></returns>
         public virtual ISqlStringBuilder SelectTop<T>(int topCount) where T : IDao, new()
         {
-            return SelectTop(topCount, Dao.TableName(typeof(T)), SelectStar ? "*" : ColumnAttribute.GetColumns(typeof(T)).ToDelimited(c => ColumnNameFormatter(c.Name)));
+            return SelectTop(topCount, Dao.TableName(typeof(T)), SelectStar ? "*" : ColumnAttribute.GetColumns(typeof(T)).ToDelimited(c => GetSelectColumnExpression(c)));
         }
 
         public virtual ISqlStringBuilder Select(string tableName, params string[] columnNames)

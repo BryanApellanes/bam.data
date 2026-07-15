@@ -153,6 +153,7 @@ public class VectorDataShould : UnitTestMenuContainer
             because.ItsTrue("IParameterInfo path binds the literal text", "[1.5,2]".Equals(results[0].Value));
             because.ItsTrue("IParameterInfo path names the parameter by column and number", ":Embedding1".Equals(results[0].ParameterName));
             because.ItsTrue("named path binds the literal text", "[3]".Equals(results[1].Value));
+            because.ItsTrue("vector parameters bind as unknown so the server infers vector", ((global::Npgsql.NpgsqlParameter)results[0]).NpgsqlDbType == global::NpgsqlTypes.NpgsqlDbType.Unknown);
         })
         .SoBeHappy()
         .UnlessItFailed();

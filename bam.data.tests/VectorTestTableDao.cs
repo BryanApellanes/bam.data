@@ -9,6 +9,30 @@ namespace Bam.Tests
     [Table("VectorTestTable", "VectorTest")]
     public class VectorTestTableDao : Dao
     {
+        public VectorTestTableDao() : base()
+        {
+            this.SetKeyColumnName();
+        }
+
+        public VectorTestTableDao(IDatabase db) : base(db)
+        {
+            this.SetKeyColumnName();
+        }
+
+        [KeyColumn(Name = "Id", DbDataType = "BigInt", MaxLength = "19")]
+        public ulong? Id
+        {
+            get => GetULongValue("Id");
+            set => SetValue("Id", value!);
+        }
+
+        [Column(Name = "Label", DbDataType = "VarChar", MaxLength = "64", AllowNull = true)]
+        public string? Label
+        {
+            get => GetStringValue("Label");
+            set => SetValue("Label", value!);
+        }
+
         [VectorColumn(3, Name = "Embedding")]
         [VectorIndex(Lists = 50)]
         public Vector? Embedding
