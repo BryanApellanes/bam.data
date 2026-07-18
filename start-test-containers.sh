@@ -45,7 +45,9 @@ wait_for_port() {
     done
 }
 
-ensure_container "bam-data-test-postgres" "postgres:16" "5432:5432" \
+# pgvector/pgvector is the official postgres image plus the pgvector extension,
+# required by the vector column integration tests (PostgresVectorShould)
+ensure_container "bam-data-test-postgres" "pgvector/pgvector:pg16" "5432:5432" \
     "POSTGRES_PASSWORD=$PASSWORD" "POSTGRES_DB=bamtest"
 
 ensure_container "bam-data-test-mssql" "mcr.microsoft.com/mssql/server:2022-latest" "1433:1433" \

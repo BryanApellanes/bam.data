@@ -300,12 +300,23 @@ namespace Bam.Data
 
         public virtual ISqlStringBuilder Select<T>() where T: IDao, new()
         {
-            return Select(Dao.TableName(typeof(T)), SelectStar ? "*": ColumnAttribute.GetColumns(typeof(T)).ToDelimited(c => ColumnNameFormatter(c.Name)));
+            return Select(Dao.TableName(typeof(T)), SelectStar ? "*": ColumnAttribute.GetColumns(typeof(T)).ToDelimited(c => GetSelectColumnExpression(c)));
         }
 
         public virtual ISqlStringBuilder Select(Type daoType)
         {
-            return Select(Dao.TableName(daoType), SelectStar ? "*" : ColumnAttribute.GetColumns(daoType).ToDelimited(c => ColumnNameFormatter(c.Name)));
+            return Select(Dao.TableName(daoType), SelectStar ? "*" : ColumnAttribute.GetColumns(daoType).ToDelimited(c => GetSelectColumnExpression(c)));
+        }
+
+        /// <summary>
+        /// Gets the select-list expression for the specified column. The base implementation
+        /// is the formatted column name; providers override to adapt columns whose native
+        /// representation the driver cannot read directly (e.g. casting pgvector columns to text).
+        /// </summary>
+        /// <param name="column">The column to project.</param>
+        protected virtual string GetSelectColumnExpression(ColumnAttribute column)
+        {
+            return ColumnNameFormatter(column.Name);
         }
 
         public virtual ISqlStringBuilder Select(Type daoType, params string[] columns)
@@ -358,7 +369,7 @@ namespace Bam.Data
         /// <returns></returns>
         public virtual ISqlStringBuilder SelectTop<T>(int topCount) where T : IDao, new()
         {
-            return SelectTop(topCount, Dao.TableName(typeof(T)), SelectStar ? "*" : ColumnAttribute.GetColumns(typeof(T)).ToDelimited(c => ColumnNameFormatter(c.Name)));
+            return SelectTop(topCount, Dao.TableName(typeof(T)), SelectStar ? "*" : ColumnAttribute.GetColumns(typeof(T)).ToDelimited(c => GetSelectColumnExpression(c)));
         }
 
         public virtual ISqlStringBuilder Select(string tableName, params string[] columnNames)
@@ -568,6 +579,31 @@ namespace Bam.Data
 			_stringBuilder.AppendFormat("ORDER BY {0} {1}", ColumnNameFormatter(columnName), GetSortOrder(order));
 			return this;
 		}
+
+        /// <summary>
+        /// Orders results by vector distance from the specified value, nearest first. Providers that
+        /// support vector similarity (e.g. PostgreSQL with pgvector) override this; the base
+        /// implementation does not support it.
+        /// </summary>
+        /// <param name="columnName">The vector column to measure distance against.</param>
+        /// <param name="value">The query vector.</param>
+        /// <param name="distance">The distance semantics to order by.</param>
+        /// <exception cref="NotSupportedException">Always thrown by this base implementation.</exception>
+        public virtual ISqlStringBuilder OrderByNearest(string columnName, Vector value, VectorDistance distance)
+        {
+            throw new NotSupportedException($"{this.GetType().Name} does not support vector similarity ordering.");
+        }
+
+        /// <summary>
+        /// Caps the number of rows returned by appending a LIMIT clause. Valid for LIMIT-dialect
+        /// databases (SQLite, PostgreSQL, MySQL); providers whose dialect differs override or throw.
+        /// </summary>
+        /// <param name="count">The maximum number of rows to return.</param>
+        public virtual ISqlStringBuilder Limit(int count)
+        {
+            _stringBuilder.AppendFormat(" LIMIT {0}", count);
+            return this;
+        }
 
 		protected string GetSortOrder(SortOrder order)
 		{

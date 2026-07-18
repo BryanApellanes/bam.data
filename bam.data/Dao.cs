@@ -1727,6 +1727,34 @@ namespace Bam.Data
             }
         }
 
+        /// <summary>
+        /// Gets the value of the specified vector column as a <see cref="Vector"/>. Values read back
+        /// from the database arrive as pgvector text literals and are parsed; values assigned in memory
+        /// may already be <see cref="Vector"/> instances or float arrays.
+        /// </summary>
+        /// <param name="columnName">The column name to read.</param>
+        /// <returns>The column's vector value, or null when the column is null.</returns>
+        protected Vector? GetVectorValue(string columnName)
+        {
+            object val = GetCurrentValue(columnName);
+            if (val != null && val != DBNull.Value)
+            {
+                if (val is Vector vector)
+                {
+                    return vector;
+                }
+                if (val is float[] components)
+                {
+                    return new Vector(components);
+                }
+                if (val is string literal && !string.IsNullOrWhiteSpace(literal))
+                {
+                    return Vector.Parse(literal);
+                }
+            }
+            return null;
+        }
+
         protected DateTime GetDateTimeValue(string columnName)
         {
             object val = GetCurrentValue(columnName);

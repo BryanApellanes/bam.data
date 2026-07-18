@@ -100,6 +100,7 @@ namespace Bam.Data
         {
             ForEachTable(type, this.WriteCreateTable);
             this.WriteForeignKeys(type);
+            ForEachTable(type, t => this.WriteCreateIndexes(t));
             return true;
         }
 
@@ -112,6 +113,7 @@ namespace Bam.Data
 		{
 			ForEachTable(assembly, this.WriteCreateTable, t => t.HasCustomAttributeOfType<TableAttribute>());
 			this.WriteForeignKeys(assembly, t => t.HasCustomAttributeOfType<TableAttribute>());
+			ForEachTable(assembly, t => this.WriteCreateIndexes(t), t => t.HasCustomAttributeOfType<TableAttribute>());
 			return true;
 		}
 
@@ -181,9 +183,29 @@ namespace Bam.Data
 
         protected virtual void WriteCreateTable(Type daoType)
         {
-            ColumnAttribute[] columns = GetColumns(daoType);           
+            ColumnAttribute[] columns = GetColumns(daoType);
             string columnDefinitions = GetColumnDefinitions(columns);
-            WriteCreateTable(Dao.TableName(daoType), columnDefinitions);            
+            WriteCreateTable(Dao.TableName(daoType), columnDefinitions);
+        }
+
+        /// <summary>
+        /// Writes CREATE INDEX statements for index declarations on the specified Dao type's
+        /// properties (currently <see cref="VectorIndexAttribute"/>). Providers that support the
+        /// declared index kind override this; this base implementation writes nothing when no
+        /// declarations are present and fails fast when one is found.
+        /// </summary>
+        /// <param name="daoType">The Dao type whose index declarations to write.</param>
+        /// <exception cref="NotSupportedException">Thrown when a vector index is declared and this writer does not support vector indexes.</exception>
+        public virtual SchemaWriter WriteCreateIndexes(Type daoType)
+        {
+            foreach (PropertyInfo property in daoType.GetProperties())
+            {
+                if (property.HasCustomAttributeOfType<VectorIndexAttribute>(out VectorIndexAttribute _))
+                {
+                    throw new NotSupportedException($"{this.GetType().Name} does not support vector indexes: declared on {daoType.Name}.{property.Name}.");
+                }
+            }
+            return this;
         }
 
         /// <summary>

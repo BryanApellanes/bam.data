@@ -90,6 +90,10 @@ namespace Bam.Data
         public override string GetColumnDefinition(ColumnAttribute column)
         {
             string type = column.DbDataType;
+            if ("vector".Equals(type, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new NotSupportedException($"{this.GetType().Name} does not support vector columns: declared as {column.Name}.");
+            }
             if (type.Equals("Bit"))
             {
                 type = "INTEGER"; // sqlite doesn't have a separate Bit/bool

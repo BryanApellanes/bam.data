@@ -23,6 +23,10 @@ namespace Bam.Data
 
         public override string GetColumnDefinition(ColumnAttribute column)
 		{
+			if ("vector".Equals(column.DbDataType, StringComparison.OrdinalIgnoreCase))
+			{
+				throw new NotSupportedException($"{this.GetType().Name} does not support vector columns: declared as {column.Name}.");
+			}
 			string max = string.Format("({0})", column.MaxLength);
 			string type = column.DbDataType.ToLowerInvariant();
 
