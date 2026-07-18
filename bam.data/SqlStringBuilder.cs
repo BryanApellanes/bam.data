@@ -18,7 +18,7 @@ namespace Bam.Data
         protected List<IParameterInfo> parameters = null!;
         public static implicit operator string(SqlStringBuilder sqlStringBuilder)
         {
-            return sqlStringBuilder._stringBuilder.ToString();
+            return sqlStringBuilder.Render();
         }
 
         /// <summary>
@@ -50,6 +50,7 @@ namespace Bam.Data
             this.GoText = ";\r\n";
             this.parameters = new List<IParameterInfo>();
             NextNumber = 1;
+            PendingRowCap = 0;
         }
 
         /// <summary>
@@ -211,6 +212,7 @@ namespace Bam.Data
         /// <returns></returns>
         public virtual ISqlStringBuilder Go()
         {
+            FlushRowCap();
             string soFar = _stringBuilder.ToString();
             if (!string.IsNullOrEmpty(soFar) && !soFar.EndsWith(GoText))
             {
@@ -387,11 +389,65 @@ namespace Bam.Data
             string top = string.Empty;
             if (topCount > 0)
             {
-                top = $" TOP {topCount} ";
+                if (RowCap.Placement == RowCapPlacement.SelectClause)
+                {
+                    top = RowCap.Render(topCount);
+                }
+                else
+                {
+                    PendingRowCap = topCount;
+                }
             }
             string cols = columnNames.ToDelimited(s => $"{s}");
             _stringBuilder.AppendFormat("SELECT {0}{1} FROM {2} ", top, cols, TableNameFormatter(tableName));
             return this;
+        }
+
+        /// <summary>
+        /// The row cap dialect this builder renders when SelectTop or Top is called.
+        /// The base builder emits T-SQL TOP (Microsoft SQL Server registers the base
+        /// builder); providers whose dialect differs override this.
+        /// </summary>
+        protected virtual RowCapSyntax RowCap => RowCapSyntax.TSqlTop;
+
+        /// <summary>
+        /// A row cap recorded by SelectTop for dialects whose cap trails the statement
+        /// (RowCapPlacement.StatementEnd).  Flushed into the SQL text by Go and included
+        /// non-destructively by Render; cleared by Reset.  A pending cap attaches to the
+        /// end of whatever text has been built when it is flushed or rendered, so separate
+        /// each statement with Go before starting the next one — appending another
+        /// statement while a cap is pending renders the cap after that later statement.
+        /// </summary>
+        protected int PendingRowCap
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Appends a pending statement-end row cap, if any, and clears it.
+        /// </summary>
+        protected void FlushRowCap()
+        {
+            if (PendingRowCap > 0)
+            {
+                _stringBuilder.Append(RowCap.Render(PendingRowCap));
+                PendingRowCap = 0;
+            }
+        }
+
+        /// <summary>
+        /// Renders the SQL built so far, including any pending statement-end row cap,
+        /// without mutating builder state.  All string materialization (the implicit
+        /// string conversion and ToString) routes through this.
+        /// </summary>
+        protected virtual string Render()
+        {
+            if (PendingRowCap > 0)
+            {
+                return _stringBuilder.ToString() + RowCap.Render(PendingRowCap);
+            }
+            return _stringBuilder.ToString();
         }
 
         /// <summary>

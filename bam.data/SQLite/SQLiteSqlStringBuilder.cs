@@ -15,6 +15,8 @@ namespace Bam.Data
             KeyColumnFormat = "{0} PRIMARY KEY AUTOINCREMENT";
         }
 
+        protected override RowCapSyntax RowCap => RowCapSyntax.Limit;
+
         public static void Register(DependencyProvider incubator)
         {
             incubator.Set<SqlStringBuilder>(new SQLiteSqlStringBuilder());

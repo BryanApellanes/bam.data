@@ -20,6 +20,8 @@ namespace Bam.Data
             TableNameFormatter = (s) => "\"{0}\"".Format(s);
             ColumnNameFormatter = (s) => "\"{0}\"".Format(s);
         }
+        protected override RowCapSyntax RowCap => RowCapSyntax.FirebirdFirst;
+
         public override SqlStringBuilder Id(string idAs)
         {
             Builder.AppendFormat(" RETURNING \"Id\" AS \"{0}\"{1}", idAs, this.GoText);
