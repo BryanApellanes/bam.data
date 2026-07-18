@@ -18,9 +18,8 @@ public class RowCapShould : UnitTestMenuContainer
             new SqlStringBuilder(),
             (builder) => builder.SelectTop(5, "TestTable", "Name").ToString())
         .TheTest
-        .ShouldPass(because =>
+        .ShouldPass<string>((because, _, sql) =>
         {
-            string sql = (string)because.Result;
             because.ItsTrue("the SELECT clause carries TOP", sql.Equals("SELECT TOP 5 Name FROM [TestTable] "));
         })
         .SoBeHappy()
@@ -34,9 +33,8 @@ public class RowCapShould : UnitTestMenuContainer
             new MsSqlSqlStringBuilder(),
             (builder) => builder.SelectTop(5, "TestTable", "Name").ToString())
         .TheTest
-        .ShouldPass(because =>
+        .ShouldPass<string>((because, _, sql) =>
         {
-            string sql = (string)because.Result;
             because.ItsTrue("the SELECT clause carries TOP", sql.Contains("SELECT TOP 5 Name FROM "));
             because.ItsTrue("no trailing LIMIT is rendered", !sql.Contains("LIMIT"));
         })
@@ -56,9 +54,8 @@ public class RowCapShould : UnitTestMenuContainer
                 return builder.ToString();
             })
         .TheTest
-        .ShouldPass(because =>
+        .ShouldPass<string>((because, _, sql) =>
         {
-            string sql = (string)because.Result;
             because.ItsTrue("no T-SQL TOP is rendered", !sql.Contains("TOP"));
             because.ItsTrue("a LIMIT clause is rendered", sql.Contains(" LIMIT 5"));
             because.ItsTrue("the LIMIT clause comes after the WHERE clause", sql.IndexOf("WHERE") < sql.IndexOf(" LIMIT 5"));
@@ -74,9 +71,8 @@ public class RowCapShould : UnitTestMenuContainer
             new MySqlSqlStringBuilder(),
             (builder) => builder.SelectTop(3, "TestTable", "Name").ToString())
         .TheTest
-        .ShouldPass(because =>
+        .ShouldPass<string>((because, _, sql) =>
         {
-            string sql = (string)because.Result;
             because.ItsTrue("no T-SQL TOP is rendered", !sql.Contains("TOP"));
             because.ItsTrue("the statement ends with the LIMIT clause", sql.EndsWith(" LIMIT 3"));
         })
@@ -91,9 +87,8 @@ public class RowCapShould : UnitTestMenuContainer
             new SQLiteSqlStringBuilder(),
             (builder) => builder.SelectTop(3, "TestTable", "Name").ToString())
         .TheTest
-        .ShouldPass(because =>
+        .ShouldPass<string>((because, _, sql) =>
         {
-            string sql = (string)because.Result;
             because.ItsTrue("no T-SQL TOP is rendered", !sql.Contains("TOP"));
             because.ItsTrue("the statement ends with the LIMIT clause", sql.EndsWith(" LIMIT 3"));
         })
@@ -108,9 +103,8 @@ public class RowCapShould : UnitTestMenuContainer
             new FirebirdSqlSqlStringBuilder(),
             (builder) => builder.SelectTop(7, "TestTable", "Name").ToString())
         .TheTest
-        .ShouldPass(because =>
+        .ShouldPass<string>((because, _, sql) =>
         {
-            string sql = (string)because.Result;
             because.ItsTrue("the SELECT clause carries FIRST", sql.StartsWith("SELECT FIRST 7 Name FROM "));
             because.ItsTrue("no T-SQL TOP is rendered", !sql.Contains("TOP"));
         })
@@ -125,9 +119,8 @@ public class RowCapShould : UnitTestMenuContainer
             new OracleSqlStringBuilder(),
             (builder) => builder.SelectTop(4, "TestTable", "Name").ToString())
         .TheTest
-        .ShouldPass(because =>
+        .ShouldPass<string>((because, _, sql) =>
         {
-            string sql = (string)because.Result;
             because.ItsTrue("no T-SQL TOP is rendered", !sql.Contains(" TOP "));
             because.ItsTrue("the statement ends with the FETCH FIRST clause", sql.EndsWith(" FETCH FIRST 4 ROWS ONLY"));
         })
@@ -142,9 +135,8 @@ public class RowCapShould : UnitTestMenuContainer
             new OracleSqlStringBuilder(),
             (builder) => builder.Top<VectorTestTableDao>(2).ToString())
         .TheTest
-        .ShouldPass(because =>
+        .ShouldPass<string>((because, _, sql) =>
         {
-            string sql = (string)because.Result;
             because.ItsTrue("the statement ends with the FETCH FIRST clause", sql.EndsWith(" FETCH FIRST 2 ROWS ONLY"));
         })
         .SoBeHappy()
@@ -163,9 +155,8 @@ public class RowCapShould : UnitTestMenuContainer
                 return builder.ToString();
             })
         .TheTest
-        .ShouldPass(because =>
+        .ShouldPass<string>((because, _, sql) =>
         {
-            string sql = (string)because.Result;
             int firstIndex = sql.IndexOf(" LIMIT 5");
             int lastIndex = sql.LastIndexOf(" LIMIT 5");
             because.ItsTrue("the LIMIT clause is rendered", firstIndex >= 0);
@@ -186,14 +177,13 @@ public class RowCapShould : UnitTestMenuContainer
                 builder.SelectTop(5, "TestTable", "Name");
                 string firstRender = builder.ToString();
                 string secondRender = builder.ToString();
-                return firstRender + "|" + secondRender;
+                return new RenderPairOutcome(firstRender, secondRender);
             })
         .TheTest
-        .ShouldPass(because =>
+        .ShouldPass<RenderPairOutcome>((because, _, outcome) =>
         {
-            string[] renders = ((string)because.Result).Split('|');
-            because.ItsTrue("both renders are identical", renders[0].Equals(renders[1]));
-            because.ItsTrue("both renders end with the LIMIT clause", renders[0].EndsWith(" LIMIT 5") && renders[1].EndsWith(" LIMIT 5"));
+            because.ItsTrue("both renders are identical", outcome.FirstRender.Equals(outcome.SecondRender));
+            because.ItsTrue("both renders end with the LIMIT clause", outcome.FirstRender.EndsWith(" LIMIT 5") && outcome.SecondRender.EndsWith(" LIMIT 5"));
         })
         .SoBeHappy()
         .UnlessItFailed();
@@ -206,9 +196,8 @@ public class RowCapShould : UnitTestMenuContainer
             new NpgsqlSqlStringBuilder(),
             (builder) => builder.Select("TestTable", "Name").ToString())
         .TheTest
-        .ShouldPass(because =>
+        .ShouldPass<string>((because, _, sql) =>
         {
-            string sql = (string)because.Result;
             because.ItsTrue("no LIMIT clause is rendered", !sql.Contains("LIMIT"));
             because.ItsTrue("no T-SQL TOP is rendered", !sql.Contains("TOP"));
         })
@@ -229,9 +218,8 @@ public class RowCapShould : UnitTestMenuContainer
                 return builder.ToString();
             })
         .TheTest
-        .ShouldPass(because =>
+        .ShouldPass<string>((because, _, sql) =>
         {
-            string sql = (string)because.Result;
             because.ItsTrue("no LIMIT clause survives the reset", !sql.Contains("LIMIT"));
         })
         .SoBeHappy()
@@ -245,12 +233,13 @@ public class RowCapShould : UnitTestMenuContainer
             new SqlStringBuilder(),
             (builder) => builder.Select("TestTable", "Name").ToString())
         .TheTest
-        .ShouldPass(because =>
+        .ShouldPass<string>((because, _, sql) =>
         {
-            string sql = (string)because.Result;
             because.ItsTrue("render parity is preserved", sql.Equals("SELECT Name FROM [TestTable] "));
         })
         .SoBeHappy()
         .UnlessItFailed();
     }
+
+    private sealed record RenderPairOutcome(string FirstRender, string SecondRender);
 }
