@@ -121,7 +121,7 @@ public class RowCapShould : UnitTestMenuContainer
         .TheTest
         .ShouldPass<string>((because, _, sql) =>
         {
-            because.ItsTrue("no T-SQL TOP is rendered", !sql.Contains(" TOP "));
+            because.ItsTrue("no T-SQL TOP is rendered", !sql.Contains("TOP"));
             because.ItsTrue("the statement ends with the FETCH FIRST clause", sql.EndsWith(" FETCH FIRST 4 ROWS ONLY"));
         })
         .SoBeHappy()
@@ -236,6 +236,86 @@ public class RowCapShould : UnitTestMenuContainer
         .ShouldPass<string>((because, _, sql) =>
         {
             because.ItsTrue("render parity is preserved", sql.Equals("SELECT Name FROM [TestTable] "));
+        })
+        .SoBeHappy()
+        .UnlessItFailed();
+    }
+
+    [UnitTest]
+    public void RenderTrailingLimitAfterOrderByOnPostgres()
+    {
+        When.A<NpgsqlSqlStringBuilder>("renders a trailing LIMIT after the ORDER BY clause",
+            new NpgsqlSqlStringBuilder(),
+            (builder) =>
+            {
+                builder.SelectTop(5, "TestTable", "Name");
+                builder.Where("Name", "test");
+                builder.OrderBy("Name");
+                return builder.ToString();
+            })
+        .TheTest
+        .ShouldPass<string>((because, _, sql) =>
+        {
+            because.ItsTrue("no T-SQL TOP is rendered", !sql.Contains("TOP"));
+            because.ItsTrue("a LIMIT clause is rendered", sql.Contains(" LIMIT 5"));
+            because.ItsTrue("the LIMIT clause comes after the ORDER BY clause", sql.IndexOf("ORDER BY") < sql.IndexOf(" LIMIT 5"));
+        })
+        .SoBeHappy()
+        .UnlessItFailed();
+    }
+
+    [UnitTest]
+    public void FunnelTypedTopThroughTheLimitDialectRowCap()
+    {
+        When.A<NpgsqlSqlStringBuilder>("renders a trailing LIMIT for typed Top",
+            new NpgsqlSqlStringBuilder(),
+            (builder) => builder.Top<VectorTestTableDao>(2).ToString())
+        .TheTest
+        .ShouldPass<string>((because, _, sql) =>
+        {
+            because.ItsTrue("no T-SQL TOP is rendered", !sql.Contains("TOP"));
+            because.ItsTrue("the statement ends with the LIMIT clause", sql.EndsWith(" LIMIT 2"));
+        })
+        .SoBeHappy()
+        .UnlessItFailed();
+    }
+
+    [UnitTest]
+    public void RenderUpdateStatementsUnchanged()
+    {
+        When.A<SqlStringBuilder>("renders an UPDATE exactly as built with no row cap text",
+            new SqlStringBuilder(),
+            (builder) =>
+            {
+                builder.Update("TestTable", new Dictionary<string, object> { { "Name", "test" } });
+                string firstRender = builder.ToString();
+                string secondRender = builder.ToString();
+                return new RenderPairOutcome(firstRender, secondRender);
+            })
+        .TheTest
+        .ShouldPass<RenderPairOutcome>((because, _, outcome) =>
+        {
+            because.ItsTrue("render parity is preserved", outcome.FirstRender.Equals("UPDATE [TestTable] SET [Name] = @Name1  "));
+            because.ItsTrue("repeated renders are identical", outcome.FirstRender.Equals(outcome.SecondRender));
+        })
+        .SoBeHappy()
+        .UnlessItFailed();
+    }
+
+    [UnitTest]
+    public void RenderInsertStatementsUnchanged()
+    {
+        When.A<SqlStringBuilder>("renders an INSERT exactly as built with no row cap text",
+            new SqlStringBuilder(),
+            (builder) =>
+            {
+                builder.Insert("TestTable", new AssignValue("Name", "test"));
+                return builder.ToString();
+            })
+        .TheTest
+        .ShouldPass<string>((because, _, sql) =>
+        {
+            because.ItsTrue("render parity is preserved", sql.Equals("INSERT INTO [TestTable] ([Name]) VALUES (@Name1)"));
         })
         .SoBeHappy()
         .UnlessItFailed();

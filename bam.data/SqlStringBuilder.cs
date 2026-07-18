@@ -413,7 +413,10 @@ namespace Bam.Data
         /// <summary>
         /// A row cap recorded by SelectTop for dialects whose cap trails the statement
         /// (RowCapPlacement.StatementEnd).  Flushed into the SQL text by Go and included
-        /// non-destructively by Render; cleared by Reset.
+        /// non-destructively by Render; cleared by Reset.  A pending cap attaches to the
+        /// end of whatever text has been built when it is flushed or rendered, so separate
+        /// each statement with Go before starting the next one — appending another
+        /// statement while a cap is pending renders the cap after that later statement.
         /// </summary>
         protected int PendingRowCap
         {
