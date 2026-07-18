@@ -48,6 +48,10 @@ namespace Bam.Data
             {
                 throw new NotSupportedException($"{this.GetType().Name} does not support vector columns: declared as {column.Name}.");
             }
+            if ("uuid[]".Equals(column.DbDataType, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new NotSupportedException($"{this.GetType().Name} does not support uuid[] columns: declared as {column.Name}.");
+            }
             string max = string.Format("({0})", column.MaxLength);
             string type = column.DbDataType.ToLowerInvariant();
 
@@ -84,8 +88,13 @@ namespace Bam.Data
             {
                 max = "";
             }
+            else if (type.Equals("jsonb"))
+            {
+                type = "BLOB SUB_TYPE TEXT"; // storage/retrieval degrade only - no JSON querying
+                max = "";
+            }
 
-            return string.Format("{0} {1}{2}{3}", ColumnNameFormatter(column.Name), type, max, column.AllowNull ? "" : " NOT NULL");
+            return string.Format("{0} {1}{2}{3}{4}", ColumnNameFormatter(column.Name), type, max, GetColumnDefaultClause(column), column.AllowNull ? "" : " NOT NULL");
         }
         public override SqlStringBuilder Where(IQueryFilter filter)
         {

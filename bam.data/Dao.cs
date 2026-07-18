@@ -1755,6 +1755,76 @@ namespace Bam.Data
             return null;
         }
 
+        /// <summary>
+        /// Gets the value of the specified column as a <see cref="Json"/> value, tolerating the
+        /// shapes a JSON column can round-trip through: an already-hydrated <see cref="Json"/>
+        /// instance, or the raw JSON text every provider returns for jsonb and text-degraded
+        /// JSON columns.
+        /// </summary>
+        /// <param name="columnName">The column name to read.</param>
+        /// <returns>The column's JSON value, or null when the column is null.</returns>
+        protected Json? GetJsonValue(string columnName)
+        {
+            object val = GetCurrentValue(columnName);
+            if (val != null && val != DBNull.Value)
+            {
+                if (val is Json json)
+                {
+                    return json;
+                }
+                if (val is string text && !string.IsNullOrWhiteSpace(text))
+                {
+                    return new Json(text);
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the value of the specified column as a <see cref="Guid"/> array, tolerating the
+        /// shapes a uuid[] column can round-trip through: a native <see cref="Guid"/> array (what
+        /// Npgsql returns), a boxed object array of Guids or guid strings, or a PostgreSQL array
+        /// literal (e.g. <c>{a,b}</c>).
+        /// </summary>
+        /// <param name="columnName">The column name to read.</param>
+        /// <returns>The column's uuid array, or null when the column is null.</returns>
+        protected Guid[]? GetUuidArrayValue(string columnName)
+        {
+            object val = GetCurrentValue(columnName);
+            if (val != null && val != DBNull.Value)
+            {
+                if (val is Guid[] guids)
+                {
+                    return guids;
+                }
+                if (val is object[] boxed)
+                {
+                    Guid[] converted = new Guid[boxed.Length];
+                    for (int i = 0; i < boxed.Length; i++)
+                    {
+                        converted[i] = boxed[i] is Guid guid ? guid : Guid.Parse((string)boxed[i]);
+                    }
+                    return converted;
+                }
+                if (val is string literal && !string.IsNullOrWhiteSpace(literal))
+                {
+                    string trimmed = literal.Trim().TrimStart('{').TrimEnd('}');
+                    if (trimmed.Length == 0)
+                    {
+                        return Array.Empty<Guid>();
+                    }
+                    string[] parts = trimmed.Split(',');
+                    Guid[] parsed = new Guid[parts.Length];
+                    for (int i = 0; i < parts.Length; i++)
+                    {
+                        parsed[i] = Guid.Parse(parts[i].Trim().Trim('"'));
+                    }
+                    return parsed;
+                }
+            }
+            return null;
+        }
+
         protected DateTime GetDateTimeValue(string columnName)
         {
             object val = GetCurrentValue(columnName);

@@ -27,6 +27,14 @@ namespace Bam.Data
 			{
 				throw new NotSupportedException($"{this.GetType().Name} does not support vector columns: declared as {column.Name}.");
 			}
+			if ("uuid[]".Equals(column.DbDataType, StringComparison.OrdinalIgnoreCase))
+			{
+				throw new NotSupportedException($"{this.GetType().Name} does not support uuid[] columns: declared as {column.Name}.");
+			}
+			if ("jsonb".Equals(column.DbDataType, StringComparison.OrdinalIgnoreCase))
+			{
+				return string.Format("\"{0}\" NVARCHAR(MAX){1}{2}", column.Name, GetColumnDefaultClause(column), column.AllowNull ? "" : " NOT NULL");
+			}
 			string max = string.Format("({0})", column.MaxLength);
 			string type = column.DbDataType.ToLowerInvariant();
 

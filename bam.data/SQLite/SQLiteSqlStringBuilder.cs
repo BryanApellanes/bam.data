@@ -96,11 +96,19 @@ namespace Bam.Data
             {
                 throw new NotSupportedException($"{this.GetType().Name} does not support vector columns: declared as {column.Name}.");
             }
+            if ("uuid[]".Equals(type, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new NotSupportedException($"{this.GetType().Name} does not support uuid[] columns: declared as {column.Name}.");
+            }
+            if ("jsonb".Equals(type, StringComparison.OrdinalIgnoreCase))
+            {
+                type = "TEXT"; // storage/retrieval degrade only - no JSON querying
+            }
             if (type.Equals("Bit"))
             {
                 type = "INTEGER"; // sqlite doesn't have a separate Bit/bool
             }
-            return string.Format("\"{0}\" {1}{2}", column.Name, type, column.AllowNull ? "" : " NOT NULL");
+            return string.Format("\"{0}\" {1}{2}{3}", column.Name, type, GetColumnDefaultClause(column), column.AllowNull ? "" : " NOT NULL");
         }
     }
 }

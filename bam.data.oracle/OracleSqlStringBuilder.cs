@@ -198,6 +198,14 @@ namespace Bam.Data
 			{
 				throw new NotSupportedException($"{this.GetType().Name} does not support vector columns: declared as {column.Name}.");
 			}
+			if ("uuid[]".Equals(column.DbDataType, StringComparison.OrdinalIgnoreCase))
+			{
+				throw new NotSupportedException($"{this.GetType().Name} does not support uuid[] columns: declared as {column.Name}.");
+			}
+			if ("jsonb".Equals(column.DbDataType, StringComparison.OrdinalIgnoreCase))
+			{
+				return string.Format("{0} CLOB{1}{2}", GetFirstThirtyCharacters(column.Name), GetColumnDefaultClause(column), column.AllowNull ? "" : " NOT NULL");
+			}
 			string type = GetType(column);
             return string.Format("{0} {1}", GetFirstThirtyCharacters(column.Name), type, column.AllowNull ? "" : " NOT NULL");
         }
