@@ -49,10 +49,7 @@ namespace Bam.Data
 			Go();
 		}
 
-		public override SqlStringBuilder Top<T>(int topCount)
-		{
-			throw new InvalidOperationException("Top is not properly implemented by OracleSqlStringBuilder; instead use OracleQuerySet which extends SqlStringBuilder");
-		}
+		protected override RowCapSyntax RowCap => RowCapSyntax.OracleFetchFirst;
 
 		protected override void WriteForeignKeys(Type daoType)
 		{

@@ -21,6 +21,8 @@ namespace Bam.Data
             ColumnNameFormatter = (s) => s;
         }
 
+        protected override RowCapSyntax RowCap => RowCapSyntax.Limit;
+
         public override SqlStringBuilder Id(string idAs)
         {
             Builder.AppendFormat("{0}SELECT last_insert_id() AS {1}", this.GoText, idAs);

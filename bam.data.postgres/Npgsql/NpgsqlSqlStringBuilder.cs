@@ -23,6 +23,8 @@ namespace Bam.Data
             ColumnNameFormatter = NpgsqlFormatProvider.ColumnNameFormatter;
         }
 
+        protected override RowCapSyntax RowCap => RowCapSyntax.Limit;
+
         public override SqlStringBuilder Id(string idAs)
         {
             Builder.AppendFormat(" RETURNING {0} AS {1}{2}", ColumnNameFormatter("Id"), idAs, this.GoText);
