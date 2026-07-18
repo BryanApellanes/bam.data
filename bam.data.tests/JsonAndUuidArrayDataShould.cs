@@ -76,6 +76,22 @@ public class JsonAndUuidArrayDataShould : UnitTestMenuContainer
     }
 
     [UnitTest]
+    public void RenderDefaultlessJsonColumnDdlWithoutDefaultClause()
+    {
+        When.A<NpgsqlSqlStringBuilder>("renders a jsonb column definition with no default literal",
+            new NpgsqlSqlStringBuilder(),
+            (builder) => builder.GetColumnDefinition(new JsonColumnAttribute { Name = "Meta" }))
+        .TheTest
+        .ShouldPass<string>((because, _, definition) =>
+        {
+            because.ItsTrue("definition renders jsonb with no DEFAULT clause and no () artifact",
+                definition.Equals("\"Meta\" jsonb NOT NULL"));
+        })
+        .SoBeHappy()
+        .UnlessItFailed();
+    }
+
+    [UnitTest]
     public void RenderUuidArrayColumnDdlForPostgres()
     {
         When.A<NpgsqlSqlStringBuilder>("renders a uuid[] column definition with its empty-array default",
@@ -114,7 +130,7 @@ public class JsonAndUuidArrayDataShould : UnitTestMenuContainer
             because.ItsTrue("Oracle degrades to CLOB with the default",
                 outcome.Oracle.Equals("Metadata CLOB DEFAULT '{}' NOT NULL"));
             because.ItsTrue("Firebird degrades to BLOB SUB_TYPE TEXT with the default",
-                outcome.Firebird.Contains("BLOB SUB_TYPE TEXT DEFAULT '{}' NOT NULL"));
+                outcome.Firebird.Equals("\"Metadata\" BLOB SUB_TYPE TEXT DEFAULT '{}' NOT NULL"));
         })
         .SoBeHappy()
         .UnlessItFailed();
@@ -224,11 +240,14 @@ public class JsonAndUuidArrayDataShould : UnitTestMenuContainer
                 dao.SetValue("RelatedEpisodeIds", "{}");
                 Guid[]? fromEmptyLiteral = dao.RelatedEpisodeIds;
 
+                dao.SetValue("RelatedEpisodeIds", new object[] { first, second.ToString() });
+                Guid[]? fromBoxed = dao.RelatedEpisodeIds;
+
                 dao.SetValue("RelatedEpisodeIds", DBNull.Value);
                 Guid[]? fromDbNull = dao.RelatedEpisodeIds;
 
                 return new HydrationOutcome(first, second, fromText, fromInstance, fromNull,
-                    fromNative, fromLiteral, fromEmptyLiteral, fromDbNull);
+                    fromNative, fromLiteral, fromEmptyLiteral, fromBoxed, fromDbNull);
             })
         .TheTest
         .ShouldPass<HydrationOutcome>((because, _, outcome) =>
@@ -241,6 +260,8 @@ public class JsonAndUuidArrayDataShould : UnitTestMenuContainer
             because.ItsTrue("a postgres array literal parses",
                 outcome.FromLiteral!.Length == 2 && outcome.FromLiteral[0] == outcome.First && outcome.FromLiteral[1] == outcome.Second);
             because.ItsTrue("an empty array literal hydrates to an empty array", outcome.FromEmptyLiteral!.Length == 0);
+            because.ItsTrue("a boxed object array of Guids and guid strings converts",
+                outcome.FromBoxed!.Length == 2 && outcome.FromBoxed[0] == outcome.First && outcome.FromBoxed[1] == outcome.Second);
             because.ItsTrue("DBNull hydrates to null uuid array", outcome.FromDbNull == null);
         })
         .SoBeHappy()
@@ -252,5 +273,5 @@ public class JsonAndUuidArrayDataShould : UnitTestMenuContainer
     private sealed record JsonDegradeOutcome(string SQLite, string MySql, string MsSql, string Oracle, string Firebird);
     private sealed record GuidArrayBindingOutcome(bool ValueIsSameArray, string ParameterName);
     private sealed record HydrationOutcome(Guid First, Guid Second, Json? FromText, Json? FromInstance, Json? FromNull,
-        Guid[]? FromNative, Guid[]? FromLiteral, Guid[]? FromEmptyLiteral, Guid[]? FromDbNull);
+        Guid[]? FromNative, Guid[]? FromLiteral, Guid[]? FromEmptyLiteral, Guid[]? FromBoxed, Guid[]? FromDbNull);
 }

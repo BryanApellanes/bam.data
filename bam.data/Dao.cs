@@ -1802,7 +1802,19 @@ namespace Bam.Data
                     Guid[] converted = new Guid[boxed.Length];
                     for (int i = 0; i < boxed.Length; i++)
                     {
-                        converted[i] = boxed[i] is Guid guid ? guid : Guid.Parse((string)boxed[i]);
+                        if (boxed[i] is Guid guid)
+                        {
+                            converted[i] = guid;
+                        }
+                        else if (boxed[i] is string text)
+                        {
+                            converted[i] = Guid.Parse(text);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException(
+                                $"Cannot convert element of type {boxed[i]?.GetType().Name ?? "null"} at index {i} to a Guid for column '{columnName}'.");
+                        }
                     }
                     return converted;
                 }

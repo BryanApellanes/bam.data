@@ -90,7 +90,10 @@ namespace Bam.Data
             }
             else if (type.Equals("jsonb"))
             {
-                type = "BLOB SUB_TYPE TEXT"; // storage/retrieval degrade only - no JSON querying
+                // storage/retrieval degrade only - no JSON querying. DEFAULT on a
+                // BLOB SUB_TYPE TEXT column is honored by Firebird (verified against
+                // Firebird 4.0: omitted-value inserts take the default).
+                type = "BLOB SUB_TYPE TEXT";
                 max = "";
             }
 
