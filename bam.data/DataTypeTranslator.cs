@@ -81,6 +81,16 @@ namespace Bam.Data
                 return DataTypes.Vector;
             }
 
+            if (type == typeof(Json))
+            {
+                return DataTypes.Json;
+            }
+
+            if (type == typeof(Guid[]))
+            {
+                return DataTypes.UuidArray;
+            }
+
             return DataTypes.Default;
         }
         
@@ -125,6 +135,10 @@ namespace Bam.Data
                     return typeof(DateTime);
                 case DataTypes.Vector:
                     return typeof(Vector);
+                case DataTypes.Json:
+                    return typeof(Json);
+                case DataTypes.UuidArray:
+                    return typeof(Guid[]);
                 default:
                     return typeof(object);
             }
@@ -137,9 +151,14 @@ namespace Bam.Data
         /// <returns>The corresponding DataTypes enum value.</returns>
         public virtual DataTypes TranslateDataType(string dbDataType)
         {
-            string dataType = dbDataType.ToLowerInvariant();
+            string dataType = dbDataType.Trim().ToLowerInvariant();
             switch (dataType)
             {
+                case "json":
+                case "jsonb":
+                    return DataTypes.Json;
+                case "uuid[]":
+                    return DataTypes.UuidArray;
                 case "bigint":
                     return DataTypes.ULong;
                 case "binary":

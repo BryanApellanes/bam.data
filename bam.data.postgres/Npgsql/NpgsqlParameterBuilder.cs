@@ -16,6 +16,10 @@ namespace Bam.Data
             {
                 return BuildVectorParameter(EnsurePrefix(name, ":"), vector);
             }
+            if (value is Json json)
+            {
+                return BuildJsonParameter(EnsurePrefix(name, ":"), json);
+            }
             return new NpgsqlParameter(EnsurePrefix(name, ":"), value);
         }
 
@@ -35,6 +39,10 @@ namespace Bam.Data
             {
                 return BuildVectorParameter(parameterName, vector);
             }
+            else if (value is Json json)
+            {
+                return BuildJsonParameter(parameterName, json);
+            }
 
             return new NpgsqlParameter(parameterName, value);
         }
@@ -52,6 +60,21 @@ namespace Bam.Data
             return new NpgsqlParameter(parameterName, NpgsqlDbType.Unknown)
             {
                 Value = vector.ToString()
+            };
+        }
+
+        /// <summary>
+        /// Binds a JSON value as a jsonb-typed parameter carrying the raw JSON text. Typing the
+        /// parameter in the driver removes the need for explicit ::jsonb casts in SQL text on
+        /// both INSERT assignment and expression use.
+        /// </summary>
+        /// <param name="parameterName">The prefixed parameter name.</param>
+        /// <param name="json">The JSON value to bind.</param>
+        private static NpgsqlParameter BuildJsonParameter(string parameterName, Json json)
+        {
+            return new NpgsqlParameter(parameterName, NpgsqlDbType.Jsonb)
+            {
+                Value = json.ToString()
             };
         }
     }

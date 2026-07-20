@@ -53,6 +53,21 @@ namespace Bam.Data
             {
                 throw new NotSupportedException($"{this.GetType().Name} does not support vector columns: declared as {column.Name}.");
             }
+            if ("uuid[]".Equals(column.DbDataType, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new NotSupportedException($"{this.GetType().Name} does not support uuid[] columns: declared as {column.Name}.");
+            }
+            if ("jsonb".Equals(column.DbDataType, StringComparison.OrdinalIgnoreCase))
+            {
+                // JSON columns require the parenthesized expression-default syntax (MySQL 8.0.13+);
+                // a bare literal default on a JSON column is rejected by the server.
+                string jsonDefault = string.Empty;
+                if (column is IDefaultLiteralColumn defaultLiteralColumn && !string.IsNullOrEmpty(defaultLiteralColumn.DefaultLiteral))
+                {
+                    jsonDefault = string.Format(" DEFAULT ({0})", defaultLiteralColumn.DefaultLiteral);
+                }
+                return string.Format("{0} JSON{1}{2}", column.Name, jsonDefault, column.AllowNull ? "" : " NOT NULL");
+            }
             string max = string.Format("({0})", column.MaxLength);
             string type = column.DbDataType.ToLowerInvariant();
 

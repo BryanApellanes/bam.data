@@ -187,8 +187,13 @@ namespace Bam.Data
             {
                 max = "";
             }
+            else if (type.Equals("jsonb") || type.Equals("uuid[]"))
+            {
+                // parameterless types: an empty MaxLength would otherwise render "jsonb()"
+                max = "";
+            }
 
-            return $"{ColumnNameFormatter(column.Name)} {type}{max}{(column.AllowNull ? "" : " NOT NULL")}";
+            return $"{ColumnNameFormatter(column.Name)} {type}{max}{GetColumnDefaultClause(column)}{(column.AllowNull ? "" : " NOT NULL")}";
         }
 
         public override ISqlStringBuilder Where(string columnName, object value)

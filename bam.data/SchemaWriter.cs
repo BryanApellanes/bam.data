@@ -250,6 +250,22 @@ namespace Bam.Data
         /// <param name="column"></param>
         /// <returns></returns>
         public abstract string GetColumnDefinition(ColumnAttribute column);
+
+        /// <summary>
+        /// Gets the rendered DEFAULT clause (leading space included) when the column attribute
+        /// carries a default literal (see <see cref="IDefaultLiteralColumn"/>), or the empty
+        /// string otherwise. Render the clause before any NOT NULL suffix — that ordering is
+        /// valid on every supported provider.
+        /// </summary>
+        /// <param name="column">The column attribute to read the default from.</param>
+        protected static string GetColumnDefaultClause(ColumnAttribute column)
+        {
+            if (column is IDefaultLiteralColumn defaultLiteralColumn)
+            {
+                return defaultLiteralColumn.GetDefaultClause();
+            }
+            return string.Empty;
+        }
         
         protected virtual void WriteForeignKeys(Type daoType)
         {
