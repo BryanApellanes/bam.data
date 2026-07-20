@@ -189,23 +189,136 @@ namespace Bam.Data
         }
 
         /// <summary>
-        /// Writes CREATE INDEX statements for index declarations on the specified Dao type's
-        /// properties (currently <see cref="VectorIndexAttribute"/>). Providers that support the
-        /// declared index kind override this; this base implementation writes nothing when no
-        /// declarations are present and fails fast when one is found.
+        /// Writes CREATE INDEX statements for every <see cref="IndexAttribute"/> declared on the
+        /// specified Dao type (class-level composites) or its properties (single-column indexes,
+        /// including <see cref="VectorIndexAttribute"/> specializations). Writes nothing when no
+        /// declarations are present. Rendering dispatches per index to
+        /// <see cref="WriteCreateIndex(IndexDefinition)"/>, which providers override for
+        /// dialect-specific syntax.
         /// </summary>
         /// <param name="daoType">The Dao type whose index declarations to write.</param>
-        /// <exception cref="NotSupportedException">Thrown when a vector index is declared and this writer does not support vector indexes.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when a declaration is invalid; see <see cref="GetIndexDefinitions(Type)"/>.</exception>
+        /// <exception cref="NotSupportedException">Thrown when a declared index requires options this writer does not support.</exception>
         public virtual SchemaWriter WriteCreateIndexes(Type daoType)
         {
-            foreach (PropertyInfo property in daoType.GetProperties())
+            foreach (IndexDefinition index in GetIndexDefinitions(daoType))
             {
-                if (property.HasCustomAttributeOfType<VectorIndexAttribute>(out VectorIndexAttribute _))
-                {
-                    throw new NotSupportedException($"{this.GetType().Name} does not support vector indexes: declared on {daoType.Name}.{property.Name}.");
-                }
+                WriteCreateIndex(index);
+                Go();
             }
             return this;
+        }
+
+        /// <summary>
+        /// Resolves the index declarations on the specified Dao type into provider-neutral
+        /// definitions: class-level <see cref="IndexAttribute"/>s first, then property-level
+        /// declarations using each property's <see cref="ColumnAttribute"/> column name.
+        /// </summary>
+        /// <param name="daoType">The Dao type whose index declarations to resolve.</param>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when a property-level index is declared on a property with no
+        /// <see cref="ColumnAttribute"/>, or when a class-level index names a column no
+        /// property's <see cref="ColumnAttribute"/> declares.
+        /// </exception>
+        protected virtual IEnumerable<IndexDefinition> GetIndexDefinitions(Type daoType)
+        {
+            string tableName = Dao.TableName(daoType);
+            List<IndexDefinition> definitions = new List<IndexDefinition>();
+            HashSet<string> columnNames = new HashSet<string>(GetColumns(daoType).Select(column => column.Name));
+            foreach (IndexAttribute classIndex in daoType.GetCustomAttributes<IndexAttribute>(false))
+            {
+                IndexDefinition definition = classIndex.GetIndexDefinition(tableName);
+                foreach (IndexColumn indexColumn in definition.Columns)
+                {
+                    if (!columnNames.Contains(indexColumn.ColumnName))
+                    {
+                        throw new InvalidOperationException($"The index {definition.Name} on {daoType.Name} names column {indexColumn.ColumnName}, but no property of {daoType.Name} declares a column by that name.");
+                    }
+                }
+                definitions.Add(definition);
+            }
+            foreach (PropertyInfo property in daoType.GetProperties())
+            {
+                foreach (IndexAttribute propertyIndex in property.GetCustomAttributes<IndexAttribute>(true))
+                {
+                    if (!property.HasCustomAttributeOfType<ColumnAttribute>(out ColumnAttribute column))
+                    {
+                        throw new InvalidOperationException($"An index is declared on {daoType.Name}.{property.Name} but the property has no column attribute.");
+                    }
+                    definitions.Add(propertyIndex.GetIndexDefinition(tableName, column.Name));
+                }
+            }
+            return definitions;
+        }
+
+        /// <summary>
+        /// Writes one CREATE INDEX statement for the specified definition. This base
+        /// implementation renders standard SQL —
+        /// <c>CREATE [UNIQUE] INDEX {name} ON {table} ({column} [DESC], ...)</c> — with no
+        /// existence guard, matching <see cref="CreateTableFormat"/>'s posture; providers whose
+        /// dialect supports <c>IF NOT EXISTS</c> override <see cref="CreateIndexExistenceClause"/>.
+        /// Definitions carrying access-method options are rejected; providers that support them
+        /// (e.g. PostgreSQL) override this method.
+        /// </summary>
+        /// <param name="index">The index to write.</param>
+        /// <exception cref="NotSupportedException">
+        /// Thrown when the definition carries an access method, operator class, or storage
+        /// parameters, which this writer does not support.
+        /// </exception>
+        protected virtual void WriteCreateIndex(IndexDefinition index)
+        {
+            if (index.HasAccessMethodOptions)
+            {
+                throw new NotSupportedException($"{this.GetType().Name} does not support index access-method options (access method, operator class, or storage parameters): declared by index {index.Name} on {index.TableName}.");
+            }
+            Builder.AppendFormat("CREATE {0}INDEX {1}{2} ON {3} ({4})",
+                index.Unique ? "UNIQUE " : string.Empty,
+                CreateIndexExistenceClause,
+                index.Name,
+                TableNameFormatter(index.TableName),
+                GetIndexColumnList(index));
+        }
+
+        /// <summary>
+        /// Gets the existence-guard clause rendered between <c>INDEX</c> and the index name.
+        /// Empty in this base implementation; providers whose dialect supports it override to
+        /// return <c>"IF NOT EXISTS "</c>.
+        /// </summary>
+        protected virtual string CreateIndexExistenceClause
+        {
+            get
+            {
+                return string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// Renders the specified index's column list — each column formatted by
+        /// <see cref="SqlStringBuilder.ColumnNameFormatter"/> with its sort-direction suffix.
+        /// </summary>
+        /// <param name="index">The index whose column list to render.</param>
+        protected string GetIndexColumnList(IndexDefinition index)
+        {
+            return string.Join(", ", index.Columns.Select(column => $"{ColumnNameFormatter(column.ColumnName)}{GetSortOrderSuffix(column.Order)}"));
+        }
+
+        /// <summary>
+        /// Gets the sort-direction suffix for the specified order: <c>" DESC"</c>, <c>" ASC"</c>,
+        /// or the empty string for <see cref="SortOrder.Unspecified"/> (provider default).
+        /// </summary>
+        /// <param name="order">The sort direction.</param>
+        protected static string GetSortOrderSuffix(SortOrder order)
+        {
+            switch (order)
+            {
+                case SortOrder.Descending:
+                    return " DESC";
+                case SortOrder.Ascending:
+                    return " ASC";
+                case SortOrder.Unspecified:
+                default:
+                    return string.Empty;
+            }
         }
 
         /// <summary>

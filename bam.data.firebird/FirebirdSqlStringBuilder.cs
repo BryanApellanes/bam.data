@@ -139,6 +139,39 @@ namespace Bam.Data
                 }));
         }
 
+        /// <summary>
+        /// Writes one CREATE INDEX statement with Firebird syntax, where sort direction is
+        /// declared at the index level (<c>CREATE [UNIQUE] [DESCENDING] INDEX</c>), not per
+        /// column. All columns must share one direction: an index whose columns are all
+        /// <see cref="SortOrder.Descending"/> renders <c>DESCENDING</c>; any mix of descending
+        /// with ascending or unspecified columns fails fast.
+        /// </summary>
+        /// <param name="index">The index to write.</param>
+        /// <exception cref="NotSupportedException">
+        /// Thrown when the definition carries access-method options, or mixes descending with
+        /// non-descending columns.
+        /// </exception>
+        protected override void WriteCreateIndex(IndexDefinition index)
+        {
+            if (index.HasAccessMethodOptions)
+            {
+                throw new NotSupportedException($"{this.GetType().Name} does not support index access-method options (access method, operator class, or storage parameters): declared by index {index.Name} on {index.TableName}.");
+            }
+            bool anyDescending = index.Columns.Any(column => column.Order == SortOrder.Descending);
+            bool allDescending = index.Columns.All(column => column.Order == SortOrder.Descending);
+            if (anyDescending && !allDescending)
+            {
+                throw new NotSupportedException($"{this.GetType().Name} supports one sort direction per index (Firebird declares direction at the index level): index {index.Name} on {index.TableName} mixes descending with non-descending columns. Mark every column Descending or none.");
+            }
+            string columnList = string.Join(", ", index.Columns.Select(column => ColumnNameFormatter(column.ColumnName)));
+            Builder.AppendFormat("CREATE {0}{1}INDEX {2} ON {3} ({4})",
+                index.Unique ? "UNIQUE " : string.Empty,
+                allDescending ? "DESCENDING " : string.Empty,
+                index.Name,
+                TableNameFormatter(index.TableName),
+                columnList);
+        }
+
         protected override void WriteDropForeignKeys(Type daoType)
         {
             TableAttribute table = null!;

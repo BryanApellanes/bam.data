@@ -110,5 +110,17 @@ namespace Bam.Data
             }
             return string.Format("\"{0}\" {1}{2}{3}", column.Name, type, GetColumnDefaultClause(column), column.AllowNull ? "" : " NOT NULL");
         }
+
+        /// <summary>
+        /// Gets the existence-guard clause for index DDL. SQLite supports
+        /// <c>CREATE INDEX IF NOT EXISTS</c>, so index creation is idempotent here.
+        /// </summary>
+        protected override string CreateIndexExistenceClause
+        {
+            get
+            {
+                return "IF NOT EXISTS ";
+            }
+        }
     }
 }

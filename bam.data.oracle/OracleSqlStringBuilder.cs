@@ -210,6 +210,25 @@ namespace Bam.Data
             return string.Format("{0} {1}", GetFirstThirtyCharacters(column.Name), type, column.AllowNull ? "" : " NOT NULL");
         }
 
+		/// <summary>
+		/// Writes one CREATE INDEX statement, truncating the index and table names to Oracle's
+		/// 30-character identifier limit (the same treatment foreign-key names receive). Declare
+		/// an explicit <see cref="IndexAttribute.Name"/> when derived names would collide after
+		/// truncation.
+		/// </summary>
+		/// <param name="index">The index to write.</param>
+		protected override void WriteCreateIndex(IndexDefinition index)
+		{
+			base.WriteCreateIndex(new IndexDefinition(
+				GetFirstThirtyCharacters(index.Name),
+				GetFirstThirtyCharacters(index.TableName),
+				index.Columns,
+				index.Unique,
+				index.AccessMethod,
+				index.OperatorClass,
+				index.StorageParameters));
+		}
+
 		private string GetFormattedTableName(Type daoType)
 		{
 			string tableName = daoType.GetCustomAttributeOfType<TableAttribute>().TableName;

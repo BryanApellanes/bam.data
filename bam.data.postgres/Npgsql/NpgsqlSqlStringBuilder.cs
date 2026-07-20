@@ -57,33 +57,6 @@ namespace Bam.Data
         }
 
         /// <summary>
-        /// Gets the pgvector index operator class for the specified distance semantics.
-        /// </summary>
-        /// <param name="distance">The distance semantics the index optimizes for.</param>
-        public static string GetVectorOperatorClass(VectorDistance distance)
-        {
-            switch (distance)
-            {
-                case VectorDistance.Euclidean:
-                    return "vector_l2_ops";
-                case VectorDistance.InnerProduct:
-                    return "vector_ip_ops";
-                case VectorDistance.Cosine:
-                default:
-                    return "vector_cosine_ops";
-            }
-        }
-
-        /// <summary>
-        /// Gets the PostgreSQL index access method name for the specified method.
-        /// </summary>
-        /// <param name="method">The index access method.</param>
-        public static string GetVectorIndexMethodName(VectorIndexMethod method)
-        {
-            return method == VectorIndexMethod.Hnsw ? "hnsw" : "ivfflat";
-        }
-
-        /// <summary>
         /// Orders results by pgvector distance from the specified value, nearest first, binding the
         /// query vector as a parameter cast server-side via <c>::vector</c>, e.g.
         /// <c>ORDER BY "Embedding" &lt;=&gt; :Embedding1::vector</c>. Pair with a not-null filter on the
@@ -106,37 +79,26 @@ namespace Bam.Data
         }
 
         /// <summary>
-        /// Writes pgvector index DDL for each property of the specified Dao type declaring a
-        /// <see cref="VectorIndexAttribute"/>, e.g.
+        /// Writes one CREATE INDEX statement with PostgreSQL syntax — <c>IF NOT EXISTS</c>, an
+        /// optional <c>USING</c> access method, per-column operator class, and an optional
+        /// <c>WITH (...)</c> storage-parameter clause. A <see cref="VectorIndexAttribute"/>
+        /// declaration renders e.g.
         /// <c>CREATE INDEX IF NOT EXISTS ix_Table_Column ON Table USING ivfflat ("Column" vector_cosine_ops) WITH (lists = 100)</c>.
         /// </summary>
-        /// <param name="daoType">The Dao type whose index declarations to write.</param>
-        /// <exception cref="InvalidOperationException">Thrown when a vector index is declared on a property with no column attribute.</exception>
-        public override SchemaWriter WriteCreateIndexes(Type daoType)
+        /// <param name="index">The index to write.</param>
+        protected override void WriteCreateIndex(IndexDefinition index)
         {
-            string tableName = Dao.TableName(daoType);
-            foreach (PropertyInfo property in daoType.GetProperties())
-            {
-                if (property.HasCustomAttributeOfType<VectorIndexAttribute>(out VectorIndexAttribute vectorIndex))
-                {
-                    if (!property.HasCustomAttributeOfType<ColumnAttribute>(out ColumnAttribute column))
-                    {
-                        throw new InvalidOperationException($"A vector index is declared on {daoType.Name}.{property.Name} but the property has no column attribute.");
-                    }
-                    string indexName = vectorIndex.Name ?? $"ix_{tableName}_{column.Name}";
-                    string method = GetVectorIndexMethodName(vectorIndex.Method);
-                    string withClause = vectorIndex.Method == VectorIndexMethod.IvfFlat ? $" WITH (lists = {vectorIndex.Lists})" : string.Empty;
-                    Builder.AppendFormat("CREATE INDEX IF NOT EXISTS {0} ON {1} USING {2} ({3} {4}){5}",
-                        indexName,
-                        TableNameFormatter(tableName),
-                        method,
-                        ColumnNameFormatter(column.Name),
-                        GetVectorOperatorClass(vectorIndex.Distance),
-                        withClause);
-                    Go();
-                }
-            }
-            return this;
+            string usingClause = string.IsNullOrEmpty(index.AccessMethod) ? string.Empty : $" USING {index.AccessMethod}";
+            string operatorClassSuffix = string.IsNullOrEmpty(index.OperatorClass) ? string.Empty : $" {index.OperatorClass}";
+            string columnList = string.Join(", ", index.Columns.Select(column => $"{ColumnNameFormatter(column.ColumnName)}{operatorClassSuffix}{GetSortOrderSuffix(column.Order)}"));
+            string withClause = string.IsNullOrEmpty(index.StorageParameters) ? string.Empty : $" WITH ({index.StorageParameters})";
+            Builder.AppendFormat("CREATE {0}INDEX IF NOT EXISTS {1} ON {2}{3} ({4}){5}",
+                index.Unique ? "UNIQUE " : string.Empty,
+                index.Name,
+                TableNameFormatter(index.TableName),
+                usingClause,
+                columnList,
+                withClause);
         }
         
         public static void Register(DependencyProvider incubator)
