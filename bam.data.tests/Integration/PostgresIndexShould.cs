@@ -23,8 +23,8 @@ public class PostgresIndexShould : IntegrationTestMenuContainer
 
         PodmanContainerHelper.WaitForReady(ContainerName, 60, () =>
         {
-            using var conn = new NpgsqlConnection(db.ConnectionString);
-            conn.Open();
+            using NpgsqlConnection connection = new NpgsqlConnection(db.ConnectionString);
+            connection.Open();
             return true;
         });
 
@@ -47,29 +47,30 @@ public class PostgresIndexShould : IntegrationTestMenuContainer
             indexWriter.WriteCreateIndexes(typeof(IndexTestTableDao));
             database.ExecuteSql((ISqlStringBuilder)indexWriter);
 
-            string?[] indexDefinitions = new string?[]
-            {
+            return new PostgresIndexOutcome(
                 database.QuerySingleColumn<string>(
                     "SELECT indexdef FROM pg_indexes WHERE tablename = 'indextesttable' AND indexname = 'ix_indextesttable_tenantid_createdat'").FirstOrDefault(),
                 database.QuerySingleColumn<string>(
                     "SELECT indexdef FROM pg_indexes WHERE tablename = 'indextesttable' AND indexname = 'ix_indextesttable_createdat'").FirstOrDefault(),
                 database.QuerySingleColumn<string>(
-                    "SELECT indexdef FROM pg_indexes WHERE tablename = 'indextesttable' AND indexname = 'ix_indextesttable_email'").FirstOrDefault()
-            };
-            return indexDefinitions;
+                    "SELECT indexdef FROM pg_indexes WHERE tablename = 'indextesttable' AND indexname = 'ix_indextesttable_email'").FirstOrDefault());
         })
         .TheTest
-        .ShouldPass(because =>
+        .ShouldPass<PostgresIndexOutcome>((because, outcome) =>
         {
-            string?[] results = (string?[])because.Result;
-            because.ItsTrue("the composite index exists covering both columns with the declared direction",
-                results[0] != null && results[0]!.Contains("TenantId") && results[0]!.Contains("CreatedAt") && results[0]!.Contains("DESC"));
-            because.ItsTrue("the descending single-column index exists",
-                results[1] != null && results[1]!.Contains("CreatedAt") && results[1]!.Contains("DESC"));
+            because.ItsTrue("the composite index covers both columns in declared order with direction on CreatedAt only",
+                outcome.CompositeIndexDefinition != null && outcome.CompositeIndexDefinition.Contains("(\"TenantId\", \"CreatedAt\" DESC)"));
+            because.ItsTrue("the descending single-column index exists with direction on CreatedAt",
+                outcome.DescendingIndexDefinition != null && outcome.DescendingIndexDefinition.Contains("(\"CreatedAt\" DESC)"));
             because.ItsTrue("the unique index exists",
-                results[2] != null && results[2]!.Contains("CREATE UNIQUE INDEX"));
+                outcome.UniqueIndexDefinition != null && outcome.UniqueIndexDefinition.Contains("CREATE UNIQUE INDEX"));
         })
         .SoBeHappy(_ => { })
         .UnlessItFailed();
     }
+
+    private sealed record PostgresIndexOutcome(
+        string? CompositeIndexDefinition,
+        string? DescendingIndexDefinition,
+        string? UniqueIndexDefinition);
 }

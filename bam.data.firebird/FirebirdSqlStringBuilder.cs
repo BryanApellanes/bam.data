@@ -144,7 +144,10 @@ namespace Bam.Data
         /// declared at the index level (<c>CREATE [UNIQUE] [DESCENDING] INDEX</c>), not per
         /// column. All columns must share one direction: an index whose columns are all
         /// <see cref="SortOrder.Descending"/> renders <c>DESCENDING</c>; any mix of descending
-        /// with ascending or unspecified columns fails fast.
+        /// with ascending or unspecified columns fails fast. Index names are not truncated:
+        /// Firebird 4+ limits identifiers to 63 characters (31 before 4.0), so declare an
+        /// explicit <see cref="IndexAttribute.Name"/> when a derived
+        /// <c>ix_{table}_{columns}</c> name would exceed the server's limit.
         /// </summary>
         /// <param name="index">The index to write.</param>
         /// <exception cref="NotSupportedException">

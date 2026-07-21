@@ -80,10 +80,12 @@ namespace Bam.Data
 
         /// <summary>
         /// Writes one CREATE INDEX statement with PostgreSQL syntax — <c>IF NOT EXISTS</c>, an
-        /// optional <c>USING</c> access method, per-column operator class, and an optional
+        /// optional <c>USING</c> access method, operator class, and an optional
         /// <c>WITH (...)</c> storage-parameter clause. A <see cref="VectorIndexAttribute"/>
         /// declaration renders e.g.
         /// <c>CREATE INDEX IF NOT EXISTS ix_Table_Column ON Table USING ivfflat ("Column" vector_cosine_ops) WITH (lists = 100)</c>.
+        /// A declared <see cref="IndexDefinition.OperatorClass"/> is applied to every column of
+        /// the index — per-column operator classes on composite indexes are not supported.
         /// </summary>
         /// <param name="index">The index to write.</param>
         protected override void WriteCreateIndex(IndexDefinition index)

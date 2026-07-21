@@ -38,19 +38,27 @@ public class SqliteIndexSchemaShould : UnitTestMenuContainer
             db,
             (database) =>
             {
-                EnsureSchemaStatus firstStatus = database.TryEnsureSchema<Bam.Tests.IndexTestTableDao>();
+                // cleanup runs in finally so a failed run does not leak the temp db directory
+                try
+                {
+                    EnsureSchemaStatus firstStatus = database.TryEnsureSchema<Bam.Tests.IndexTestTableDao>();
 
-                Bam.Data.SQLiteSqlStringBuilder indexWriter = new Bam.Data.SQLiteSqlStringBuilder();
-                indexWriter.WriteCreateIndexes(typeof(Bam.Tests.IndexTestTableDao));
-                database.ExecuteSql((ISqlStringBuilder)indexWriter);
+                    Bam.Data.SQLiteSqlStringBuilder indexWriter = new Bam.Data.SQLiteSqlStringBuilder();
+                    indexWriter.WriteCreateIndexes(typeof(Bam.Tests.IndexTestTableDao));
+                    database.ExecuteSql((ISqlStringBuilder)indexWriter);
 
-                string[] indexNames = database.QuerySingleColumn<string>(
-                    "SELECT name FROM sqlite_master WHERE type = 'index' AND tbl_name = 'IndexTestTable' AND name LIKE 'ix_%' ORDER BY name")
-                    .ToArray();
-                string uniqueIndexSql = database.QuerySingleColumn<string>(
-                    "SELECT sql FROM sqlite_master WHERE type = 'index' AND name = 'ix_IndexTestTable_Email'")
-                    .FirstOrDefault() ?? string.Empty;
-                return new SqliteIndexOutcome(firstStatus, indexNames, uniqueIndexSql);
+                    string[] indexNames = database.QuerySingleColumn<string>(
+                        "SELECT name FROM sqlite_master WHERE type = 'index' AND tbl_name = 'IndexTestTable' AND name LIKE 'ix_%' ORDER BY name")
+                        .ToArray();
+                    string uniqueIndexSql = database.QuerySingleColumn<string>(
+                        "SELECT sql FROM sqlite_master WHERE type = 'index' AND name = 'ix_IndexTestTable_Email'")
+                        .FirstOrDefault() ?? string.Empty;
+                    return new SqliteIndexOutcome(firstStatus, indexNames, uniqueIndexSql);
+                }
+                finally
+                {
+                    CleanupDb(database);
+                }
             })
         .TheTest
         .ShouldPass<SqliteIndexOutcome>((because, outcome) =>
@@ -63,7 +71,7 @@ public class SqliteIndexSchemaShould : UnitTestMenuContainer
             because.ItsTrue("exactly the three declared ix_ indexes exist — the repeat created no duplicates", outcome.IndexNames.Length == 3);
             because.ItsTrue("the email index is unique", outcome.UniqueIndexSql.Contains("CREATE UNIQUE INDEX"));
         })
-        .SoBeHappy(_ => CleanupDb(db))
+        .SoBeHappy(_ => { })
         .UnlessItFailed();
     }
 

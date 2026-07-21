@@ -211,21 +211,26 @@ namespace Bam.Data
 
         /// <summary>
         /// Resolves the index declarations on the specified Dao type into provider-neutral
-        /// definitions: class-level <see cref="IndexAttribute"/>s first, then property-level
-        /// declarations using each property's <see cref="ColumnAttribute"/> column name.
+        /// definitions: class-level <see cref="IndexAttribute"/>s first (including declarations
+        /// inherited from base classes), then property-level declarations using each property's
+        /// <see cref="ColumnAttribute"/> column name.
         /// </summary>
         /// <param name="daoType">The Dao type whose index declarations to resolve.</param>
         /// <exception cref="InvalidOperationException">
         /// Thrown when a property-level index is declared on a property with no
-        /// <see cref="ColumnAttribute"/>, or when a class-level index names a column no
-        /// property's <see cref="ColumnAttribute"/> declares.
+        /// <see cref="ColumnAttribute"/>, when a class-level index names a column no
+        /// property's <see cref="ColumnAttribute"/> declares, or when two declarations
+        /// resolve to the same index name — on dialects whose DDL carries an existence guard
+        /// a duplicate name would otherwise silently drop the later definition (losing, for
+        /// example, its uniqueness) instead of failing.
         /// </exception>
         protected virtual IEnumerable<IndexDefinition> GetIndexDefinitions(Type daoType)
         {
             string tableName = Dao.TableName(daoType);
             List<IndexDefinition> definitions = new List<IndexDefinition>();
             HashSet<string> columnNames = new HashSet<string>(GetColumns(daoType).Select(column => column.Name));
-            foreach (IndexAttribute classIndex in daoType.GetCustomAttributes<IndexAttribute>(false))
+            HashSet<string> indexNames = new HashSet<string>();
+            foreach (IndexAttribute classIndex in daoType.GetCustomAttributes<IndexAttribute>(true))
             {
                 IndexDefinition definition = classIndex.GetIndexDefinition(tableName);
                 foreach (IndexColumn indexColumn in definition.Columns)
@@ -235,7 +240,7 @@ namespace Bam.Data
                         throw new InvalidOperationException($"The index {definition.Name} on {daoType.Name} names column {indexColumn.ColumnName}, but no property of {daoType.Name} declares a column by that name.");
                     }
                 }
-                definitions.Add(definition);
+                AddIndexDefinition(definitions, indexNames, definition, daoType);
             }
             foreach (PropertyInfo property in daoType.GetProperties())
             {
@@ -245,10 +250,19 @@ namespace Bam.Data
                     {
                         throw new InvalidOperationException($"An index is declared on {daoType.Name}.{property.Name} but the property has no column attribute.");
                     }
-                    definitions.Add(propertyIndex.GetIndexDefinition(tableName, column.Name));
+                    AddIndexDefinition(definitions, indexNames, propertyIndex.GetIndexDefinition(tableName, column.Name), daoType);
                 }
             }
             return definitions;
+        }
+
+        private static void AddIndexDefinition(List<IndexDefinition> definitions, HashSet<string> indexNames, IndexDefinition definition, Type daoType)
+        {
+            if (!indexNames.Add(definition.Name))
+            {
+                throw new InvalidOperationException($"Two index declarations on {daoType.Name} resolve to the same name {definition.Name}: set an explicit {nameof(IndexAttribute)}.{nameof(IndexAttribute.Name)} to disambiguate.");
+            }
+            definitions.Add(definition);
         }
 
         /// <summary>

@@ -140,16 +140,41 @@ public class IndexDdlShould : UnitTestMenuContainer
     }
 
     [UnitTest]
+    public void RenderMySqlIndexesWithBaseSyntax()
+    {
+        When.A<MySqlSqlStringBuilder>("renders MySql indexes with base syntax through its formatters",
+            new MySqlSqlStringBuilder(),
+            (builder) =>
+            {
+                builder.WriteCreateIndexes(typeof(IndexTestTableDao));
+                return new BaseSyntaxOutcome(builder.ToString(), builder.ColumnNameFormatter, builder.TableNameFormatter);
+            })
+        .TheTest
+        .ShouldPass<BaseSyntaxOutcome>((because, outcome) =>
+        {
+            string table = outcome.TableNameFormatter("IndexTestTable");
+            because.ItsTrue("the composite index renders MySql-quoted columns with per-column direction",
+                outcome.Sql.Contains($"CREATE INDEX ix_IndexTestTable_TenantId_CreatedAt ON {table} ({outcome.ColumnNameFormatter("TenantId")}, {outcome.ColumnNameFormatter("CreatedAt")} DESC)"));
+            because.ItsTrue("the unique index renders UNIQUE",
+                outcome.Sql.Contains($"CREATE UNIQUE INDEX ix_IndexTestTable_Email ON {table} ({outcome.ColumnNameFormatter("Email")})"));
+            because.ItsTrue("MySql base syntax has no existence guard, matching CREATE TABLE",
+                !outcome.Sql.Contains("IF NOT EXISTS"));
+        })
+        .SoBeHappy()
+        .UnlessItFailed();
+    }
+
+    [UnitTest]
     public void FailFastOnAccessMethodOptionsWithoutProviderSupport()
     {
-        When.A<VectorColumnAttribute>("fails fast on access-method options without provider support",
-            new VectorColumnAttribute(3) { Name = "Embedding" },
-            (_) =>
+        When.A<MsSqlSqlStringBuilder>("fails fast on access-method options without provider support",
+            new MsSqlSqlStringBuilder(),
+            (msSqlWriter) =>
             {
                 int guards = 0;
                 SchemaWriter[] writers = new SchemaWriter[]
                 {
-                    new MsSqlSqlStringBuilder(),
+                    msSqlWriter,
                     new MySqlSqlStringBuilder(),
                     new OracleSqlStringBuilder(),
                     new FirebirdSqlSqlStringBuilder(),
@@ -209,6 +234,53 @@ public class IndexDdlShould : UnitTestMenuContainer
         {
             because.ItsTrue("an index on a property with no column attribute is rejected", outcome.NoColumnThrew);
             because.ItsTrue("a class-level index naming an unknown column is rejected", outcome.UnknownColumnThrew);
+        })
+        .SoBeHappy()
+        .UnlessItFailed();
+    }
+
+    [UnitTest]
+    public void RejectDuplicateIndexNames()
+    {
+        When.A<MsSqlSqlStringBuilder>("rejects declarations resolving to the same index name",
+            new MsSqlSqlStringBuilder(),
+            (builder) =>
+            {
+                bool duplicateThrew = false;
+                try
+                {
+                    builder.WriteCreateIndexes(typeof(DuplicateNameIndexTestTableDao));
+                }
+                catch (InvalidOperationException)
+                {
+                    duplicateThrew = true;
+                }
+                return duplicateThrew;
+            })
+        .TheTest
+        .ShouldPass<bool>((because, duplicateThrew) =>
+        {
+            because.ItsTrue("a property-level and class-level declaration deriving the same name are rejected — on guarded dialects the collision would otherwise silently drop the later definition", duplicateThrew);
+        })
+        .SoBeHappy()
+        .UnlessItFailed();
+    }
+
+    [UnitTest]
+    public void InheritClassLevelIndexDeclarations()
+    {
+        When.A<MsSqlSqlStringBuilder>("inherits class-level index declarations from base Dao classes",
+            new MsSqlSqlStringBuilder(),
+            (builder) =>
+            {
+                builder.WriteCreateIndexes(typeof(InheritedIndexTestTableDao));
+                return builder.ToString();
+            })
+        .TheTest
+        .ShouldPass<string>((because, sql) =>
+        {
+            because.ItsTrue("a class-level index declared on a base Dao class renders for the derived type's table",
+                sql.Contains("CREATE INDEX ix_InheritedIndexTestTable_CreatedAt ON "));
         })
         .SoBeHappy()
         .UnlessItFailed();
