@@ -26,6 +26,19 @@ namespace Bam.Data
         /// <returns>The corresponding DataTypes enum value.</returns>
         public virtual DataTypes EnumFromType(Type type)
         {
+            // Unwrap Nullable<T> so nullable value types (e.g. DateTime?, int?) map to the same
+            // DataTypes as their underlying type. Without this they fall through to
+            // DataTypes.Default and are silently dropped from object-data persistence — the cause
+            // of RepoData.Created never round-tripping (BryanApellanes/bam.data#8).
+            if (type != null)
+            {
+                Type? underlyingType = Nullable.GetUnderlyingType(type);
+                if (underlyingType != null)
+                {
+                    type = underlyingType;
+                }
+            }
+
             if (type == typeof(object) || type == null)
             {
                 return DataTypes.Default;
