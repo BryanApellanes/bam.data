@@ -397,15 +397,29 @@ namespace Bam.Data
             return c;
         }
         
+        /// <summary>
+        /// Adds an inclusive less-than-or-equal (&lt;=) <see cref="Comparison"/> against the specified
+        /// <see cref="QueryValue"/>, so boundary-equal rows are included in the result set.
+        /// </summary>
+        /// <param name="c">The filter to append the comparison to; mutated and returned for fluent chaining.</param>
+        /// <param name="value">The value whose resolved result the column is compared against.</param>
+        /// <returns>The same <see cref="QueryFilter"/> instance with the comparison appended.</returns>
         public static QueryFilter operator <=(QueryFilter c, QueryValue value)
         {
-            c.Add(new Comparison(c.ColumnName, "<", value.GetValue()));
-            return c;   
+            c.Add(new Comparison(c.ColumnName, "<=", value.GetValue()));
+            return c;
         }
 
+        /// <summary>
+        /// Adds an inclusive greater-than-or-equal (&gt;=) <see cref="Comparison"/> against the specified
+        /// <see cref="QueryValue"/>, so boundary-equal rows are included in the result set.
+        /// </summary>
+        /// <param name="c">The filter to append the comparison to; mutated and returned for fluent chaining.</param>
+        /// <param name="value">The value whose resolved result the column is compared against.</param>
+        /// <returns>The same <see cref="QueryFilter"/> instance with the comparison appended.</returns>
         public static QueryFilter operator >=(QueryFilter c, QueryValue value)
         {
-            c.Add(new Comparison(c.ColumnName, ">", value.GetValue()));
+            c.Add(new Comparison(c.ColumnName, ">=", value.GetValue()));
             return c;
         }
         
