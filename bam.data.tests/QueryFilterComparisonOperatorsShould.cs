@@ -1,4 +1,5 @@
 using Bam.Data;
+using Bam.Data.Tests.Dao;
 using Bam.DependencyInjection;
 using Bam.Test;
 
@@ -80,6 +81,54 @@ public class QueryFilterComparisonOperatorsShould : UnitTestMenuContainer
         {
             because.ItsTrue("bool: == renders '='", outcome.Equal.Equals("="));
             because.ItsTrue("bool: != renders '<>'", outcome.NotEqual.Equals("<>"));
+        })
+        .SoBeHappy()
+        .UnlessItFailed();
+    }
+
+    [UnitTest]
+    public void RenderExpectedComparatorTokenForEveryGenericOperatorOverloadVariant()
+    {
+        When.A<QueryFilter<TestItemColumns>>("renders the expected comparison token for every QueryFilter<C> operator overload variant",
+            new QueryFilter<TestItemColumns>(Column),
+            (_) => BuildGenericComparatorMatrix())
+        .TheTest
+        .ShouldPass<List<ComparatorTokensOutcome>>((because, _, outcomes) =>
+        {
+            because.ItsTrue("all 12 QueryFilter<C> overload variants were exercised", outcomes.Count == 12);
+            foreach (ComparatorTokensOutcome outcome in outcomes)
+            {
+                because.ItsTrue($"QueryFilter<C> {outcome.Variant}: == renders '='", outcome.Equal.Equals("="));
+                because.ItsTrue($"QueryFilter<C> {outcome.Variant}: != renders '<>'", outcome.NotEqual.Equals("<>"));
+                because.ItsTrue($"QueryFilter<C> {outcome.Variant}: < renders '<'", outcome.LessThan.Equals("<"));
+                because.ItsTrue($"QueryFilter<C> {outcome.Variant}: > renders '>'", outcome.GreaterThan.Equals(">"));
+                because.ItsTrue($"QueryFilter<C> {outcome.Variant}: <= renders '<='", outcome.LessThanOrEqual.Equals("<="));
+                because.ItsTrue($"QueryFilter<C> {outcome.Variant}: >= renders '>='", outcome.GreaterThanOrEqual.Equals(">="));
+            }
+        })
+        .SoBeHappy()
+        .UnlessItFailed();
+    }
+
+    [UnitTest]
+    public void RenderRelationalTokensForGenericObjectOverloads()
+    {
+        // QueryFilter<C>'s object overloads are relational-only (no ==/!=). A plain object value is used
+        // deliberately: routing a QueryValue through them embeds the QueryValue itself (tracked as #12).
+        When.A<QueryFilter<TestItemColumns>>("renders relational comparators for the QueryFilter<C> object overloads",
+            new QueryFilter<TestItemColumns>(Column),
+            (_) => new GenericObjectTokensOutcome(
+                ComparatorToken(GenericWhere() < (object)21),
+                ComparatorToken(GenericWhere() > (object)21),
+                ComparatorToken(GenericWhere() <= (object)21),
+                ComparatorToken(GenericWhere() >= (object)21)))
+        .TheTest
+        .ShouldPass<GenericObjectTokensOutcome>((because, _, outcome) =>
+        {
+            because.ItsTrue("QueryFilter<C> object: < renders '<'", outcome.LessThan.Equals("<"));
+            because.ItsTrue("QueryFilter<C> object: > renders '>'", outcome.GreaterThan.Equals(">"));
+            because.ItsTrue("QueryFilter<C> object: <= renders '<='", outcome.LessThanOrEqual.Equals("<="));
+            because.ItsTrue("QueryFilter<C> object: >= renders '>='", outcome.GreaterThanOrEqual.Equals(">="));
         })
         .SoBeHappy()
         .UnlessItFailed();
@@ -191,6 +240,105 @@ public class QueryFilterComparisonOperatorsShould : UnitTestMenuContainer
         };
     }
 
+    private static List<ComparatorTokensOutcome> BuildGenericComparatorMatrix()
+    {
+        DateTime date = new DateTime(2026, 1, 1);
+        return new List<ComparatorTokensOutcome>
+        {
+            Tokens("int",
+                GenericWhere() == 21,
+                GenericWhere() != 21,
+                GenericWhere() < 21,
+                GenericWhere() > 21,
+                GenericWhere() <= 21,
+                GenericWhere() >= 21),
+            Tokens("uint",
+                GenericWhere() == (uint)21,
+                GenericWhere() != (uint)21,
+                GenericWhere() < (uint)21,
+                GenericWhere() > (uint)21,
+                GenericWhere() <= (uint)21,
+                GenericWhere() >= (uint)21),
+            Tokens("long",
+                GenericWhere() == 21L,
+                GenericWhere() != 21L,
+                GenericWhere() < 21L,
+                GenericWhere() > 21L,
+                GenericWhere() <= 21L,
+                GenericWhere() >= 21L),
+            Tokens("ulong",
+                GenericWhere() == (ulong)21,
+                GenericWhere() != (ulong)21,
+                GenericWhere() < (ulong)21,
+                GenericWhere() > (ulong)21,
+                GenericWhere() <= (ulong)21,
+                GenericWhere() >= (ulong)21),
+            Tokens("decimal",
+                GenericWhere() == 21m,
+                GenericWhere() != 21m,
+                GenericWhere() < 21m,
+                GenericWhere() > 21m,
+                GenericWhere() <= 21m,
+                GenericWhere() >= 21m),
+            Tokens("int?",
+                GenericWhere() == (int?)21,
+                GenericWhere() != (int?)21,
+                GenericWhere() < (int?)21,
+                GenericWhere() > (int?)21,
+                GenericWhere() <= (int?)21,
+                GenericWhere() >= (int?)21),
+            Tokens("uint?",
+                GenericWhere() == (uint?)21,
+                GenericWhere() != (uint?)21,
+                GenericWhere() < (uint?)21,
+                GenericWhere() > (uint?)21,
+                GenericWhere() <= (uint?)21,
+                GenericWhere() >= (uint?)21),
+            Tokens("ulong?",
+                GenericWhere() == (ulong?)21,
+                GenericWhere() != (ulong?)21,
+                GenericWhere() < (ulong?)21,
+                GenericWhere() > (ulong?)21,
+                GenericWhere() <= (ulong?)21,
+                GenericWhere() >= (ulong?)21),
+            Tokens("decimal?",
+                GenericWhere() == (decimal?)21,
+                GenericWhere() != (decimal?)21,
+                GenericWhere() < (decimal?)21,
+                GenericWhere() > (decimal?)21,
+                GenericWhere() <= (decimal?)21,
+                GenericWhere() >= (decimal?)21),
+            Tokens("string",
+                GenericWhere() == "21",
+                GenericWhere() != "21",
+                GenericWhere() < "21",
+                GenericWhere() > "21",
+                GenericWhere() <= "21",
+                GenericWhere() >= "21"),
+            Tokens("DateTime",
+                GenericWhere() == date,
+                GenericWhere() != date,
+                GenericWhere() < date,
+                GenericWhere() > date,
+                GenericWhere() <= date,
+                GenericWhere() >= date),
+            Tokens("DateTime?",
+                GenericWhere() == (DateTime?)date,
+                GenericWhere() != (DateTime?)date,
+                GenericWhere() < (DateTime?)date,
+                GenericWhere() > (DateTime?)date,
+                GenericWhere() <= (DateTime?)date,
+                GenericWhere() >= (DateTime?)date)
+        };
+    }
+
+    // A concrete column token (not a bare QueryFilter<C>) because the ulong ==/!= overloads route through
+    // ToQueryValue, which requires the KeyColumn property that generated DAO column types declare.
+    private static QueryFilter<TestItemColumns> GenericWhere()
+    {
+        return new TestItemColumns(Column);
+    }
+
     private static ComparatorTokensOutcome Tokens(string variant, QueryFilter equal, QueryFilter notEqual, QueryFilter lessThan, QueryFilter greaterThan, QueryFilter lessThanOrEqual, QueryFilter greaterThanOrEqual)
     {
         return new ComparatorTokensOutcome(
@@ -211,4 +359,6 @@ public class QueryFilterComparisonOperatorsShould : UnitTestMenuContainer
     private sealed record ComparatorTokensOutcome(string Variant, string Equal, string NotEqual, string LessThan, string GreaterThan, string LessThanOrEqual, string GreaterThanOrEqual);
 
     private sealed record BoolTokensOutcome(string Equal, string NotEqual);
+
+    private sealed record GenericObjectTokensOutcome(string LessThan, string GreaterThan, string LessThanOrEqual, string GreaterThanOrEqual);
 }
