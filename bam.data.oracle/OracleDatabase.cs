@@ -247,7 +247,7 @@ namespace Bam.Data.Oracle
             ServiceProvider = new DependencyProvider();
             ServiceProvider.Set<DbProviderFactory>(OracleClientFactory.Instance);
             OracleRegistrar.Register(this);
-            Infos.Add(new DatabaseInfo(this));
+            RegisterInfo(this);
         }
     }
 }

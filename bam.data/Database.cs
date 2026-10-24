@@ -62,13 +62,40 @@ namespace Bam.Data
         static HashSet<DatabaseInfo> _infos = null!;
         static readonly object _infosLock = new object();
         /// <summary>
-        /// Gets the set of DatabaseInfo instances tracking all known database connections.
+        /// Gets the set of DatabaseInfo instances tracking all known database connections. The set is shared and not
+        /// thread-safe: add to it through <see cref="RegisterInfo"/> and read it through <see cref="InfosSnapshot"/>, which
+        /// both hold the same lock (bam.data#23).
         /// </summary>
         public static HashSet<DatabaseInfo> Infos
         {
             get
             {
                 return _infosLock.DoubleCheckLock(ref _infos, () => new HashSet<DatabaseInfo>());
+            }
+        }
+
+        /// <summary>
+        /// Records a database in <see cref="Infos"/> under the set's lock, so databases constructed on several threads at
+        /// once do not corrupt it (bam.data#23).
+        /// </summary>
+        /// <param name="database">The database to record.</param>
+        protected static void RegisterInfo(Database database)
+        {
+            ArgumentNullException.ThrowIfNull(database);
+            DatabaseInfo info = new DatabaseInfo(database);
+            lock (_infosLock)
+            {
+                Infos.Add(info);
+            }
+        }
+
+        /// <summary>A copy of <see cref="Infos"/> taken under the set's lock.</summary>
+        /// <returns>The recorded databases.</returns>
+        public static DatabaseInfo[] InfosSnapshot()
+        {
+            lock (_infosLock)
+            {
+                return Infos.ToArray();
             }
         }
 
