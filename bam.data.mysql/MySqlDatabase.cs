@@ -41,7 +41,7 @@ namespace Bam.Data.MySql
             ServiceProvider = new DependencyProvider();
             ServiceProvider.Set<DbProviderFactory>(MySqlClientFactory.Instance);
             MySqlRegistrar.Register(this);
-            Infos.Add(new DatabaseInfo(this));
+            RegisterInfo(this);
         }
 
         public IConnectionStringResolver? ConnectionStringResolver
