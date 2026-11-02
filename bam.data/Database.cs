@@ -6,6 +6,7 @@ using System.Data;
 using System.Data.Common;
 using Bam.Logging;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Bam.DependencyInjection;
 using Bam.Services;
 
@@ -59,17 +60,24 @@ namespace Bam.Data
         {
         }
 
-        static HashSet<DatabaseInfo> _infos = null!;
-        static readonly object _infosLock = new object();
+        // Thread-safe, keyed by reference, and weak: a database that nothing else references drops out, so the registry
+        // neither races on concurrent construction nor grows with every database a process has ever built.
+        static readonly ConditionalWeakTable<Database, DatabaseInfo> _infos = new ConditionalWeakTable<Database, DatabaseInfo>();
+
         /// <summary>
-        /// Gets the set of DatabaseInfo instances tracking all known database connections.
+        /// Gets a snapshot of the diagnostic information for every live database: its type and connection name, never its
+        /// connection string.
         /// </summary>
-        public static HashSet<DatabaseInfo> Infos
+        public static DatabaseInfo[] Infos => _infos.Select(entry => entry.Value).ToArray();
+
+        /// <summary>
+        /// Registers the specified database in <see cref="Infos"/>. Safe to call from several threads at once.
+        /// </summary>
+        /// <param name="database">The database to register.</param>
+        protected static void RegisterInfo(Database database)
         {
-            get
-            {
-                return _infosLock.DoubleCheckLock(ref _infos, () => new HashSet<DatabaseInfo>());
-            }
+            Args.ThrowIfNull(database, nameof(database));
+            _infos.AddOrUpdate(database, new DatabaseInfo(database));
         }
 
         /// <summary>
@@ -185,7 +193,8 @@ namespace Bam.Data
 
                 if (string.IsNullOrEmpty(databaseName))
                 {
-                    throw new InvalidOperationException($"Unable to determine database name from connection string: {ConnectionString}");
+                    // Never the connection string itself: it carries the credentials.
+                    throw new InvalidOperationException($"Unable to determine the database name: the {GetType().Name} connection string has no Database, Initial Catalog or Data Source value.");
                 }
                 return databaseName;
             }
@@ -1404,11 +1413,10 @@ namespace Bam.Data
 		/// <returns>True if the connection strings match.</returns>
 		public override bool Equals(object? obj)
 		{
-			if (obj!.GetType() == this.GetType() && 
+			if (obj is Database other && other.GetType() == this.GetType() &&
 				!string.IsNullOrEmpty(ConnectionString))
 			{
-				Database? db = obj as Database;
-				return db!.ConnectionString!.Equals(this.ConnectionString);
+				return string.Equals(other.ConnectionString, this.ConnectionString, StringComparison.Ordinal);
 			}
 			else
 			{

@@ -39,7 +39,7 @@ namespace Bam.Data.FirebirdSql
             ServiceProvider = new DependencyProvider();
             ServiceProvider.Set<DbProviderFactory>(FirebirdClientFactory.Instance);
             FirebirdSqlRegistrar.Register(this);
-            Infos.Add(new DatabaseInfo(this));
+            RegisterInfo(this);
         }
 
         public IConnectionStringResolver? ConnectionStringResolver

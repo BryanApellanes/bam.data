@@ -46,7 +46,7 @@ namespace Bam.Data.MsSql
             ServiceProvider = new DependencyProvider();
             ServiceProvider.Set<DbProviderFactory>(SqlClientFactory.Instance);
             MsSqlRegistrar.Register(this);
-            Infos.Add(new DatabaseInfo(this));
+            RegisterInfo(this);
         }
 
 		public IConnectionStringResolver? ConnectionStringResolver

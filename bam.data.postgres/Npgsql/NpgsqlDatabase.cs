@@ -99,7 +99,7 @@ namespace Bam.Data.Npgsql
             ServiceProvider = new DependencyProvider();
             ServiceProvider.Set<DbProviderFactory>(NpgsqlFactory.Instance);
             NpgsqlRegistrar.Register(this);
-            Infos.Add(new DatabaseInfo(this));
+            RegisterInfo(this);
         }
     }
 }

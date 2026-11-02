@@ -168,7 +168,7 @@ namespace Bam.Data.SQLite
             ServiceProvider = new DependencyProvider();
             ServiceProvider.Set<DbProviderFactory>(SQLiteFactory.Instance);
             SQLiteRegistrar.Register(this);
-            Infos.Add(new DatabaseInfo(this));
+            RegisterInfo(this);
         }
     }
 }

@@ -1,7 +1,8 @@
 namespace Bam.Data
 {
     /// <summary>
-    /// Class used to report diagnostic information about a database.
+    /// Class used to report diagnostic information about a database: its type and connection name. It never exposes the
+    /// connection string, which carries the credentials.
     /// </summary>
     public class DatabaseInfo
     {
@@ -22,10 +23,6 @@ namespace Bam.Data
         /// </summary>
         public string DatabaseType => Database.GetType().FullName!;
         /// <summary>
-        /// Gets the database connection string.
-        /// </summary>
-        public string ConnectionString => Database.ConnectionString!;
-        /// <summary>
         /// Gets the database connection name.
         /// </summary>
         public string ConnectionName => Database.ConnectionName!;
@@ -37,7 +34,7 @@ namespace Bam.Data
 
         public override int GetHashCode()
         {
-            return $"{DatabaseType}{ConnectionString}{ConnectionName}".GetHashCode();
+            return HashCode.Combine(DatabaseType, ConnectionName);
         }
 
         public override bool Equals(object? obj)
@@ -49,9 +46,7 @@ namespace Bam.Data
             }
 
             
-            return dbInfo.DatabaseType.Or("").Equals(this.DatabaseType) &&
-                   dbInfo.ConnectionString.Or("").Equals(this.ConnectionString) &&
-                   dbInfo.ConnectionName.Or("").Equals(this.ConnectionName);
+            return ReferenceEquals(dbInfo.Database, this.Database);
         }
     }
 }
