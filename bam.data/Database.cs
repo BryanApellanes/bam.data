@@ -414,6 +414,17 @@ namespace Bam.Data
         /// <c>ExecuteSql</c> call throws on failure.
         /// </summary>
         /// <param name="builder">The schema script.</param>
+        public virtual void ExecuteSchemaScript(ISqlStringBuilder builder)
+        {
+            ExecuteSchemaScript(builder, ServiceProvider.Get<IParameterBuilder>());
+        }
+
+        /// <summary>
+        /// Executes a schema script whose statements may fail because the objects they create already exist. A failing
+        /// statement is reported through <see cref="CommandException"/> and does not stop the script or throw; every other
+        /// <c>ExecuteSql</c> call throws on failure.
+        /// </summary>
+        /// <param name="builder">The schema script.</param>
         /// <param name="parameterBuilder">The parameter builder for creating DbParameters.</param>
         public virtual void ExecuteSchemaScript(ISqlStringBuilder builder, IParameterBuilder parameterBuilder)
         {

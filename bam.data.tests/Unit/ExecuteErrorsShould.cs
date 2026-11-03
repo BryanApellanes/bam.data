@@ -88,7 +88,9 @@ public class ExecuteErrorsShould : UnitTestMenuContainer
                     EnsureSchemaStatus first = database.TryEnsureSchema<Bam.Tests.IndexTestTableDao>();
                     EnsureSchemaStatus again = database.TryEnsureSchema(typeof(Bam.Tests.IndexTestTableDao), true, out Exception repeatFailure);
                     string direct = Describe(() => database.ExecuteSql("CREATE TABLE IndexTestTable (Id INTEGER)"));
-                    return new SchemaOutcome(first, again, repeatFailure?.Message, direct);
+                    SqlStringBuilder script = new SqlStringBuilder("CREATE TABLE IndexTestTable (Id INTEGER)");
+                    string scripted = Describe(() => database.ExecuteSchemaScript(script));
+                    return new SchemaOutcome(first, again, repeatFailure?.Message, direct, scripted);
                 }
                 finally
                 {
@@ -101,6 +103,7 @@ public class ExecuteErrorsShould : UnitTestMenuContainer
                 because.ItsTrue("the first run creates the schema", outcome.First == EnsureSchemaStatus.Success);
                 because.ItsTrue($"a forced re-run over existing tables still succeeds ({outcome.RepeatFailure})", outcome.Again == EnsureSchemaStatus.Success && outcome.RepeatFailure is null);
                 because.ItsTrue($"the same statement outside a schema script throws ({outcome.Direct})", outcome.Direct.StartsWith("DbException:"));
+                because.ItsTrue($"through ExecuteSchemaScript it is tolerated ({outcome.Scripted})", outcome.Scripted == "none");
             })
             .SoBeHappy()
             .UnlessItFailed();
@@ -213,5 +216,5 @@ public class ExecuteErrorsShould : UnitTestMenuContainer
 
     private sealed record ReleaseOutcome(int AfterSuccess, int AfterFailure);
 
-    private sealed record SchemaOutcome(EnsureSchemaStatus First, EnsureSchemaStatus Again, string? RepeatFailure, string Direct);
+    private sealed record SchemaOutcome(EnsureSchemaStatus First, EnsureSchemaStatus Again, string? RepeatFailure, string Direct, string Scripted);
 }
