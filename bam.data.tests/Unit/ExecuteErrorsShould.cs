@@ -106,6 +106,38 @@ public class ExecuteErrorsShould : UnitTestMenuContainer
             .UnlessItFailed();
     }
 
+    [UnitTest]
+    public void ReleaseTheConnectionsTheTableReadersOpen()
+    {
+        When.A<CountingDatabase>("reads a table, and a missing table, through each overload that opens its own connection",
+            NewCountingDatabase,
+            database =>
+            {
+                try
+                {
+                    database.GetDataTableFromReader("SELECT 1 AS Id", Array.Empty<DbParameter>());
+                    database.GetDataTableFromReader("SELECT 1 AS Id", new { });
+                    int afterSuccess = database.Released;
+                    Describe(() => database.GetDataTableFromReader(MissingTableQuery, Array.Empty<DbParameter>()));
+                    Describe(() => database.GetDataTableFromReader(MissingTableQuery, new { }));
+                    Describe(() => database.GetDataTableFromReader(MissingTableQuery, Array.Empty<DbParameter>(), out DbConnection _));
+                    return new ReleaseOutcome(afterSuccess, database.Released - afterSuccess);
+                }
+                finally
+                {
+                    Cleanup(database);
+                }
+            })
+            .TheTest
+            .ShouldPass<ReleaseOutcome>((because, outcome) =>
+            {
+                because.ItsTrue($"both successful reads release their connection ({outcome.AfterSuccess})", outcome.AfterSuccess == 2);
+                because.ItsTrue($"all three failed reads release theirs ({outcome.AfterFailure})", outcome.AfterFailure == 3);
+            })
+            .SoBeHappy()
+            .UnlessItFailed();
+    }
+
     private static SQLiteDatabase NewDatabase()
     {
         string directory = Path.Combine(Path.GetTempPath(), "bam_data_tests", Guid.NewGuid().ToString());
@@ -147,6 +179,29 @@ public class ExecuteErrorsShould : UnitTestMenuContainer
         }
     }
 
+    private static CountingDatabase NewCountingDatabase()
+    {
+        string directory = Path.Combine(Path.GetTempPath(), "bam_data_tests", Guid.NewGuid().ToString());
+        Directory.CreateDirectory(directory);
+        return new CountingDatabase(directory);
+    }
+
+    /// <summary>A SQLite database that counts the connections released to it.</summary>
+    private sealed class CountingDatabase : SQLiteDatabase
+    {
+        public CountingDatabase(string directory) : base(directory, "BamDataReleaseCount")
+        {
+        }
+
+        public int Released { get; private set; }
+
+        public override void ReleaseConnection(DbConnection conn)
+        {
+            Released++;
+            base.ReleaseConnection(conn);
+        }
+    }
+
     private sealed class Row
     {
         public long Id { get; set; }
@@ -155,6 +210,8 @@ public class ExecuteErrorsShould : UnitTestMenuContainer
     private sealed record FailureOutcome(string Thrown, int Reported);
 
     private sealed record ReaderOutcome(string Reader, string Typed, string Table, int Reported);
+
+    private sealed record ReleaseOutcome(int AfterSuccess, int AfterFailure);
 
     private sealed record SchemaOutcome(EnsureSchemaStatus First, EnsureSchemaStatus Again, string? RepeatFailure, string Direct);
 }

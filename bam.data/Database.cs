@@ -791,8 +791,7 @@ namespace Bam.Data
         /// <returns>A DataTable containing the results.</returns>
         public virtual DataTable GetDataTableFromReader(string sqlStatement, object dbParameters)
         {
-            DbConnection ignore;
-            return GetDataTableFromReader(sqlStatement, dbParameters, out ignore);
+            return GetDataTableFromReader(sqlStatement, dbParameters.ToDbParameters(this).ToArray());
         }
         /// <summary>
         /// Executes a SQL statement with dynamic parameters, returning a DataTable and outputting the connection.
@@ -816,7 +815,15 @@ namespace Bam.Data
         public virtual DataTable GetDataTableFromReader(string sqlStatement, DbParameter[] dbParameters, out DbConnection conn)
         {
             conn = GetOpenDbConnection();
-            return GetDataTableFromReader(sqlStatement, CommandType.Text, dbParameters, conn, false);
+            try
+            {
+                return GetDataTableFromReader(sqlStatement, CommandType.Text, dbParameters, conn, false);
+            }
+            catch
+            {
+                ReleaseConnection(conn);
+                throw;
+            }
         }
 
         /// <summary>
@@ -824,11 +831,13 @@ namespace Bam.Data
         /// </summary>
         /// <param name="sqlStatement">The SQL statement.</param>
         /// <param name="dbParameters">The database parameters.</param>
-        /// <param name="conn">Optional connection; a new one is created if null.</param>
+        /// <param name="conn">Optional connection; when null, one is opened and released once the table is read.</param>
         /// <returns>A DataTable containing the results.</returns>
         public virtual DataTable GetDataTableFromReader(string sqlStatement, DbParameter[] dbParameters, DbConnection conn = null!)
         {
-            return GetDataTableFromReader(sqlStatement, CommandType.Text, dbParameters, conn ?? GetOpenDbConnection(), false);
+            return conn is null
+                ? GetDataTableFromReader(sqlStatement, CommandType.Text, dbParameters, GetOpenDbConnection(), true)
+                : GetDataTableFromReader(sqlStatement, CommandType.Text, dbParameters, conn, false);
         }
 
         /// <summary>
@@ -842,19 +851,21 @@ namespace Bam.Data
         /// <returns>A DataTable containing the results.</returns>
         public virtual DataTable GetDataTableFromReader(string sqlStatement, CommandType commandType, DbParameter[] dbParameters, DbConnection conn, bool closeConnection = true)
         {
-            DbDataReader reader;
             try
             {
-                reader = ExecuteReader(sqlStatement, commandType, dbParameters, conn);
+                return ReadDataTable(ExecuteReader(sqlStatement, commandType, dbParameters, conn));
             }
-            catch
+            finally
             {
                 if (closeConnection)
                 {
                     ReleaseConnection(conn);
                 }
-                throw;
             }
+        }
+
+        private DataTable ReadDataTable(DbDataReader reader)
+        {
             DataTable table = new DataTable(8.RandomLetters());
             if (reader.HasRows)
             {
@@ -873,10 +884,6 @@ namespace Bam.Data
                     });
                     table.Rows.Add(row);
                 }
-            }
-            if (closeConnection)
-            {
-                ReleaseConnection(conn);
             }
             return table;
         }
@@ -913,7 +920,7 @@ namespace Bam.Data
         public virtual IEnumerable<DataRow> GetDataRowsFromReader(string sqlStatement, DbParameter[] dbParameters, out DbConnection conn)
         {
             conn = GetOpenDbConnection();
-            return GetDataRowsFromReader(sqlStatement, dbParameters, conn);
+            return GetDataRowsFromReader(ExecuteReaderReleasingOnFailure(sqlStatement, CommandType.Text, dbParameters, conn));
         }
 
         /// <summary>
