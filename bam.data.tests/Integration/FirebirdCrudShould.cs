@@ -219,4 +219,41 @@ public class FirebirdCrudShould : IntegrationTestMenuContainer
         .SoBeHappy(_ => { })
         .UnlessItFailed();
     }
+
+    [IntegrationTest]
+    public void ReportToleratedSchemaFailures()
+    {
+        FirebirdSqlDatabase db = SetupDb();
+
+        When.A<FirebirdSqlDatabase>("runs a schema script whose two statements both fail because the table exists", () => db, database =>
+        {
+            int reported = 0;
+            EventHandler count = (sender, args) => reported++;
+            database.CommandException += count;
+            bool threw = false;
+            try
+            {
+                database.ExecuteSchemaScript(new SqlStringBuilder("CREATE TABLE \"TestItem\" (\"Id\" BIGINT);\nCREATE TABLE \"TestItem\" (\"Id\" BIGINT)"));
+            }
+            catch (FbException)
+            {
+                threw = true;
+            }
+            finally
+            {
+                database.CommandException -= count;
+            }
+            return new ToleratedOutcome(threw, reported);
+        })
+        .TheTest
+        .ShouldPass<ToleratedOutcome>((because, outcome) =>
+        {
+            because.ItsTrue($"the schema script tolerates the failures (threw: {outcome.Threw})", !outcome.Threw);
+            because.ItsTrue($"each failure is reported through CommandException ({outcome.Reported})", outcome.Reported == 2);
+        })
+        .SoBeHappy()
+        .UnlessItFailed();
+    }
+
+    private sealed record ToleratedOutcome(bool Threw, int Reported);
 }

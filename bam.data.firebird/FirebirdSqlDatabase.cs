@@ -122,9 +122,11 @@ namespace Bam.Data.FirebirdSql
                         using var cmd = new FbCommand(trimmed, conn);
                         cmd.ExecuteNonQuery();
                     }
-                    catch (FbException) when (ToleratingErrors)
+                    catch (FbException ex) when (ToleratingErrors)
                     {
-                        // Schema statements may fail if objects already exist; continue with remaining statements.
+                        // Schema statements may fail if objects already exist: report the failure as every other
+                        // provider does, then continue with the remaining statements.
+                        OnCommandException(ex);
                     }
                 }
             }

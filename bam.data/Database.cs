@@ -522,6 +522,16 @@ namespace Bam.Data
         /// Event raised when a command execution throws an exception.
         /// </summary>
         public event EventHandler CommandException = null!;
+
+        /// <summary>
+        /// Raises <see cref="CommandException"/> for a statement that failed. Providers that execute statements
+        /// themselves, outside <c>ExecuteSql</c>, call it so a failure they tolerate is still reported.
+        /// </summary>
+        /// <param name="exception">The exception the statement threw.</param>
+        protected void OnCommandException(Exception exception)
+        {
+            FireEvent(CommandException, new DatabaseExecutionEventArgs { Database = this, Exception = exception, Message = exception.Message });
+        }
         /// <summary>
         /// Executes a SQL statement with full control over connection, exception handling, and connection release.
         /// </summary>
@@ -542,7 +552,7 @@ namespace Bam.Data
             }
             catch (Exception ex)
             {
-                FireEvent(CommandException, new DatabaseExecutionEventArgs { Database = this, Exception = ex, Message = ex.Message });
+                OnCommandException(ex);
                 exceptionHandler(ex);
             }
             finally
