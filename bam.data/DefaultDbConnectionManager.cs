@@ -46,6 +46,12 @@ namespace Bam.Data
         /// <summary>
         /// Gets a database connection from the pool, releasing the previous connection at the same index.
         /// </summary>
+        /// <remarks>
+        /// The ring holds <see cref="MaxConnections"/> slots. When a slot is reused, its previous connection is closed
+        /// <c>LifetimeMilliseconds</c> (3.1 s by default) later, whether or not its consumer is done: a command or open
+        /// reader still running on that connection then is cut off. A caller that runs work longer than that, while other
+        /// callers keep taking connections, should open its own connection with <see cref="Database.CreateConnection"/>.
+        /// </remarks>
         /// <returns>A new DbConnection instance.</returns>
         public override DbConnection GetDbConnection()
         {
