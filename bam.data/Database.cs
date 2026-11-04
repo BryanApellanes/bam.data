@@ -406,7 +406,10 @@ namespace Bam.Data
             ExecuteSql(builder.ToString(), CommandType.Text, parameterBuilder.GetParameters(builder));
         }
 
-        private readonly AsyncLocal<bool> _toleratingErrors = new AsyncLocal<bool>();
+        // Scoped to the logical call, not the instance: a database that forwards a schema script's statements to another
+        // (BackedupDatabase forwards ExecuteSql to the database it backs up) must tolerate them there too. Any database
+        // executing in the same flow while the script runs is tolerant, so the scope is kept to the script itself.
+        private static readonly AsyncLocal<bool> _toleratingErrors = new AsyncLocal<bool>();
 
         /// <summary>
         /// Executes a schema script whose statements may fail because the objects they create already exist. A failing
@@ -497,8 +500,9 @@ namespace Bam.Data
         }
 
         /// <summary>
-        /// Gets whether the current call runs inside <see cref="ExecuteSchemaScript"/>, where a failing statement is
-        /// reported but does not throw. Provider overrides that execute statements themselves honour it.
+        /// Gets whether the current call runs inside <see cref="ExecuteSchemaScript"/>, on this database or on one that
+        /// forwards its statements here, where a failing statement is reported but does not throw. Provider overrides
+        /// that execute statements themselves honour it.
         /// </summary>
         protected bool ToleratingErrors => _toleratingErrors.Value;
 

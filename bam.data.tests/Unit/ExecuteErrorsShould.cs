@@ -141,6 +141,37 @@ public class ExecuteErrorsShould : UnitTestMenuContainer
             .UnlessItFailed();
     }
 
+    [UnitTest]
+    public void TolerateSchemaScriptsForwardedToAnotherDatabase()
+    {
+        When.A<ForwardingDatabase>("runs a schema script over an existing table through a database that forwards to another",
+            NewForwardingDatabase,
+            database =>
+            {
+                try
+                {
+                    database.Inner.ExecuteSql("CREATE TABLE ForwardedTable (Id INTEGER)");
+                    string scripted = Describe(() => database.ExecuteSchemaScript(new SqlStringBuilder("CREATE TABLE ForwardedTable (Id INTEGER)")));
+                    string direct = Describe(() => database.ExecuteSql((ISqlStringBuilder)new SqlStringBuilder("CREATE TABLE ForwardedTable (Id INTEGER)")));
+                    return new ForwardedOutcome(database.Forwarded, scripted, direct);
+                }
+                finally
+                {
+                    Cleanup(database.Inner);
+                    Cleanup(database);
+                }
+            })
+            .TheTest
+            .ShouldPass<ForwardedOutcome>((because, outcome) =>
+            {
+                because.ItsTrue($"both statements are forwarded ({outcome.Forwarded})", outcome.Forwarded == 2);
+                because.ItsTrue($"the forwarded schema script is tolerated ({outcome.Scripted})", outcome.Scripted == "none");
+                because.ItsTrue($"the forwarded plain statement still throws ({outcome.Direct})", outcome.Direct.StartsWith("DbException:"));
+            })
+            .SoBeHappy()
+            .UnlessItFailed();
+    }
+
     private static SQLiteDatabase NewDatabase()
     {
         string directory = Path.Combine(Path.GetTempPath(), "bam_data_tests", Guid.NewGuid().ToString());
@@ -189,6 +220,34 @@ public class ExecuteErrorsShould : UnitTestMenuContainer
         return new CountingDatabase(directory);
     }
 
+    private static ForwardingDatabase NewForwardingDatabase()
+    {
+        string outer = Path.Combine(Path.GetTempPath(), "bam_data_tests", Guid.NewGuid().ToString());
+        string inner = Path.Combine(Path.GetTempPath(), "bam_data_tests", Guid.NewGuid().ToString());
+        Directory.CreateDirectory(outer);
+        Directory.CreateDirectory(inner);
+        return new ForwardingDatabase(outer, new SQLiteDatabase(inner, "BamDataForwardTarget"));
+    }
+
+    /// <summary>A database that forwards its builder statements to another, as BackedupDatabase does.</summary>
+    private sealed class ForwardingDatabase : SQLiteDatabase
+    {
+        public ForwardingDatabase(string directory, SQLiteDatabase inner) : base(directory, "BamDataForwarding")
+        {
+            Inner = inner;
+        }
+
+        public SQLiteDatabase Inner { get; }
+
+        public int Forwarded { get; private set; }
+
+        public override void ExecuteSql(ISqlStringBuilder builder, IParameterBuilder parameterBuilder)
+        {
+            Forwarded++;
+            Inner.ExecuteSql(builder, parameterBuilder);
+        }
+    }
+
     /// <summary>A SQLite database that counts the connections released to it.</summary>
     private sealed class CountingDatabase : SQLiteDatabase
     {
@@ -213,6 +272,8 @@ public class ExecuteErrorsShould : UnitTestMenuContainer
     private sealed record FailureOutcome(string Thrown, int Reported);
 
     private sealed record ReaderOutcome(string Reader, string Typed, string Table, int Reported);
+
+    private sealed record ForwardedOutcome(int Forwarded, string Scripted, string Direct);
 
     private sealed record ReleaseOutcome(int AfterSuccess, int AfterFailure);
 
