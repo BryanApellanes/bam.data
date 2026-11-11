@@ -82,6 +82,27 @@ namespace Bam.Data.FirebirdSql
         }
 
         /// <summary>
+        /// Splits multi-statement SQL into individual statements, each run with the given parameters. Firebird's ADO.NET
+        /// provider does not support executing multiple SQL statements in a single command.
+        /// </summary>
+        public override void ExecuteSql(string sqlStatement, System.Data.CommandType commandType, params DbParameter[] dbParameters)
+        {
+            if (commandType != System.Data.CommandType.Text)
+            {
+                base.ExecuteSql(sqlStatement, commandType, dbParameters);
+                return;
+            }
+            foreach (string statement in sqlStatement.Split(new[] { ";\r\n", ";\n" }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                string trimmed = statement.Trim();
+                if (!string.IsNullOrEmpty(trimmed))
+                {
+                    base.ExecuteSql(trimmed, commandType, dbParameters);
+                }
+            }
+        }
+
+        /// <summary>
         /// Overrides batch SQL execution to split multi-statement SQL into individual statements.
         /// Firebird's ADO.NET provider does not support executing multiple SQL statements in a single command.
         /// </summary>
@@ -101,9 +122,11 @@ namespace Bam.Data.FirebirdSql
                         using var cmd = new FbCommand(trimmed, conn);
                         cmd.ExecuteNonQuery();
                     }
-                    catch (FbException)
+                    catch (FbException ex) when (ToleratingErrors)
                     {
-                        // Schema statements may fail if objects already exist; continue with remaining statements.
+                        // Schema statements may fail if objects already exist: report the failure as every other
+                        // provider does, then continue with the remaining statements.
+                        OnCommandException(ex);
                     }
                 }
             }

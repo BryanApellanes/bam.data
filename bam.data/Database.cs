@@ -7,6 +7,7 @@ using System.Data.Common;
 using Bam.Logging;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using Bam.DependencyInjection;
 using Bam.Services;
 
@@ -405,6 +406,43 @@ namespace Bam.Data
             ExecuteSql(builder.ToString(), CommandType.Text, parameterBuilder.GetParameters(builder));
         }
 
+        // Scoped to the logical call, not the instance: a database that forwards a schema script's statements to another
+        // (BackedupDatabase forwards ExecuteSql to the database it backs up) must tolerate them there too. Any database
+        // executing in the same flow while the script runs is tolerant, so the scope is kept to the script itself.
+        private static readonly AsyncLocal<bool> _toleratingErrors = new AsyncLocal<bool>();
+
+        /// <summary>
+        /// Executes a schema script whose statements may fail because the objects they create already exist. A failing
+        /// statement is reported through <see cref="CommandException"/> and does not stop the script or throw; every other
+        /// <c>ExecuteSql</c> call throws on failure.
+        /// </summary>
+        /// <param name="builder">The schema script.</param>
+        public virtual void ExecuteSchemaScript(ISqlStringBuilder builder)
+        {
+            ExecuteSchemaScript(builder, ServiceProvider.Get<IParameterBuilder>());
+        }
+
+        /// <summary>
+        /// Executes a schema script whose statements may fail because the objects they create already exist. A failing
+        /// statement is reported through <see cref="CommandException"/> and does not stop the script or throw; every other
+        /// <c>ExecuteSql</c> call throws on failure.
+        /// </summary>
+        /// <param name="builder">The schema script.</param>
+        /// <param name="parameterBuilder">The parameter builder for creating DbParameters.</param>
+        public virtual void ExecuteSchemaScript(ISqlStringBuilder builder, IParameterBuilder parameterBuilder)
+        {
+            bool previous = _toleratingErrors.Value;
+            _toleratingErrors.Value = true;
+            try
+            {
+                ExecuteSql(builder, parameterBuilder);
+            }
+            finally
+            {
+                _toleratingErrors.Value = previous;
+            }
+        }
+
         /// <summary>
         /// Executes a stored procedure with the specified parameters.
         /// </summary>
@@ -455,9 +493,25 @@ namespace Bam.Data
         /// <param name="dbParameters">The database parameters.</param>
         /// <param name="conn">The database connection to use.</param>
         /// <param name="releaseConnection">Whether to release the connection after execution.</param>
+        /// <exception cref="DbException">The statement failed, outside <see cref="ExecuteSchemaScript"/>.</exception>
         public virtual void ExecuteSql(string sqlStatement, CommandType commandType, DbParameter[] dbParameters, DbConnection conn, bool releaseConnection = true)
         {
-            ExecuteSql(sqlStatement, commandType, dbParameters, conn, (ex) => { }, releaseConnection);
+            ExecuteSql(sqlStatement, commandType, dbParameters, conn, RethrowUnlessTolerated, releaseConnection);
+        }
+
+        /// <summary>
+        /// Gets whether the current call runs inside <see cref="ExecuteSchemaScript"/>, on this database or on one that
+        /// forwards its statements here, where a failing statement is reported but does not throw. Provider overrides
+        /// that execute statements themselves honour it.
+        /// </summary>
+        protected bool ToleratingErrors => _toleratingErrors.Value;
+
+        private void RethrowUnlessTolerated(Exception exception)
+        {
+            if (!ToleratingErrors)
+            {
+                ExceptionDispatchInfo.Throw(exception);
+            }
         }
 
         /// <summary>
@@ -468,6 +522,16 @@ namespace Bam.Data
         /// Event raised when a command execution throws an exception.
         /// </summary>
         public event EventHandler CommandException = null!;
+
+        /// <summary>
+        /// Raises <see cref="CommandException"/> for a statement that failed. Providers that execute statements
+        /// themselves, outside <c>ExecuteSql</c>, call it so a failure they tolerate is still reported.
+        /// </summary>
+        /// <param name="exception">The exception the statement threw.</param>
+        protected void OnCommandException(Exception exception)
+        {
+            FireEvent(CommandException, new DatabaseExecutionEventArgs { Database = this, Exception = exception, Message = exception.Message });
+        }
         /// <summary>
         /// Executes a SQL statement with full control over connection, exception handling, and connection release.
         /// </summary>
@@ -475,23 +539,28 @@ namespace Bam.Data
         /// <param name="commandType">The type of command.</param>
         /// <param name="dbParameters">The database parameters.</param>
         /// <param name="conn">The database connection to use.</param>
-        /// <param name="exceptionHandler">The action to invoke if an exception occurs.</param>
+        /// <param name="exceptionHandler">The action to invoke if an exception occurs, after <see cref="CommandException"/> fires; it may rethrow.</param>
         /// <param name="releaseConnection">Whether to release the connection after execution.</param>
         public virtual void ExecuteSql(string sqlStatement, CommandType commandType, DbParameter[] dbParameters, DbConnection conn, Action<Exception> exceptionHandler, bool releaseConnection = true)
         {
+            DbCommand? cmd = null;
             try
             {
-                DbCommand cmd = PrepareCommand(sqlStatement, commandType, dbParameters, conn);
+                cmd = PrepareCommand(sqlStatement, commandType, dbParameters, conn);
                 cmd.ExecuteNonQuery();
                 FireEvent(CommandExecuted, new DatabaseExecutionEventArgs { Database = this, Command = cmd });
             }
             catch (Exception ex)
             {
+                OnCommandException(ex);
                 exceptionHandler(ex);
-                FireEvent(CommandException, new DatabaseExecutionEventArgs { Database = this, Exception = ex, Message = ex.Message });
             }
             finally
             {
+                // Detach the parameters so the same instances can be passed to another command: providers such as Npgsql
+                // refuse a parameter that still belongs to an earlier command's collection, which broke every parameterised
+                // multi-line batch that a per-line override (Npgsql, Oracle) splits into several commands.
+                cmd?.Parameters.Clear();
                 if (releaseConnection)
                 {
                     ReleaseConnection(conn);
@@ -579,7 +648,19 @@ namespace Bam.Data
         /// <returns>An enumerable of T instances.</returns>
         public virtual IEnumerable<T> ExecuteReader<T>(string sqlStatement, CommandType commandType, DbParameter[] dbParameters, DbConnection conn, bool closeConnection = true, Action<DbDataReader>? onReaderExecuted = null) where T: class, new()
         {
-            DbDataReader reader = ExecuteReader(sqlStatement, commandType, dbParameters, conn);
+            DbDataReader reader;
+            try
+            {
+                reader = ExecuteReader(sqlStatement, commandType, dbParameters, conn);
+            }
+            catch
+            {
+                if (closeConnection)
+                {
+                    ReleaseConnection(conn);
+                }
+                throw;
+            }
             onReaderExecuted = onReaderExecuted ?? ((dr) => { });
             if (reader.HasRows)
             {
@@ -651,7 +732,7 @@ namespace Bam.Data
         public virtual DbDataReader ExecuteReader(string sqlStatement, DbParameter[] dbParameters, out DbConnection conn)
         {
             conn = GetOpenDbConnection();
-            return ExecuteReader(sqlStatement, CommandType.Text, dbParameters, conn);
+            return ExecuteReaderReleasingOnFailure(sqlStatement, CommandType.Text, dbParameters, conn);
         }
 
         /// <summary>
@@ -663,7 +744,23 @@ namespace Bam.Data
         /// <returns>A DbDataReader for reading the results.</returns>
         public virtual DbDataReader ExecuteReader(string sqlStatement, DbParameter[] dbParameters, DbConnection? conn = null!)
         {
-            return ExecuteReader(sqlStatement, CommandType.Text, dbParameters, conn ?? GetOpenDbConnection());
+            return conn is null
+                ? ExecuteReaderReleasingOnFailure(sqlStatement, CommandType.Text, dbParameters, GetOpenDbConnection())
+                : ExecuteReader(sqlStatement, CommandType.Text, dbParameters, conn);
+        }
+
+        // For overloads that open the connection themselves: the caller never sees it if the reader cannot be opened.
+        private DbDataReader ExecuteReaderReleasingOnFailure(string sqlStatement, CommandType commandType, DbParameter[] dbParameters, DbConnection conn)
+        {
+            try
+            {
+                return ExecuteReader(sqlStatement, commandType, dbParameters, conn);
+            }
+            catch
+            {
+                ReleaseConnection(conn);
+                throw;
+            }
         }
 
         /// <summary>
@@ -682,9 +779,11 @@ namespace Bam.Data
         /// <param name="dbParameters">The database parameters.</param>
         /// <param name="conn">The database connection.</param>
         /// <returns>A DbDataReader for reading the results.</returns>
+        /// <exception cref="DbException">The statement failed; <see cref="ReaderException"/> fires first. The connection is
+        /// left to the caller.</exception>
         public virtual DbDataReader ExecuteReader(string sqlStatement, CommandType commandType, DbParameter[] dbParameters, DbConnection conn)
         {
-            DbDataReader? reader = null;
+            DbDataReader reader;
             try
             {
                 DbCommand cmd = PrepareCommand(sqlStatement, commandType, dbParameters, conn);
@@ -694,8 +793,9 @@ namespace Bam.Data
             catch (Exception ex)
             {
                 FireEvent(ReaderException, new DatabaseExecutionEventArgs { Database = this, Exception = ex, Message = ex.Message });
+                throw;
             }
-            return reader!;
+            return reader;
         }
 
         // -- start datatable readers
@@ -716,8 +816,7 @@ namespace Bam.Data
         /// <returns>A DataTable containing the results.</returns>
         public virtual DataTable GetDataTableFromReader(string sqlStatement, object dbParameters)
         {
-            DbConnection ignore;
-            return GetDataTableFromReader(sqlStatement, dbParameters, out ignore);
+            return GetDataTableFromReader(sqlStatement, dbParameters.ToDbParameters(this).ToArray());
         }
         /// <summary>
         /// Executes a SQL statement with dynamic parameters, returning a DataTable and outputting the connection.
@@ -741,7 +840,15 @@ namespace Bam.Data
         public virtual DataTable GetDataTableFromReader(string sqlStatement, DbParameter[] dbParameters, out DbConnection conn)
         {
             conn = GetOpenDbConnection();
-            return GetDataTableFromReader(sqlStatement, CommandType.Text, dbParameters, conn, false);
+            try
+            {
+                return GetDataTableFromReader(sqlStatement, CommandType.Text, dbParameters, conn, false);
+            }
+            catch
+            {
+                ReleaseConnection(conn);
+                throw;
+            }
         }
 
         /// <summary>
@@ -749,11 +856,13 @@ namespace Bam.Data
         /// </summary>
         /// <param name="sqlStatement">The SQL statement.</param>
         /// <param name="dbParameters">The database parameters.</param>
-        /// <param name="conn">Optional connection; a new one is created if null.</param>
+        /// <param name="conn">Optional connection; when null, one is opened and released once the table is read.</param>
         /// <returns>A DataTable containing the results.</returns>
         public virtual DataTable GetDataTableFromReader(string sqlStatement, DbParameter[] dbParameters, DbConnection conn = null!)
         {
-            return GetDataTableFromReader(sqlStatement, CommandType.Text, dbParameters, conn ?? GetOpenDbConnection(), false);
+            return conn is null
+                ? GetDataTableFromReader(sqlStatement, CommandType.Text, dbParameters, GetOpenDbConnection(), true)
+                : GetDataTableFromReader(sqlStatement, CommandType.Text, dbParameters, conn, false);
         }
 
         /// <summary>
@@ -767,7 +876,21 @@ namespace Bam.Data
         /// <returns>A DataTable containing the results.</returns>
         public virtual DataTable GetDataTableFromReader(string sqlStatement, CommandType commandType, DbParameter[] dbParameters, DbConnection conn, bool closeConnection = true)
         {
-            DbDataReader reader = ExecuteReader(sqlStatement, commandType, dbParameters, conn);
+            try
+            {
+                return ReadDataTable(ExecuteReader(sqlStatement, commandType, dbParameters, conn));
+            }
+            finally
+            {
+                if (closeConnection)
+                {
+                    ReleaseConnection(conn);
+                }
+            }
+        }
+
+        private DataTable ReadDataTable(DbDataReader reader)
+        {
             DataTable table = new DataTable(8.RandomLetters());
             if (reader.HasRows)
             {
@@ -786,10 +909,6 @@ namespace Bam.Data
                     });
                     table.Rows.Add(row);
                 }
-            }
-            if (closeConnection)
-            {
-                ReleaseConnection(conn);
             }
             return table;
         }
@@ -826,7 +945,7 @@ namespace Bam.Data
         public virtual IEnumerable<DataRow> GetDataRowsFromReader(string sqlStatement, DbParameter[] dbParameters, out DbConnection conn)
         {
             conn = GetOpenDbConnection();
-            return GetDataRowsFromReader(sqlStatement, dbParameters, conn);
+            return GetDataRowsFromReader(ExecuteReaderReleasingOnFailure(sqlStatement, CommandType.Text, dbParameters, conn));
         }
 
         /// <summary>
@@ -1544,7 +1663,8 @@ namespace Bam.Data
                     _schemaNames.Add(schemaName);
                     SchemaWriter schema = ServiceProvider.Get<SchemaWriter>();
                     schema.WriteSchemaScript(type);
-                    ExecuteSql(schema, ServiceProvider.Get<IParameterBuilder>());
+                    // CREATE TABLE and ADD CONSTRAINT are not idempotent, and the script re-runs after every process start.
+                    ExecuteSchemaScript(schema, ServiceProvider.Get<IParameterBuilder>());
                     result = EnsureSchemaStatus.Success;
                 }
                 else
