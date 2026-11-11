@@ -321,5 +321,75 @@ public class RowCapShould : UnitTestMenuContainer
         .UnlessItFailed();
     }
 
+    [UnitTest]
+    public void KeepTheInheritedLimitCallableOnTheSQLiteQuerySet()
+    {
+        When.A<SQLiteQuerySet>("appends a LIMIT clause through the inherited Limit method",
+            new SQLiteQuerySet(),
+            (querySet) => querySet.Limit(3).ToString()!)
+        .TheTest
+        .ShouldPass<string>((because, _, sql) =>
+        {
+            because.ItsTrue("the LIMIT clause is rendered", sql.Equals(" LIMIT 3"));
+        })
+        .SoBeHappy()
+        .UnlessItFailed();
+    }
+
+    [UnitTest]
+    public void KeepTheInheritedLimitCallableOnTheMySqlQuerySet()
+    {
+        When.A<MySqlQuerySet>("appends a LIMIT clause through the inherited Limit method",
+            new MySqlQuerySet(),
+            (querySet) => querySet.Limit(3).ToString()!)
+        .TheTest
+        .ShouldPass<string>((because, _, sql) =>
+        {
+            because.ItsTrue("the LIMIT clause is rendered", sql.Equals(" LIMIT 3"));
+        })
+        .SoBeHappy()
+        .UnlessItFailed();
+    }
+
+    [UnitTest]
+    public void KeepTheInheritedLimitCallableOnTheNpgsqlQuerySet()
+    {
+        When.A<NpgsqlQuerySet>("appends a LIMIT clause through the inherited Limit method",
+            new NpgsqlQuerySet(),
+            (querySet) => querySet.Limit(3).ToString()!)
+        .TheTest
+        .ShouldPass<string>((because, _, sql) =>
+        {
+            because.ItsTrue("the LIMIT clause is rendered", sql.Equals(" LIMIT 3"));
+        })
+        .SoBeHappy()
+        .UnlessItFailed();
+    }
+
+    [UnitTest]
+    public void RecordAndFlushTheLimitCountOnTheSQLiteQuerySet()
+    {
+        When.A<SQLiteQuerySet>("records the SelectTop count and flushes it on Go",
+            new SQLiteQuerySet(),
+            (querySet) =>
+            {
+                querySet.SelectTop(5, "TestTable", "Name");
+                int recorded = querySet.LimitCount;
+                querySet.Go();
+                return new LimitCountOutcome(recorded, querySet.LimitCount, querySet.ToString()!);
+            })
+        .TheTest
+        .ShouldPass<LimitCountOutcome>((because, _, outcome) =>
+        {
+            because.ItsTrue("SelectTop records the cap", outcome.Recorded == 5);
+            because.ItsTrue("Go resets the cap", outcome.AfterGo == -1);
+            because.ItsTrue("Go renders the cap", outcome.Sql.Contains(" Limit 5 "));
+        })
+        .SoBeHappy()
+        .UnlessItFailed();
+    }
+
+    private sealed record LimitCountOutcome(int Recorded, int AfterGo, string Sql);
+
     private sealed record RenderPairOutcome(string FirstRender, string SecondRender);
 }

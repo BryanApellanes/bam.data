@@ -40,7 +40,12 @@ namespace Bam.Data
         }
 
 
-        public int Limit
+        /// <summary>
+        /// The row cap <see cref="SelectTop"/> records for the statement being built; <see cref="Go"/> appends it
+        /// as a LIMIT clause and resets it to -1. Named so it does not hide the inherited
+        /// <see cref="SqlStringBuilder.Limit(int)"/> method.
+        /// </summary>
+        public int LimitCount
         {
             get;
             set;
@@ -48,7 +53,7 @@ namespace Bam.Data
 
         public override SqlStringBuilder SelectTop(int topCount, string tableName, params string[] columnNames)
         {
-            this.Limit = topCount;
+            this.LimitCount = topCount;
 
             if (columnNames.Length == 0)
             {
@@ -62,7 +67,7 @@ namespace Bam.Data
 
         public override void Execute(IDatabase db)
         {
-            if (Limit > 0)
+            if (LimitCount > 0)
             {
                 Go();
             }
@@ -71,13 +76,13 @@ namespace Bam.Data
 
         public override SqlStringBuilder Go()
         {
-            if (this.Limit > 0)
+            if (this.LimitCount > 0)
             {
-                StringBuilder.AppendFormat(" Limit {0} ", this.Limit);
+                StringBuilder.AppendFormat(" Limit {0} ", this.LimitCount);
             }
 
             base.Go();
-            this.Limit = -1;
+            this.LimitCount = -1;
             return this;
         }
     }
