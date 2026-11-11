@@ -324,9 +324,14 @@ public class RowCapShould : UnitTestMenuContainer
     [UnitTest]
     public void KeepTheInheritedLimitCallableOnTheSQLiteQuerySet()
     {
-        When.A<SQLiteQuerySet>("appends a LIMIT clause through the inherited Limit method",
+        When.A<SQLiteQuerySet>("exposes the inherited Limit method as a method group",
             new SQLiteQuerySet(),
-            (querySet) => querySet.Limit(3).ToString()!)
+            (querySet) =>
+            {
+                // The method group only binds when no property named Limit hides the method (CS0108).
+                Func<int, ISqlStringBuilder> limit = querySet.Limit;
+                return limit(3).ToString()!;
+            })
         .TheTest
         .ShouldPass<string>((because, _, sql) =>
         {
@@ -339,9 +344,14 @@ public class RowCapShould : UnitTestMenuContainer
     [UnitTest]
     public void KeepTheInheritedLimitCallableOnTheMySqlQuerySet()
     {
-        When.A<MySqlQuerySet>("appends a LIMIT clause through the inherited Limit method",
+        When.A<MySqlQuerySet>("exposes the inherited Limit method as a method group",
             new MySqlQuerySet(),
-            (querySet) => querySet.Limit(3).ToString()!)
+            (querySet) =>
+            {
+                // The method group only binds when no property named Limit hides the method (CS0108).
+                Func<int, ISqlStringBuilder> limit = querySet.Limit;
+                return limit(3).ToString()!;
+            })
         .TheTest
         .ShouldPass<string>((because, _, sql) =>
         {
@@ -354,9 +364,14 @@ public class RowCapShould : UnitTestMenuContainer
     [UnitTest]
     public void KeepTheInheritedLimitCallableOnTheNpgsqlQuerySet()
     {
-        When.A<NpgsqlQuerySet>("appends a LIMIT clause through the inherited Limit method",
+        When.A<NpgsqlQuerySet>("exposes the inherited Limit method as a method group",
             new NpgsqlQuerySet(),
-            (querySet) => querySet.Limit(3).ToString()!)
+            (querySet) =>
+            {
+                // The method group only binds when no property named Limit hides the method (CS0108).
+                Func<int, ISqlStringBuilder> limit = querySet.Limit;
+                return limit(3).ToString()!;
+            })
         .TheTest
         .ShouldPass<string>((because, _, sql) =>
         {
