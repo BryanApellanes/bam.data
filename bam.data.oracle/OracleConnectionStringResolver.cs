@@ -39,7 +39,12 @@ namespace Bam.Data
         public ConnectionStringSettings Resolve(string connectionName)
         {
 			ConnectionStringSettings connSettings = new ConnectionStringSettings();
-			connSettings.Name = connectionName;
+			// A database built without a connection name resolves with null or "". ConnectionStringSettings
+			// accepts an unset name but rejects an empty one, so only a real name is assigned.
+			if (!string.IsNullOrEmpty(connectionName))
+			{
+			    connSettings.Name = connectionName;
+			}
 			connSettings.ProviderName = OracleRegistrar.OracleAssemblyQualifiedName();
 			connSettings.ConnectionString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST={ServerName})(PORT={Port}))(CONNECT_DATA=(SERVICE_NAME={InstanceName})));User Id={UserId};Password={Password};".NamedFormat(this);
 

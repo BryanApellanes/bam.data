@@ -32,7 +32,12 @@ namespace Bam.Data.MySql
 		public ConnectionStringSettings Resolve(string connectionName)
         {
             ConnectionStringSettings s = new ConnectionStringSettings();
-            s.Name = connectionName;
+            // A database built without a connection name resolves with null or "". ConnectionStringSettings
+            // accepts an unset name but rejects an empty one, so only a real name is assigned.
+            if (!string.IsNullOrEmpty(connectionName))
+            {
+                s.Name = connectionName;
+            }
             s.ProviderName = typeof(MySqlClientFactory).AssemblyQualifiedName;
             DbConnectionStringBuilder connectionStringBuilder = GetConnectionStringBuilder();
 

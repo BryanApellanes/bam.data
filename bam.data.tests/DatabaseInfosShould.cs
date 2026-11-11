@@ -142,11 +142,13 @@ public class DatabaseInfosShould : UnitTestMenuContainer
     {
         When.A<NpgsqlDatabase>("compares a database with null, another type and a database without a connection string",
             () => new NpgsqlDatabase($"Host=db;Database=d;Username=u;Password={Secret}"),
+            // The null comparison is evaluated last: after Equals(null) the compiler treats
+            // `database` as possibly null for every later use (CS8602).
             database => new EqualityOutcome(
-                database.Equals(null),
-                database.Equals("Host=db"),
-                database.Equals(new NpgsqlDatabase()),
-                database.Equals(new NpgsqlDatabase($"Host=db;Database=d;Username=u;Password={Secret}"))))
+                OtherType: database.Equals("Host=db"),
+                NoConnectionString: database.Equals(new NpgsqlDatabase()),
+                Same: database.Equals(new NpgsqlDatabase($"Host=db;Database=d;Username=u;Password={Secret}")),
+                Null: database.Equals(null)))
             .TheTest
             .ShouldPass<EqualityOutcome>((because, outcome) =>
             {

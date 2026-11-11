@@ -35,9 +35,14 @@ namespace Bam.Data.Npgsql
         {
             ConnectionStringSettings s = new ConnectionStringSettings
             {
-                Name = connectionName,
                 ProviderName = typeof(NpgsqlFactory).AssemblyQualifiedName
             };
+            // A database built without a connection name resolves with null or "". ConnectionStringSettings
+            // accepts an unset name but rejects an empty one, so only a real name is assigned.
+            if (!string.IsNullOrEmpty(connectionName))
+            {
+                s.Name = connectionName;
+            }
             DbConnectionStringBuilder connectionStringBuilder = GetConnectionStringBuilder();
             s.ConnectionString = connectionStringBuilder.ConnectionString;
 

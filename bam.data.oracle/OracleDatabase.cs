@@ -95,7 +95,7 @@ namespace Bam.Data.Oracle
             {
                 if (string.IsNullOrEmpty(_connectionString))
                 {
-                    _connectionString = ConnectionStringResolver?.Resolve(ConnectionName)?.ConnectionString;
+                    _connectionString = ConnectionStringResolver?.Resolve(ConnectionName ?? string.Empty)?.ConnectionString;
                 }
 
                 return _connectionString;
