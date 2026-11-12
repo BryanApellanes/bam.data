@@ -41,7 +41,6 @@ bam.data also includes a built-in SQLite provider (`SQLiteDatabase`), a fluent q
 - `bam.configuration` -- Configuration and application name providers
 
 ### Package References
-- `mongocsharpdriver` 2.30.0
 - `Stub.System.Data.SQLite.Core.NetStandard` 1.0.119
 
 ### Target Framework
