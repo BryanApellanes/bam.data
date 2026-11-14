@@ -1400,7 +1400,9 @@ namespace Bam.Data
                 {
                     Type type = GetType();
                     Assembly assembly = type.Assembly;
-                    Log.AddEntry("Exception getting IdValue for Dao instance of type ({0}.{1}) in Assembly ({2}) with hash (sha256) ({3})", ex, type.Namespace!, type.Name, assembly.FullName!, assembly.GetFileInfo().Sha256());
+                    // runtime-generated Dao assemblies are loaded from bytes and have no file to hash
+                    string assemblyHash = assembly.TryGetFileInfo(out FileInfo? assemblyFile) ? assemblyFile.Sha256() : "(no file)";
+                    Log.AddEntry("Exception getting IdValue for Dao instance of type ({0}.{1}) in Assembly ({2}) with hash (sha256) ({3})", ex, type.Namespace!, type.Name, assembly.FullName!, assemblyHash);
                 }
             }
 
